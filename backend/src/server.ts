@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import app from './app';
 import { ensureDefaultAdminUser } from './lib/seed-admin';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,5 +11,5 @@ ensureDefaultAdminUser();
 
 // Start Express Server
 app.listen(PORT, () => {
-  console.log(`⚡ [Express API Backend] Modular & Security Hardened Server Running on http://localhost:${PORT}`);
+  console.log(`⚡ [Express API Backend] Server running on port ${PORT}`);
 });
