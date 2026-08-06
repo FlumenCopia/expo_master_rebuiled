@@ -78,17 +78,22 @@ export class VisitorController {
 
       const data = validation.data;
       const cleanEmail = (data.email || '').trim().toLowerCase();
+      const cleanPhoneDigits = data.phone.replace(/\D/g, '');
+      const last10Digits = cleanPhoneDigits.length >= 10 ? cleanPhoneDigits.slice(-10) : cleanPhoneDigits;
 
       let existing = null;
       if (cleanEmail) {
         existing = await prisma.visitor.findFirst({
           where: {
-            OR: [{ email: cleanEmail }, { phone: data.phone }],
+            OR: [
+              { email: cleanEmail },
+              { phone: { contains: last10Digits } },
+            ],
           },
         });
       } else {
         existing = await prisma.visitor.findFirst({
-          where: { phone: data.phone },
+          where: { phone: { contains: last10Digits } },
         });
       }
 
