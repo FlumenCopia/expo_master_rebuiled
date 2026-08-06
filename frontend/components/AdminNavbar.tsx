@@ -51,31 +51,28 @@ export default function AdminNavbar({ onRefresh, isRefreshing }: AdminNavbarProp
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/95 border-b border-slate-800/80 backdrop-blur-xl w-full">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className="h-16 flex items-center justify-between gap-2 sm:gap-4"
-          style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-        >
+    <header className="sticky top-0 z-50 bg-slate-900/95 border-b border-slate-800/80 backdrop-blur-xl w-full max-w-full overflow-hidden">
+      <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="h-16 flex items-center justify-between gap-2 sm:gap-4 overflow-hidden">
           {/* LEFT: LOGO & BRAND TITLE */}
-          <div className="flex items-center gap-3 shrink-0" style={{ display: 'flex', alignItems: 'center' }}>
-            <Link href="/admin/dashboard" className="flex items-center gap-3 group" style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <Link href="/admin/dashboard" className="flex items-center gap-2 sm:gap-3 group min-w-0">
               {/* eslint-disable-next-html-element-for-jsx */}
               <img
                 src="/assets/logo/logo3.png"
                 alt="Masters Expo Logo"
-                className="h-8 sm:h-9 object-contain group-hover:scale-105 transition-transform"
+                className="h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform shrink-0"
                 onError={(e) => {
                   (e.target as HTMLElement).style.display = 'none';
                 }}
               />
-              <div className="border-l border-slate-800 pl-3">
-                <span className="font-black text-white text-xs sm:text-sm leading-tight block tracking-tight whitespace-nowrap">
+              <div className="border-l border-slate-800 pl-2 sm:pl-3 truncate">
+                <span className="font-black text-white text-xs sm:text-sm leading-tight block tracking-tight truncate">
                   Event Management System
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 tracking-wide flex items-center gap-1 whitespace-nowrap">
+                <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 tracking-wide flex items-center gap-1 truncate">
                   <ShieldCheck className="w-3 h-3 text-emerald-400 inline shrink-0" />
-                  Masters Kerala RE 2.0 EXPO26
+                  <span className="truncate">Masters Kerala RE 2.0 EXPO26</span>
                 </span>
               </div>
             </Link>

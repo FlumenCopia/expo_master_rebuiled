@@ -276,26 +276,27 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
       </aside>
 
       {/* MAIN CONTENT CONTAINER */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col w-full max-w-full overflow-x-hidden">
         {/* TOP SUB-HEADER BAR */}
-        <header className="sticky top-0 z-30 bg-[#072228]/95 border-b border-[#0b3d46] backdrop-blur-xl px-6 md:px-8 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 text-xs font-bold text-slate-400">
-            <span className="text-slate-200 font-extrabold tracking-wide">EXPO26 ADMIN</span>
+        <header className="sticky top-0 z-30 bg-[#072228]/95 border-b border-[#0b3d46] backdrop-blur-xl px-4 sm:px-6 md:px-8 py-3.5 flex items-center justify-between w-full max-w-full overflow-hidden">
+          <div className="flex items-center gap-2.5 text-xs font-bold text-slate-400 truncate">
+            <span className="text-slate-200 font-extrabold tracking-wide shrink-0">EXPO26 ADMIN</span>
             <span className="text-slate-600">/</span>
-            <span className="text-[#7fee00] font-extrabold capitalize">
+            <span className="text-[#7fee00] font-extrabold capitalize truncate">
               {pathname.split('/').filter(Boolean).pop()?.replace('-', ' ') || 'Dashboard'}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#7fee00]/10 border border-[#7fee00]/25 text-[#7fee00] text-[11px] font-extrabold">
-              <span className="w-2 h-2 rounded-full bg-[#7fee00] animate-pulse" />
-              <span>Masters System Online</span>
+              <span className="w-2 h-2 rounded-full bg-[#7fee00] animate-pulse shrink-0" />
+              <span className="hidden sm:inline">Masters System Online</span>
+              <span className="sm:hidden">Online</span>
             </div>
           </div>
         </header>
 
         {/* CONTENT AREA */}
-        <div className="flex-1 p-6 md:p-8 bg-[#03151a]">{children}</div>
+        <div className="flex-1 p-4 sm:p-6 md:p-8 bg-[#03151a] w-full max-w-full overflow-x-hidden">{children}</div>
       </div>
     </div>
   );
