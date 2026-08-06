@@ -85,6 +85,7 @@ export default function AdminCheckinPage() {
       gain.connect(ctx.destination);
 
       if (type === 'success') {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([60]);
         osc.type = 'sine';
         osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
         osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.12);
@@ -93,6 +94,7 @@ export default function AdminCheckinPage() {
         osc.start();
         osc.stop(ctx.currentTime + 0.15);
       } else if (type === 'warning') {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([100, 50, 100]);
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(440, ctx.currentTime);
         gain.gain.setValueAtTime(0.3, ctx.currentTime);
@@ -100,6 +102,7 @@ export default function AdminCheckinPage() {
         osc.start();
         osc.stop(ctx.currentTime + 0.25);
       } else {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([200, 100, 200]);
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(220, ctx.currentTime);
         gain.gain.setValueAtTime(0.3, ctx.currentTime);
