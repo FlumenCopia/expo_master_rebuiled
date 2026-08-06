@@ -1,0 +1,15 @@
+[build]
+  base = "frontend"
+  publish = "frontend/.next"
+  command = "npm install && npx prisma generate && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
