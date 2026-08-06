@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { API_BASE_URL } from '@/lib/api-client';
 
 export default function ExhibitorRegisterPage() {
   const [selectedDays, setSelectedDays] = useState<string[]>(['Sep 25', 'Sep 26', 'Sep 27']);
@@ -41,7 +42,7 @@ export default function ExhibitorRegisterPage() {
     };
 
     try {
-      await fetch('http://localhost:5000/api/register/exhibitor', {
+      await fetch(`${API_BASE_URL}/api/register/exhibitor`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { API_BASE_URL } from '@/lib/api-client';
 
 const COUNTRIES = [
   { code: '91', country: 'India', name: 'India (+91)' },
@@ -103,7 +104,7 @@ export default function VisitorRegisterPage() {
     if (val.length >= 7) {
       setLookingUp(true);
       try {
-        const res = await fetch(`http://localhost:5000/api/visitors/lookup?phone=${encodeURIComponent(val)}`);
+        const res = await fetch(`${API_BASE_URL}/api/visitors/lookup?phone=${encodeURIComponent(val)}`);
         const result = await res.json();
         if (result.status && result.data) {
           const d = result.data;
@@ -156,7 +157,7 @@ export default function VisitorRegisterPage() {
     };
 
     try {
-      const res = await fetch('http://localhost:5000/api/register/visitor', {
+      const res = await fetch(`${API_BASE_URL}/api/register/visitor`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

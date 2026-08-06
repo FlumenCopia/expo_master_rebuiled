@@ -2,7 +2,18 @@
  * Unified API Client for Frontend connecting to Node.js Express Backend
  */
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export function getApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && !envUrl.includes('localhost')) {
+    return envUrl;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://expo-master-rebuiled.onrender.com';
+  }
+  return envUrl || 'http://localhost:5000';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   let token: string | null = null;
@@ -24,10 +35,12 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  const baseUrl = getApiBaseUrl();
 
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const res = await fetch(`${baseUrl}${endpoint}`, {
       ...options,
       headers,
       signal: controller.signal,
