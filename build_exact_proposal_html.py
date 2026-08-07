@@ -302,25 +302,19 @@ html_content = f"""<!DOCTYPE html>
             <tbody>
                 <tr>
                     <td>Days 1 – 5</td>
-                    <td>Core System & Architecture</td>
-                    <td>Architecture planning, repository setup, PostgreSQL schema & B-Tree Prisma ORM indexing</td>
+                    <td>Minimal Setup & Registrations</td>
+                    <td>Minimal running setup, visitor & exhibitor portals, digital QR badges, welcome emails & auto-calendar (.ics) invites</td>
                     <td>5 Days</td>
                 </tr>
                 <tr>
                     <td>Days 6 – 10</td>
-                    <td>Registration Engine</td>
-                    <td>Visitor & Exhibitor portals, digital badge QR, Nodemailer dispatch & auto-calendar (.ics) invites</td>
+                    <td>Core Event Management & Deployment</td>
+                    <td>Sub-events engine, gate control, dual ENTRY/EXIT QR scanners, gate audit logs, admin analytics & Hostinger KVM 8 VPS setup</td>
                     <td>5 Days</td>
-                </tr>
-                <tr>
-                    <td>Days 11 – 18</td>
-                    <td>Gate Control & Deployment</td>
-                    <td>Gates CRUD, dual-mode ENTRY/EXIT QR scanner, gate audit logs, Hostinger KVM 8 VPS setup & 75k load tuning</td>
-                    <td>8 Days</td>
                 </tr>
                 <tr class="total-row">
                     <td colspan="3">Total Fast-Track Execution Timeline</td>
-                    <td>18 Days</td>
+                    <td>10 Days</td>
                 </tr>
             </tbody>
         </table>
