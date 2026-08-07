@@ -6,6 +6,7 @@ import {
   generateBadgeCode,
   sanitizeCsvCell,
 } from '../middleware/security';
+import { EmailService } from '../services/email.service';
 
 export class VisitorController {
   // Public Phone Autofill Lookup
@@ -143,6 +144,16 @@ export class VisitorController {
           status: 'REGISTERED',
         },
       });
+
+      // Dispatch Welcome Email asynchronously with QR Badge & Calendar invite
+      if (cleanEmail && !cleanEmail.endsWith('@expokerala.local')) {
+        EmailService.sendVisitorWelcomeEmail({
+          fullName: visitor.fullName,
+          email: visitor.email,
+          badgeCode: visitor.badgeCode,
+          category: visitor.category,
+        }).catch((err) => console.error('Email send background error:', err));
+      }
 
       res.json({
         success: true,

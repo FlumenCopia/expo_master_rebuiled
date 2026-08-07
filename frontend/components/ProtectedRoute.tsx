@@ -42,7 +42,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#7fee00',
+          color: '#79C143',
           fontFamily: "'Manrope', sans-serif, system-ui",
         }}
       >
@@ -51,8 +51,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
             style={{
               width: '48px',
               height: '48px',
-              border: '3px solid rgba(127,238,0,0.2)',
-              borderTopColor: '#7fee00',
+              border: '3px solid rgba(1,166,78,0.2)',
+              borderTopColor: '#79C143',
               borderRadius: '50%',
               margin: '0 auto 16px',
               animation: 'spin 0.8s linear infinite',

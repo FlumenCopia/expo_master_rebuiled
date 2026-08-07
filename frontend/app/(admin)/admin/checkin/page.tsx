@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { QrCode, CheckCircle2, AlertTriangle, XCircle, Search, ShieldCheck, Camera, RefreshCw, Zap, Clock, UserCheck, History, ArrowRight } from 'lucide-react';
-import { Html5Qrcode } from 'html5-qrcode';
 import { fetchApi } from '@/lib/api-client';
 import AdminNavbar from '@/components/AdminNavbar';
 
@@ -67,7 +66,7 @@ export default function AdminCheckinPage() {
       .catch(() => {});
   }, []);
 
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const html5QrCodeRef = useRef<any>(null);
   const lastScannedCodeRef = useRef<{ code: string; time: number }>({ code: '', time: 0 });
   // Use a ref for loading so the html5-qrcode callback always sees the latest value (avoids stale closure)
   const loadingRef = useRef(false);
@@ -192,18 +191,20 @@ export default function AdminCheckinPage() {
 
   // Get list of available video cameras, then auto-start once a real ID is resolved
   useEffect(() => {
-    Html5Qrcode.getCameras()
-      .then((deviceList) => {
-        if (deviceList && deviceList.length > 0) {
-          setCameras(deviceList);
-          // Prefer back camera if available
-          const backCam = deviceList.find((c) => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment'));
-          const chosenId = backCam ? backCam.id : deviceList[0].id;
-          setSelectedCameraId(chosenId);
-          setCameraActive(true); // only start after we have a real camera ID
-        }
-      })
-      .catch(() => {});
+    import('html5-qrcode').then(({ Html5Qrcode }) => {
+      Html5Qrcode.getCameras()
+        .then((deviceList) => {
+          if (deviceList && deviceList.length > 0) {
+            setCameras(deviceList);
+            // Prefer back camera if available
+            const backCam = deviceList.find((c) => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment'));
+            const chosenId = backCam ? backCam.id : deviceList[0].id;
+            setSelectedCameraId(chosenId);
+            setCameraActive(true); // only start after we have a real camera ID
+          }
+        })
+        .catch(() => {});
+    }).catch(() => {});
   }, []);
 
   // Initialize and control camera scanner
@@ -218,23 +219,25 @@ export default function AdminCheckinPage() {
       const qrReaderElement = document.getElementById('qr-camera-viewport');
       if (!qrReaderElement) return;
 
-      const html5QrCode = new Html5Qrcode('qr-camera-viewport', { verbose: false } as any);
-      html5QrCodeRef.current = html5QrCode;
+      import('html5-qrcode').then(({ Html5Qrcode }) => {
+        const html5QrCode = new Html5Qrcode('qr-camera-viewport', { verbose: false } as any);
+        html5QrCodeRef.current = html5QrCode;
 
-      const config = { fps: 10, qrbox: { width: 200, height: 200 } };
+        const config = { fps: 10, qrbox: { width: 200, height: 200 } };
 
-      html5QrCode
-        .start(
-          { deviceId: { exact: selectedCameraId } },
-          config,
-          (decodedText) => {
-            verifyBadge(decodedText);
-          },
-          () => {}
-        )
-        .catch(() => {
-          // Camera permission denied or device busy — silent fail
-        });
+        html5QrCode
+          .start(
+            { deviceId: { exact: selectedCameraId } },
+            config,
+            (decodedText) => {
+              verifyBadge(decodedText);
+            },
+            () => {}
+          )
+          .catch(() => {
+            // Camera permission denied or device busy — silent fail
+          });
+      }).catch(() => {});
     }, 150);
 
     return () => {
@@ -254,17 +257,17 @@ export default function AdminCheckinPage() {
   }, [cameraActive, selectedCameraId]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 flex flex-col">
+    <div className="min-h-screen bg-[#03151a] text-slate-100 font-sans selection:bg-[#01A64E] selection:text-white flex flex-col">
       {/* UNIFIED ADMIN NAVBAR */}
       <AdminNavbar />
 
       <main className="max-w-4xl mx-auto w-full px-4 py-6 flex-1 flex flex-col space-y-6">
         {/* Top Header Card */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between bg-slate-900/80 border border-slate-800 p-5 rounded-3xl backdrop-blur-xl shadow-xl gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between bg-[#072228] border border-[#0b3d46] p-5 rounded-3xl shadow-xl gap-4">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center font-bold transition-all ${
               mode === 'IN' 
-                ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' 
+                ? 'bg-[#01A64E]/15 border-[#01A64E]/30 text-[#79C143]' 
                 : 'bg-amber-500/20 border-amber-500/30 text-amber-400'
             }`}>
               <QrCode className="w-6 h-6" />
@@ -272,7 +275,7 @@ export default function AdminCheckinPage() {
             <div>
               <h1 className="font-extrabold text-white text-lg sm:text-xl flex items-center gap-2">
                 Gate Scanner — <span className={
-                  mode === 'IN' ? 'text-emerald-400' : mode === 'BREAK' ? 'text-amber-400' : 'text-rose-400'
+                  mode === 'IN' ? 'text-[#79C143]' : mode === 'BREAK' ? 'text-amber-400' : 'text-rose-400'
                 }>{
                   mode === 'IN' ? 'CHECK-IN (ENTRY)' : mode === 'BREAK' ? 'PASS-OUT (BREAK)' : 'FINAL EXIT'
                 }</span>
@@ -286,7 +289,7 @@ export default function AdminCheckinPage() {
             <select
               value={selectedGate}
               onChange={(e) => setSelectedGate(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none"
+              className="bg-[#03151a] border border-[#0b3d46] text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none"
             >
               {gateOptions.map((gate) => (
                 <option key={gate} value={gate}>{gate}</option>
@@ -298,7 +301,7 @@ export default function AdminCheckinPage() {
               <select
                 value={selectedCameraId}
                 onChange={(e) => setSelectedCameraId(e.target.value)}
-                className="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none"
+                className="bg-[#03151a] border border-[#0b3d46] text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none"
               >
                 {cameras.map((cam) => (
                   <option key={cam.id} value={cam.id}>
@@ -314,7 +317,7 @@ export default function AdminCheckinPage() {
               className={`px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 shadow-lg ${
                 cameraActive
                   ? 'bg-rose-500/20 border border-rose-500/40 text-rose-400 hover:bg-rose-500/30'
-                  : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-emerald-500/20'
+                  : 'bg-[#01A64E] text-white hover:bg-[#79C143] shadow-[#01A64E]/20'
               }`}
             >
               <Camera className="w-4 h-4" />
@@ -324,13 +327,13 @@ export default function AdminCheckinPage() {
         </div>
 
         {/* Mode Switcher Banner (ENTRY vs BREAK vs EXIT) */}
-        <div className="bg-slate-900/60 border border-slate-800/80 p-2 rounded-2xl flex items-center justify-between gap-2 shadow-inner flex-wrap sm:flex-nowrap">
+        <div className="bg-[#072228] border border-[#0b3d46] p-2 rounded-2xl flex items-center justify-between gap-2 shadow-inner flex-wrap sm:flex-nowrap">
           <button
             onClick={() => changeMode('IN')}
             className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all min-w-[120px] ${
               mode === 'IN'
-                ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25 scale-[1.01]'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                ? 'bg-[#01A64E] text-white shadow-lg shadow-[#01A64E]/25 scale-[1.01]'
+                : 'text-slate-400 hover:text-white hover:bg-[#0b3d46]/50'
             }`}
           >
             <Zap className="w-4 h-4" />
@@ -341,8 +344,8 @@ export default function AdminCheckinPage() {
             onClick={() => changeMode('BREAK')}
             className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all min-w-[120px] ${
               mode === 'BREAK'
-                ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25 scale-[1.01]'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                ? 'bg-amber-500 text-[#03151a] shadow-lg shadow-amber-500/25 scale-[1.01]'
+                : 'text-slate-400 hover:text-white hover:bg-[#0b3d46]/50'
             }`}
           >
             <Clock className="w-4 h-4" />
@@ -354,7 +357,7 @@ export default function AdminCheckinPage() {
             className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all min-w-[120px] ${
               mode === 'OUT'
                 ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25 scale-[1.01]'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                : 'text-slate-400 hover:text-white hover:bg-[#0b3d46]/50'
             }`}
           >
             <ArrowRight className="w-4 h-4" />
@@ -463,29 +466,13 @@ export default function AdminCheckinPage() {
                 {/* HTML5 QR Camera Video Target */}
                 <div id="qr-camera-viewport" className="w-full h-full" />
 
-                {/* Animated HUD Target Reticle */}
-                <div className="absolute inset-0 pointer-events-none border-[3px] border-slate-500/20 rounded-2xl flex items-center justify-center">
-                  {/* Top-Left Corner */}
-                  <div className={`absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 rounded-tl-md ${
-                    mode === 'IN' ? 'border-emerald-400' : mode === 'BREAK' ? 'border-amber-400' : 'border-rose-400'
-                  }`} />
-                  {/* Top-Right Corner */}
-                  <div className={`absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 rounded-tr-md ${
-                    mode === 'IN' ? 'border-emerald-400' : mode === 'BREAK' ? 'border-amber-400' : 'border-rose-400'
-                  }`} />
-                  {/* Bottom-Left Corner */}
-                  <div className={`absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 rounded-bl-md ${
-                    mode === 'IN' ? 'border-emerald-400' : mode === 'BREAK' ? 'border-amber-400' : 'border-rose-400'
-                  }`} />
-                  {/* Bottom-Right Corner */}
-                  <div className={`absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 rounded-br-md ${
-                    mode === 'IN' ? 'border-emerald-400' : mode === 'BREAK' ? 'border-amber-400' : 'border-rose-400'
-                  }`} />
-
-                  {/* Scanning Laser Beam Line */}
-                  <div className={`w-3/4 h-0.5 bg-gradient-to-r from-transparent via-current to-transparent animate-pulse ${
-                    mode === 'IN' ? 'text-emerald-400 shadow-[0_0_12px_#10b981]' : mode === 'BREAK' ? 'text-amber-400 shadow-[0_0_12px_#f59e0b]' : 'text-rose-400 shadow-[0_0_12px_#f43f5e]'
-                  }`} />
+                {/* Clean QR Alignment Target Reticle */}
+                <div className="absolute inset-0 pointer-events-none border-2 border-slate-700/30 rounded-2xl flex items-center justify-center p-6">
+                  <div className="w-full h-full border-2 border-dashed border-[#01A64E]/50 rounded-xl flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-[#79C143] bg-[#03151a]/80 px-2 py-0.5 rounded-full border border-[#01A64E]/30">
+                      Align QR Code Within Box
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : (

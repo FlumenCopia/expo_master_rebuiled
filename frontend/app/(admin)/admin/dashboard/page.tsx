@@ -104,37 +104,36 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-6 sm:space-y-8 pb-10">
       {/* DASHBOARD HEADER & QUICK ACTIONS */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-900 border border-slate-800/80 p-6 md:p-8 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-extrabold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" />
-            <span>Master EXPO26 Portal</span>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-8 rounded-3xl shadow-xl">
+        <div>
+          <div className="flex items-center gap-2 text-[#79C143] text-xs font-extrabold uppercase tracking-widest mb-1.5">
+            <ShieldCheck className="w-4 h-4 text-[#79C143]" />
+            <span>Masters Kerala RE 2.0 EXPO26</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-            Event Overview & Analytics
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+            Event Management Overview
           </h1>
-          <p className="text-slate-400 text-xs md:text-sm mt-1 max-w-xl">
+          <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
             Real-time tracking of attendee check-ins, stall registrations, gate pass validation, and live analytics.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 relative z-10 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 flex-wrap sm:flex-nowrap">
           <button
             onClick={loadStats}
             disabled={loading}
-            className="p-3 rounded-2xl bg-slate-800/90 border border-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-700/80 transition-all shadow-lg flex items-center gap-2 text-xs font-bold"
+            className="p-3 rounded-2xl bg-[#0b3d46] text-slate-200 hover:text-white hover:bg-[#0f4d58] border border-[#0b3d46] transition-all flex items-center gap-2 text-xs font-bold shrink-0"
             title="Refresh Live Data"
           >
-            <RefreshCw className={`w-4 h-4 text-emerald-400 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-[#79C143] ${loading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh Data</span>
           </button>
 
           <Link
             href="/admin/checkin"
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs md:text-sm flex items-center gap-2.5 shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="px-5 py-3 rounded-2xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2.5 shadow-lg shadow-[#01A64E]/20 transition-all active:scale-[0.98] shrink-0"
           >
             <QrCode className="w-4 h-4 stroke-[2.5]" />
             <span>Open Gate Scanner</span>
@@ -143,33 +142,33 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* 6 STAT CARDS GRID - CLEAN 3-COLUMN RESPONSIVE LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
             <div
               key={idx}
-              className="bg-slate-900/90 border border-slate-800/90 p-5 rounded-2xl relative overflow-hidden group hover:border-slate-700 transition-all duration-300 shadow-xl backdrop-blur-xl flex flex-col justify-between"
+              className="bg-[#072228] border border-[#0b3d46] p-5 rounded-2xl flex flex-col justify-between hover:border-[#01A64E]/40 transition-all shadow-xl"
             >
               <div className="flex items-start justify-between gap-2 mb-4">
                 <div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#79C143] block">
                     {card.title}
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-500 block mt-0.5">
+                  <span className="text-[11px] font-semibold text-slate-400 block mt-0.5">
                     {card.subtitle}
                   </span>
                 </div>
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${card.color} text-white shadow-lg shrink-0`}>
+                <div className="p-3 rounded-xl bg-[#0b3d46] text-[#79C143] border border-[#0b3d46] shrink-0">
                   <Icon className="w-5 h-5 stroke-[2]" />
                 </div>
               </div>
 
-              <div className="flex items-baseline justify-between pt-2 border-t border-slate-800/60">
-                <span className="text-3xl font-black text-white tracking-tight">
+              <div className="flex items-baseline justify-between pt-3 border-t border-[#0b3d46]">
+                <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   {card.value}
                 </span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${card.badgeBg}`}>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#01A64E]/15 text-[#79C143] border border-[#01A64E]/30">
                   Live Sync
                 </span>
               </div>
@@ -181,26 +180,26 @@ export default function AdminDashboardPage() {
       {/* 2 PASS ANALYTICS CARDS (GATE IN & GATE OUT) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GATE IN PASSES */}
-        <div className="bg-slate-900/90 border border-slate-800 p-6 md:p-7 rounded-3xl shadow-xl backdrop-blur-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
+        <div className="bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-7 rounded-3xl shadow-xl flex flex-col justify-between">
+          <div className="flex items-center justify-between border-b border-[#0b3d46] pb-4 mb-6">
             <div>
               <h3 className="font-extrabold text-white text-base">Gate In Passes</h3>
               <p className="text-xs text-slate-400">Total entry pass utilization</p>
             </div>
-            <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
+            <span className="px-3 py-1 rounded-full bg-[#01A64E]/15 border border-[#01A64E]/30 text-[#79C143] text-xs font-bold">
               100% Validated
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-around gap-8 py-2">
+          <div className="flex flex-col sm:flex-row items-center justify-around gap-6 sm:gap-8 py-2">
             {/* SVG Circular Ring Chart */}
-            <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
+            <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center shrink-0">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <circle
                   cx="50"
                   cy="50"
                   r="40"
-                  className="stroke-slate-800"
+                  className="stroke-[#0b3d46]"
                   strokeWidth="10"
                   fill="transparent"
                 />
@@ -208,7 +207,7 @@ export default function AdminDashboardPage() {
                   cx="50"
                   cy="50"
                   r="40"
-                  className="stroke-emerald-400 transition-all duration-1000 ease-out"
+                  className="stroke-[#01A64E] transition-all duration-1000 ease-out"
                   strokeWidth="10"
                   strokeDasharray={`${2 * Math.PI * 40}`}
                   strokeDashoffset={0}
@@ -218,25 +217,25 @@ export default function AdminDashboardPage() {
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
                 <span className="text-2xl font-black text-white tracking-tight">100.0%</span>
-                <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest mt-0.5">
+                <span className="text-[10px] font-extrabold text-[#79C143] uppercase tracking-widest mt-0.5">
                   Used
                 </span>
               </div>
             </div>
 
             {/* Metrics legend */}
-            <div className="space-y-4 w-full sm:w-auto">
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-800">
+            <div className="space-y-3 w-full sm:w-auto">
+              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-[#03151a] border border-[#0b3d46]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3.5 h-3.5 rounded-md bg-emerald-400 shadow-sm shadow-emerald-400/50" />
+                  <div className="w-3.5 h-3.5 rounded-md bg-[#01A64E]" />
                   <span className="text-xs font-bold text-slate-300">Used Passes</span>
                 </div>
                 <span className="text-xs font-black text-white font-mono">100.0%</span>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-800">
+              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-[#03151a] border border-[#0b3d46]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3.5 h-3.5 rounded-md bg-slate-700" />
+                  <div className="w-3.5 h-3.5 rounded-md bg-[#0b3d46]" />
                   <span className="text-xs font-bold text-slate-400">Unused Passes</span>
                 </div>
                 <span className="text-xs font-black text-slate-400 font-mono">0.0%</span>
@@ -246,8 +245,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* GATE OUT PASSES */}
-        <div className="bg-slate-900/90 border border-slate-800 p-6 md:p-7 rounded-3xl shadow-xl backdrop-blur-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
+        <div className="bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-7 rounded-3xl shadow-xl flex flex-col justify-between">
+          <div className="flex items-center justify-between border-b border-[#0b3d46] pb-4 mb-6">
             <div>
               <h3 className="font-extrabold text-white text-base">Gate Out Passes</h3>
               <p className="text-xs text-slate-400">Exit pass checkout validation</p>
@@ -257,7 +256,7 @@ export default function AdminDashboardPage() {
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-around gap-8 py-2">
+          <div className="flex flex-col sm:flex-row items-center justify-around gap-6 sm:gap-8 py-2">
             {/* SVG Circular Ring Chart */}
             <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">

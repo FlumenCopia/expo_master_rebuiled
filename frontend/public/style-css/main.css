@@ -1707,7 +1707,7 @@ top: 0 ;
 .vist-input button[type="submit"] {
     background: linear-gradient(135deg, #7fee00, #95c841);
     border: none;
-    color: #ffffff !important;
+    color: #03151a !important;
     padding: 10px 16px;
     border-radius: 6px;
     width: 100%;
@@ -1741,7 +1741,7 @@ top: 0 ;
 .vist-input button.vist-regis-btn:hover,
 .vist-input button[type="submit"]:hover {
     background: linear-gradient(135deg, #95c841, #7fee00);
-    color: #ffffff !important;
+    color: #03151a !important;
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(127, 238, 0, 0.45);
 }

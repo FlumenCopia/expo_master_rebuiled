@@ -40,8 +40,8 @@ export default function AdminRootPage() {
           style={{
             width: '48px',
             height: '48px',
-            border: '3px solid rgba(127,238,0,0.2)',
-            borderTopColor: '#7fee00',
+            border: '3px solid rgba(1,166,78,0.2)',
+            borderTopColor: '#79C143',
             borderRadius: '50%',
             margin: '0 auto 16px',
             animation: 'spin 0.8s linear infinite',

@@ -137,39 +137,6 @@ model CompanyEmployee {
   @@index([companyName])
 }
 
-model FoodItem {
-  id          String   @id @default(cuid())
-  name        String
-  category    String?
-  price       Float    @default(0.0)
-  description String?
-  status      String   @default("AVAILABLE")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Quiz {
-  id          String         @id @default(cuid())
-  title       String
-  description String?
-  status      String         @default("ACTIVE")
-  questions   QuizQuestion[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-}
-
-model QuizQuestion {
-  id            String   @id @default(cuid())
-  quizId        String
-  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  questionText  String
-  optionA       String
-  optionB       String
-  optionC       String
-  optionD       String
-  correctOption String
-  createdAt     DateTime @default(now())
-}
 
 model MasterItem {
   id        String   @id @default(cuid())
@@ -213,6 +180,16 @@ model SubEvent {
   @@index([title])
 }
 
+model Gate {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  hall      String?  @default("Main Hall")
+  status    String   @default("ACTIVE") // ACTIVE or INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model GateLog {
   id          String   @id @default(cuid())
   visitorId   String
@@ -221,9 +198,15 @@ model GateLog {
   scannedBy   User?    @relation(fields: [scannedById], references: [id])
   scannedAt   DateTime @default(now())
   gateName    String   @default("Main Entrance")
+  scanType    String   @default("ENTRY") // ENTRY or EXIT
+  status      String   @default("SUCCESS") // SUCCESS, DENIED, DUPLICATE_ENTRY
+  notes       String?
 
   @@index([visitorId])
   @@index([scannedAt])
+  @@index([scanType])
+  @@index([status])
 }
+
 
 

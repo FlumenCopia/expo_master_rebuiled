@@ -163,15 +163,15 @@ export default function AdminGatesPage() {
                 {gates.map((gate) => (
                   <div
                     key={gate.id}
-                    className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-all"
+                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-3 hover:border-slate-700 transition-all overflow-hidden"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">
-                        <DoorOpen className="w-5 h-5" />
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold shrink-0">
+                        <DoorOpen className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
-                      <div>
-                        <div className="font-extrabold text-white text-sm">{gate.name}</div>
-                        <div className="text-[11px] text-slate-400">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-extrabold text-white text-xs sm:text-sm truncate">{gate.name}</div>
+                        <div className="text-[10px] sm:text-[11px] text-slate-400 truncate">
                           Status: <span className="text-emerald-400 font-semibold uppercase">{gate.status}</span>
                         </div>
                       </div>
@@ -179,7 +179,7 @@ export default function AdminGatesPage() {
 
                     <button
                       onClick={() => handleDeleteGate(gate.id, gate.name)}
-                      className="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-all"
+                      className="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-all shrink-0"
                       title="Delete Gate"
                     >
                       <Trash2 className="w-4 h-4" />

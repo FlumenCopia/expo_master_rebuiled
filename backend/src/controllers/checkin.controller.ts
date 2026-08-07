@@ -26,12 +26,24 @@ export class CheckInController {
       }
 
       // --- BREAK / PASS-OUT MODE ---
-      if (mode === 'BREAK') {
+      if (mode === 'BREAK' || mode === 'OUT' || mode === 'EXIT') {
         if (visitor.status !== 'CHECKED_IN') {
+          // Log denied exit attempt
+          await prisma.gateLog.create({
+            data: {
+              visitorId: visitor.id,
+              scannedById: req.user?.id,
+              gateName: gateName || 'Main Entrance',
+              scanType: 'EXIT',
+              status: 'DENIED',
+              notes: 'Visitor was not currently checked in',
+            },
+          });
+
           res.json({
             success: false,
             code: 'NOT_INSIDE',
-            message: `⚠️ CANNOT PASS-OUT! ${visitor.fullName} is not currently inside the venue.`,
+            message: `⚠️ CANNOT EXIT! ${visitor.fullName} is not currently checked inside the venue.`,
             visitor,
           });
           return;
@@ -40,15 +52,22 @@ export class CheckInController {
         const updatedVisitor = await prisma.visitor.update({
           where: { id: visitor.id },
           data: {
-            status: 'ON_BREAK' as any,
-            GateLogs: { create: { gateName: `${gateName} (BREAK EXIT)`, scannedById: req.user?.id } },
+            status: 'CHECKED_OUT' as any,
+            GateLogs: {
+              create: {
+                gateName: `${gateName || 'Main Entrance'} (EXIT)`,
+                scannedById: req.user?.id,
+                scanType: 'EXIT',
+                status: 'SUCCESS',
+              },
+            },
           },
         });
 
         res.json({
           success: true,
-          code: 'ON_BREAK',
-          message: `☕ BREAK APPROVED! ${updatedVisitor.fullName} checked out for a break.`,
+          code: 'CHECKED_OUT',
+          message: `👋 EXIT APPROVED! ${updatedVisitor.fullName} marked as checked out.`,
           visitor: updatedVisitor,
         });
         return;
@@ -57,6 +76,17 @@ export class CheckInController {
       // --- RE-ENTRY MODE ---
       if (mode === 'RE_ENTRY') {
         if (visitor.status === 'CHECKED_IN') {
+          await prisma.gateLog.create({
+            data: {
+              visitorId: visitor.id,
+              scannedById: req.user?.id,
+              gateName: gateName || 'Main Entrance',
+              scanType: 'ENTRY',
+              status: 'DUPLICATE_ENTRY',
+              notes: 'Visitor is already inside',
+            },
+          });
+
           res.json({
             success: false,
             code: 'ALREADY_CHECKED_IN',
@@ -70,7 +100,14 @@ export class CheckInController {
           where: { id: visitor.id },
           data: {
             status: 'CHECKED_IN',
-            GateLogs: { create: { gateName: `${gateName} (RE-ENTRY)`, scannedById: req.user?.id } },
+            GateLogs: {
+              create: {
+                gateName: `${gateName || 'Main Entrance'} (RE-ENTRY)`,
+                scannedById: req.user?.id,
+                scanType: 'ENTRY',
+                status: 'SUCCESS',
+              },
+            },
           },
         });
 
@@ -83,62 +120,23 @@ export class CheckInController {
         return;
       }
 
-      // --- FINAL EXIT MODE ---
-      if (mode === 'OUT') {
-        if (visitor.status === 'REGISTERED' || visitor.status === ('CHECKED_OUT' as any)) {
-          res.json({
-            success: false,
-            code: 'NOT_CHECKED_IN',
-            message: `⚠️ NOT CHECKED IN! ${visitor.fullName} has not entered the venue.`,
-            visitor,
-          });
-          return;
-        }
-
-        const updatedVisitor = await prisma.visitor.update({
-          where: { id: visitor.id },
-          data: {
-            status: 'CHECKED_OUT' as any,
-            GateLogs: { create: { gateName: `${gateName} (FINAL EXIT)`, scannedById: req.user?.id } },
-          },
-        });
-
-        res.json({
-          success: true,
-          code: 'CHECKED_OUT',
-          message: `👋 GOODBYE! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Final Exit Approved!`,
-          visitor: updatedVisitor,
-        });
-        return;
-      }
-
       // --- ENTRY / CHECK-IN MODE (Default) ---
-      // Smart Re-entry detection if visitor was on break
-      if (visitor.status === ('ON_BREAK' as any)) {
-        const updatedVisitor = await prisma.visitor.update({
-          where: { id: visitor.id },
+      if (visitor.status === 'CHECKED_IN') {
+        await prisma.gateLog.create({
           data: {
-            status: 'CHECKED_IN',
-            GateLogs: { create: { gateName: `${gateName} (RE-ENTRY FROM BREAK)`, scannedById: req.user?.id } },
+            visitorId: visitor.id,
+            scannedById: req.user?.id,
+            gateName: gateName || 'Main Entrance',
+            scanType: 'ENTRY',
+            status: 'DUPLICATE_ENTRY',
+            notes: 'Visitor already inside venue',
           },
         });
 
-        res.json({
-          success: true,
-          code: 'VERIFIED',
-          message: `👋 WELCOME BACK! ${updatedVisitor.fullName} (${updatedVisitor.category}) returned from break. Pass Approved!`,
-          visitor: updatedVisitor,
-        });
-        return;
-      }
-
-      if (visitor.status === 'CHECKED_IN') {
         res.json({
           success: false,
           code: 'ALREADY_CHECKED_IN',
-          message: `⚠️ ALREADY CHECKED IN! ${visitor.fullName} entered at ${
-            visitor.checkedInAt ? new Date(visitor.checkedInAt).toLocaleTimeString() : 'earlier'
-          }.`,
+          message: `⚠️ ALREADY CHECKED IN! ${visitor.fullName} entered earlier.`,
           visitor,
         });
         return;
@@ -149,7 +147,14 @@ export class CheckInController {
         data: {
           status: 'CHECKED_IN',
           checkedInAt: new Date(),
-          GateLogs: { create: { gateName: `${gateName} (ENTRY)`, scannedById: req.user?.id } },
+          GateLogs: {
+            create: {
+              gateName: `${gateName || 'Main Entrance'} (ENTRY)`,
+              scannedById: req.user?.id,
+              scanType: 'ENTRY',
+              status: 'SUCCESS',
+            },
+          },
         },
       });
 
@@ -158,6 +163,36 @@ export class CheckInController {
         code: 'VERIFIED',
         message: `✅ WELCOME! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Entrance Pass Approved!`,
         visitor: updatedVisitor,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Get Recent Gate Audit Logs
+  static async getGateLogs(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '30', 10)));
+      const skip = (page - 1) * limit;
+
+      const [logs, total] = await Promise.all([
+        prisma.gateLog.findMany({
+          orderBy: { scannedAt: 'desc' },
+          skip,
+          take: limit,
+          include: {
+            visitor: { select: { fullName: true, badgeCode: true, category: true, company: true } },
+            scannedBy: { select: { name: true, email: true } },
+          },
+        }),
+        prisma.gateLog.count(),
+      ]);
+
+      res.json({
+        success: true,
+        logs,
+        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
       });
     } catch (error) {
       next(error);

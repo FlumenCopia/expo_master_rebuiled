@@ -4,13 +4,13 @@
 
 export function getApiBaseUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl && !envUrl.includes('localhost')) {
+  if (envUrl) {
     return envUrl;
   }
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://expo-master-rebuiled.onrender.com';
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000';
   }
-  return envUrl || 'http://localhost:5000';
+  return 'http://localhost:5000';
 }
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -38,9 +38,10 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
   const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   const baseUrl = getApiBaseUrl();
+  const requestUrl = `${baseUrl}${endpoint}`;
 
   try {
-    const res = await fetch(`${baseUrl}${endpoint}`, {
+    const res = await fetch(requestUrl, {
       ...options,
       headers,
       signal: controller.signal,
@@ -48,10 +49,20 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
 
     clearTimeout(timeoutId);
 
-    const data = await res.json();
+    const text = await res.text();
+    let data: any;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      if (text.trim().startsWith('<')) {
+        throw new Error(`API Endpoint "${endpoint}" at ${baseUrl} returned HTML instead of JSON (${res.status} ${res.statusText})`);
+      }
+      throw new Error(`Server returned non-JSON response (${res.status} ${res.statusText})`);
+    }
 
     if (!res.ok) {
-      throw new Error(data.error || 'API Request Failed');
+      throw new Error(data.error || data.message || `API Request Failed (${res.status})`);
     }
 
     return data as T;

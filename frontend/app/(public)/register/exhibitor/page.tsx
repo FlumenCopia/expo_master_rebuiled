@@ -166,7 +166,7 @@ export default function ExhibitorRegisterPage() {
 
                       {/* Submit Button */}
                       <div className="vist-input mt-4">
-                        <button type="submit" id="visit-btn" className="vist-regis-btn w-full py-3.5 bg-emerald-500 text-slate-950 font-extrabold text-base rounded-lg hover:bg-emerald-400 transition-all shadow-md" disabled={loading}>
+                        <button type="submit" id="visit-btn" className="vist-regis-btn w-full py-3.5 bg-[#7fee00] text-[#03151a] font-extrabold text-base rounded-lg hover:bg-[#95c841] transition-all shadow-md cursor-pointer" disabled={loading}>
                           {loading ? 'Submitting...' : 'Register as Exhibitor'}
                         </button>
                       </div>

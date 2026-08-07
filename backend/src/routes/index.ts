@@ -8,6 +8,7 @@ import settingsRoutes from './settings.routes';
 import checkinRoutes from './checkin.routes';
 import statsRoutes from './stats.routes';
 import adminManagementRoutes from './admin-management.routes';
+import gateRoutes from './gate.routes';
 
 const apiRouter = Router();
 
@@ -26,5 +27,6 @@ apiRouter.use('/', settingsRoutes);
 apiRouter.use('/', checkinRoutes);
 apiRouter.use('/', statsRoutes);
 apiRouter.use('/', adminManagementRoutes);
+apiRouter.use('/', gateRoutes);
 
 export default apiRouter;

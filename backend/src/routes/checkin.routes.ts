@@ -13,4 +13,11 @@ router.post(
   CheckInController.verifyCheckIn
 );
 
+router.get(
+  '/checkin/logs',
+  authenticateJWT,
+  requireRoles('SUPER_ADMIN', 'GATE_OFFICER', 'EVENT_MANAGER'),
+  CheckInController.getGateLogs
+);
+
 export default router;

@@ -39,23 +39,27 @@ export default function AdminExhibitorsPage() {
     }
   };
 
-  const filtered = exhibitors.filter(
-    (e) =>
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  const filtered = exhibitors.filter((e) => {
+    const matchesSearch =
       e.companyName.toLowerCase().includes(search.toLowerCase()) ||
       e.contactPerson.toLowerCase().includes(search.toLowerCase()) ||
-      e.email.toLowerCase().includes(search.toLowerCase())
-  );
+      e.email.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'ALL' || e.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#03151a] text-slate-100 font-sans selection:bg-[#01A64E] selection:text-white">
       {/* UNIFIED ADMIN NAVBAR */}
       <AdminNavbar onRefresh={fetchExhibitors} isRefreshing={loading} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 rounded-3xl shadow-xl">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-              <Building2 className="w-7 h-7 text-blue-400" />
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+              <Building2 className="w-7 h-7 text-[#79C143]" />
               Exhibitors & Stall Booking Directory
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -64,17 +68,33 @@ export default function AdminExhibitorsPage() {
           </div>
         </div>
 
-        {/* SEARCH BAR */}
-        <div className="bg-slate-900/80 border border-slate-800/80 p-4 sm:p-6 rounded-3xl backdrop-blur-xl">
-          <div className="relative max-w-md">
+        {/* SEARCH BAR & STATUS TABS */}
+        <div className="bg-[#072228] border border-[#0b3d46] p-4 sm:p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+          <div className="relative max-w-md w-full">
             <Search className="w-5 h-5 absolute left-4 top-3.5 text-slate-500" />
             <input
               type="text"
               placeholder="Search by company name, contact, or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm transition-colors"
+              className="w-full pl-12 pr-4 py-3 rounded-2xl bg-[#03151a] border border-[#0b3d46] text-white placeholder-slate-500 focus:outline-none focus:border-[#01A64E] text-sm transition-colors"
             />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 bg-[#03151a] p-1.5 rounded-2xl border border-[#0b3d46] self-start md:self-auto">
+            {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map((st) => (
+              <button
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-colors ${
+                  statusFilter === st
+                    ? 'bg-[#01A64E] text-white shadow-md shadow-[#01A64E]/20'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#072228]'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
           </div>
         </div>
 

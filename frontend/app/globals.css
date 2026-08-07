@@ -6,8 +6,11 @@
   --brand-teal-dark: #03151a;
   --brand-teal-mid: #072228;
   --brand-teal-light: #0b3d46;
-  --brand-lime: #7fee00;
-  --brand-lime-hover: #95c841;
+  --brand-green-primary: #01A64E;
+  --brand-green-vibrant: #79C143;
+  --brand-purple-accent: #652368;
+  --brand-lime: #79C143;
+  --brand-lime-hover: #01A64E;
 }
 
 @theme inline {
@@ -15,18 +18,183 @@
   --color-foreground: var(--foreground);
   --color-brand-dark: #03151a;
   --color-brand-teal: #072228;
-  --color-brand-lime: #7fee00;
+  --color-brand-lime: #79C143;
+  --color-brand-primary: #01A64E;
+  --color-brand-purple: #652368;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Manrope', sans-serif, system-ui;
-  background-color: #03151a;
+  background-color: #FFFAF6;
   color: #0f172a;
   overflow-x: hidden !important;
   max-width: 100vw !important;
   width: 100% !important;
+}
+
+/* PUBLIC WEBSITE HEADER & HERO (TRANSPARENT HEADER OVER BANNER TOP) */
+.header {
+  background-color: transparent !important;
+  position: absolute !important;
+  top: 30px !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10 !important;
+}
+
+.hdr-cont {
+  background-color: transparent !important;
+}
+
+.ind1 {
+  background-color: #03151a !important;
+  color: #ffffff !important;
+}
+
+.ind1 h1, .ind1 h2, .ind1 h3, .ind1 p {
+  color: #ffffff !important;
+}
+
+/* HERO DATE BOXES (MATCHING OLD PHP SITE BADGE GRADIENT) */
+.dt-bx {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+.dt-bx h3 {
+  color: #03151a !important;
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  margin: 0 !important;
+}
+
+.dt-bx-btm-bx {
+  background-image: linear-gradient(to bottom, #699D1D, #25370A) !important;
+  border-radius: 0 0 7px 7px !important;
+}
+
+.dt-bx-btm-bx p {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* PUBLIC SECTIONS WITH LIGHT BACKGROUND & DARK TEXT */
+.ind2, .ind3, .ind4, .ind6, .ind7, .ind8, .ind9, .ind10 {
+  background-color: #FFFAF6;
+  color: #0f172a;
+}
+
+.ind2 h2, .ind3 h2, .ind4 h2, .ind6 h2, .ind7 h2, .ind8 h2, .ind9 h2, .ind10 h2 {
+  color: #03151a !important;
+  font-weight: 700;
+}
+
+.ind2 p, .ind3 p, .ind4 p, .ind6 p, .ind7 p, .ind8 p, .ind9 p, .ind10 p,
+.ind2-inr-flx-rgt p {
+  color: #334155 !important;
+}
+
+.h3, .h3 span {
+  color: #79C143 !important;
+}
+
+.ind2-inr-flx-rgt .p {
+  background-color: #79C143 !important;
+  color: #ffffff !important;
+}
+
+.ind-cnct-btn p {
+  background-color: #01A64E !important;
+  color: #ffffff !important;
+}
+
+.fr-und-ln.active {
+  color: #652368 !important;
+}
+
+.fr-und-ln.active::after {
+  background: #652368 !important;
+}
+
+/* WHITE CONTAINER CARDS IN PUBLIC SECTIONS */
+.count-bx {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.count-bx li, .count-bx li span {
+  color: #03151a !important;
+  font-weight: 700 !important;
+}
+
+#timeControl li {
+  color: #699D1D !important;
+}
+
+#timeControl li span {
+  color: #03151a !important;
+}
+
+.exp-bx {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.exp-bx h3, .exp-bx p, .exp-bx span {
+  color: #03151a !important;
+  font-weight: 700 !important;
+}
+
+.cnt-frm-bx {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.cnt-frm-bx h2, .cnt-frm-bx label, .cnt-frm-bx input, .cnt-frm-bx textarea {
+  color: #0f172a !important;
+}
+
+/* DARK ACCENT SECTIONS */
+.ind5 {
+  background-color: #03151a !important;
+  color: #ffffff !important;
+}
+
+.ind5 h1, .ind5 h2, .ind5 h3, .ind5 p {
+  color: #ffffff !important;
+}
+
+/* VISITOR & EXHIBITOR REGISTRATION FORM CONTAINER */
+.vis-pg {
+  background-color: #FFFAF6 !important;
+}
+
+.vist-form-contain {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+
+.vist-form-contain h2 {
+  color: #0f172a !important;
+}
+
+.vist-form-contain h2 span {
+  color: #03151a !important;
+}
+
+.visit-cont-blk {
+  background-color: #03151a !important;
+  border: 1px solid #0b3d46 !important;
+  color: #ffffff !important;
+}
+
+.visit-cont-blk h2, .visit-cont-blk h3, .visit-cont-blk p {
+  color: #ffffff !important;
 }
 
 /* PUBLIC WEBSITE FORM INPUT CONTRAST & STYLING FIX */
@@ -84,19 +252,20 @@ html, body {
 }
 
 .day-btn:hover {
-  border-color: #7fee00 !important;
+  border-color: #79C143 !important;
   color: #0f172a !important;
   background: #f0fdf4 !important;
 }
 
 .day-btn.active {
-  background: linear-gradient(135deg, #7fee00, #95c841) !important;
-  border-color: #7fee00 !important;
+  background: linear-gradient(135deg, #01A64E, #79C143) !important;
+  border-color: #01A64E !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 12px rgba(127, 238, 0, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(1, 166, 78, 0.35) !important;
 }
 
 .day-btn.active strong {
   color: #ffffff !important;
 }
+

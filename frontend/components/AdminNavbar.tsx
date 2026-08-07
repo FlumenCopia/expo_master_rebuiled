@@ -219,11 +219,11 @@ export default function AdminNavbar({ onRefresh, isRefreshing }: AdminNavbarProp
             })}
           </div>
 
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white">{user?.email || 'admin@expokerala.com'}</span>
+          <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="text-xs font-bold text-white truncate">{user?.email || 'admin@expokerala.com'}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Link
                 href="/"
                 target="_blank"

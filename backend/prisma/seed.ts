@@ -7,21 +7,26 @@ async function main() {
   console.log('🌱 Seeding database with exact data matching event.rowbest.in...');
 
   // 1. Seed Admin User
-  const adminEmail = 'mastersassociationmeadia@gmail.com';
+  const adminEmails = [
+    'mastersassociationmedia@gmail.com',
+    'mastersassociationmeadia@gmail.com',
+  ];
   const hashedPassword = await bcrypt.hash('123456', 10);
 
-  const adminUser = await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: { password: hashedPassword, role: 'SUPER_ADMIN', name: 'Kerala reexpo Founder' },
-    create: {
-      email: adminEmail,
-      name: 'Kerala reexpo Founder',
-      password: hashedPassword,
-      role: 'SUPER_ADMIN',
-    },
-  });
+  for (const email of adminEmails) {
+    await prisma.user.upsert({
+      where: { email },
+      update: { password: hashedPassword, role: 'SUPER_ADMIN', name: 'Kerala reexpo Founder' },
+      create: {
+        email,
+        name: 'Kerala reexpo Founder',
+        password: hashedPassword,
+        role: 'SUPER_ADMIN',
+      },
+    });
+  }
 
-  console.log(`✅ Admin user seeded: ${adminUser.email}`);
+  console.log(`✅ Admin users seeded: ${adminEmails.join(', ')}`);
 
   // 2. Seed Main Event
   const event = await prisma.event.create({
@@ -169,16 +174,6 @@ async function main() {
     });
   }
 
-  // 7. Seed Food Items
-  const foodItems = [
-    { name: 'Malabar Tea & Snacks Combo', category: 'Snacks', price: 120, description: 'Traditional Kerala Kovai Tea with Banana Fritters' },
-    { name: 'VIP Buffet Lunch Pass', category: 'Meals', price: 650, description: 'Unlimited Executive Buffet Pass' },
-    { name: 'Cold Coffee & Cookie', category: 'Beverages', price: 180, description: 'Iced Coffee with Choco Chip Cookie' },
-  ];
-
-  for (const food of foodItems) {
-    await prisma.foodItem.create({ data: food });
-  }
 
   // 8. Seed Master Data
   const masterItems = [
@@ -191,8 +186,29 @@ async function main() {
   ];
 
   for (const master of masterItems) {
-    await prisma.masterItem.create({ data: master });
+    const existing = await prisma.masterItem.findFirst({
+      where: { type: master.type, code: master.code },
+    });
+    if (!existing) {
+      await prisma.masterItem.create({ data: master });
+    }
   }
+
+  // Seed Gates
+  const defaultGates = [
+    { name: 'Gate 1 - Main Entrance', code: 'GATE-01', hall: 'Hall A (Solar Pavilion)', status: 'ACTIVE' },
+    { name: 'Gate 2 - Exhibitor Entrance', code: 'GATE-02', hall: 'Hall B (Industrial Power)', status: 'ACTIVE' },
+    { name: 'Gate 3 - VIP Gate', code: 'GATE-03', hall: 'Hall C (VIP Lounge)', status: 'ACTIVE' },
+  ];
+
+  for (const g of defaultGates) {
+    await prisma.gate.upsert({
+      where: { code: g.code },
+      update: {},
+      create: g,
+    });
+  }
+
 
   // 9. Seed Gate Passes (For Gate In & Gate Out Pass Donut Charts)
   for (let i = 1; i <= 100; i++) {

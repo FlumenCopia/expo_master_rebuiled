@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#ffffff', margin: '0 0 6px' }}>
             Event Management System
           </h1>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: '#7fee00', letterSpacing: '0.5px', margin: 0 }}>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: '#79C143', letterSpacing: '0.5px', margin: 0 }}>
             MASTERS KERALA RE 2.0 EXPO26 • SECURE ADMIN PORTAL
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
         <div
           style={{
             background: 'rgba(7, 34, 40, 0.95)',
-            border: '1.5px solid rgba(127, 238, 0, 0.35)',
+            border: '1.5px solid rgba(1, 166, 78, 0.45)',
             borderRadius: '20px',
             padding: '32px 28px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
@@ -167,13 +167,13 @@ export default function AdminLoginPage() {
                 width: '100%',
                 padding: '15px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #7fee00, #95c841)',
+                background: 'linear-gradient(135deg, #01A64E, #79C143)',
                 border: 'none',
-                color: '#0f172a',
+                color: '#ffffff',
                 fontSize: '15px',
                 fontWeight: 800,
                 cursor: 'pointer',
-                boxShadow: '0 6px 20px rgba(127, 238, 0, 0.4)',
+                boxShadow: '0 6px 20px rgba(1, 166, 78, 0.4)',
                 marginTop: '10px',
                 transition: 'all 0.25s ease',
               }}

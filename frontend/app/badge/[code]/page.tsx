@@ -3,24 +3,35 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { generateQRCodeDataUrl } from '@/lib/qrcode';
 import PrintBadgeButton from './PrintBadgeButton';
-import { ShieldCheck, Zap, ArrowLeft, Building2, MapPin, Briefcase, User } from 'lucide-react';
+import { ShieldCheck, Zap, ArrowLeft, Building2, MapPin, Briefcase, User, Calendar } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function BadgePage({ params }: { params: Promise<{ code: string }> }) {
-  const { code } = await params;
+  let visitor = null;
+  let qrCodeUrl = '';
 
-  const visitor = await prisma.visitor.findUnique({
-    where: { badgeCode: code.toUpperCase() },
-  });
+  try {
+    const { code } = await params;
+    if (!code) return notFound();
 
-  if (!visitor) {
+    visitor = await prisma.visitor.findUnique({
+      where: { badgeCode: code.toUpperCase() },
+    });
+
+    if (!visitor) {
+      notFound();
+    }
+
+    qrCodeUrl = await generateQRCodeDataUrl(visitor.badgeCode);
+  } catch (err) {
+    console.error('BadgePage Server Component Error:', err);
     notFound();
   }
 
-  // Generate QR Code data URL containing badge code
-  const qrCodeUrl = await generateQRCodeDataUrl(visitor.badgeCode);
   const profileName = visitor.subEvents?.[1] || visitor.category || 'Visitor';
+
+  const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Masters EXPO26')}&details=${encodeURIComponent('Official Entry Pass: ' + visitor.badgeCode)}&location=${encodeURIComponent('Main Exhibition Centre, Kochi, Kerala')}&dates=20260915T090000Z/20260917T180000Z`;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start sm:justify-center py-8 px-4 selection:bg-emerald-500 selection:text-white">
@@ -33,6 +44,15 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
           <ArrowLeft className="w-4 h-4" />
           <span>Home</span>
         </Link>
+        <a
+          href={googleCalUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 transition-all shadow-md"
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Add to Calendar</span>
+        </a>
         <PrintBadgeButton />
       </div>
 
