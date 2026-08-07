@@ -18,17 +18,14 @@ export class GateController {
   // Create new Gate
   static async createGate(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { name, code, hall, status } = req.body;
-      if (!name || !code) {
-        res.status(400).json({ error: 'Gate Name and Gate Code are required' });
+      const { name, hall, status } = req.body;
+      if (!name) {
+        res.status(400).json({ error: 'Gate Name is required' });
         return;
       }
 
-      const existing = await prisma.gate.findUnique({ where: { code: code.trim().toUpperCase() } });
-      if (existing) {
-        res.status(400).json({ error: 'Gate Code already exists' });
-        return;
-      }
+      const count = await prisma.gate.count();
+      const code = `G${String(count + 1).padStart(3, '0')}`;
 
       const gate = await prisma.gate.create({
         data: {

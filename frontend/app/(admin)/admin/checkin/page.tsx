@@ -57,7 +57,7 @@ export default function AdminCheckinPage() {
     selectedGateRef.current = selectedGate;
   }, [selectedGate]);
 
-  // Load gates dynamically from DB (auto-creates defaults if empty)
+  // Load gates dynamically from DB — only gates the admin has created
   useEffect(() => {
     fetchApi<any>('/api/admin/gates')
       .then((res) => {
@@ -66,15 +66,14 @@ export default function AdminCheckinPage() {
           setGateOptions(names);
           setSelectedGate(names[0]);
         } else {
-          const fallback = ['Gate 1 - Main Entrance', 'Gate 2 - Exhibitor Entrance', 'Gate 3 - VIP Gate'];
-          setGateOptions(fallback);
-          setSelectedGate(fallback[0]);
+          // No gates configured yet — prompt admin
+          setGateOptions([]);
+          setSelectedGate('');
         }
       })
       .catch(() => {
-        const fallback = ['Gate 1 - Main Entrance', 'Gate 2 - Exhibitor Entrance', 'Gate 3 - VIP Gate'];
-        setGateOptions(fallback);
-        setSelectedGate(fallback[0]);
+        setGateOptions([]);
+        setSelectedGate('');
       });
   }, []);
 
@@ -290,7 +289,7 @@ export default function AdminCheckinPage() {
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* Dynamic Gate Selector — loaded from DB */}
-            {gateOptions.length > 0 && (
+            {gateOptions.length > 0 ? (
               <select
                 value={selectedGate}
                 onChange={(e) => setSelectedGate(e.target.value)}
@@ -300,6 +299,13 @@ export default function AdminCheckinPage() {
                   <option key={gate} value={gate}>{gate}</option>
                 ))}
               </select>
+            ) : (
+              <a
+                href="/admin/gates"
+                className="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center gap-1.5"
+              >
+                ⚠️ No Gates — Add Gates First
+              </a>
             )}
 
             {/* On-Spot Gate Pass Button */}
