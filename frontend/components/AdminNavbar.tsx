@@ -32,7 +32,7 @@ export default function AdminNavbar({ onRefresh, isRefreshing }: AdminNavbarProp
 
   const allNavLinks = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'EVENT_MANAGER'] },
-    { name: 'Visitors (75k+)', href: '/admin/visitors', icon: Users, roles: ['SUPER_ADMIN', 'EVENT_MANAGER'] },
+    { name: 'Visitors', href: '/admin/visitors', icon: Users, roles: ['SUPER_ADMIN', 'EVENT_MANAGER'] },
     { name: 'Exhibitors', href: '/admin/exhibitors', icon: Building2, roles: ['SUPER_ADMIN', 'EVENT_MANAGER'] },
     { name: 'Gate Scanner', href: '/admin/checkin', icon: QrCode, roles: ['SUPER_ADMIN', 'EVENT_MANAGER', 'GATE_OFFICER'] },
     { name: 'Gates', href: '/admin/gates', icon: DoorOpen, roles: ['SUPER_ADMIN', 'EVENT_MANAGER'] },

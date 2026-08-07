@@ -13,7 +13,7 @@ export interface AuthRequest extends Request {
 }
 
 export function getJwtSecret(): string {
-  return process.env.JWT_SECRET || 'expo26_super_secret_jwt_key_75k_scale';
+  return process.env.JWT_SECRET || 'expo26_super_secret_jwt_key';
 }
 
 /**

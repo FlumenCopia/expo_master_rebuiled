@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
-import { ExhibitorRegistrationSchema, ExhibitorUpdateSchema } from '../middleware/security';
+import { ExhibitorRegistrationSchema, ExhibitorUpdateSchema, generateBadgeCode } from '../middleware/security';
+import { EmailService } from '../services/email.service';
 
 export class ExhibitorController {
   // Public Exhibitor Registration
@@ -16,8 +17,47 @@ export class ExhibitorController {
       const data = validation.data;
       const existing = await prisma.exhibitor.findUnique({ where: { email: data.email } });
 
+      let badgeCode = '';
+      const existingVisitor = await prisma.visitor.findFirst({
+        where: { OR: [{ email: data.email }, { phone: data.phone }] },
+      });
+
+      if (existingVisitor) {
+        badgeCode = existingVisitor.badgeCode;
+      } else {
+        badgeCode = generateBadgeCode();
+        let isUnique = false;
+        let attempts = 0;
+        while (!isUnique && attempts < 5) {
+          const check = await prisma.visitor.findUnique({ where: { badgeCode } });
+          if (!check) isUnique = true;
+          else {
+            badgeCode = generateBadgeCode();
+            attempts++;
+          }
+        }
+
+        await prisma.visitor.create({
+          data: {
+            badgeCode,
+            fullName: data.contactPerson,
+            email: data.email,
+            phone: data.phone,
+            company: data.companyName,
+            designation: 'Exhibitor Representative',
+            category: 'EXHIBITOR',
+            status: 'REGISTERED',
+          },
+        });
+      }
+
       if (existing) {
-        res.json({ success: true, message: 'Exhibitor already registered!', exhibitor: existing });
+        res.json({
+          success: true,
+          message: 'Exhibitor already registered!',
+          badgeCode,
+          exhibitor: existing,
+        });
         return;
       }
 
@@ -35,7 +75,22 @@ export class ExhibitorController {
         },
       });
 
-      res.json({ success: true, message: 'Exhibitor booking request submitted!', exhibitor });
+      // Dispatch Welcome Email asynchronously with badge details
+      if (exhibitor.email) {
+        EmailService.sendExhibitorWelcomeEmail({
+          companyName: exhibitor.companyName,
+          contactPerson: exhibitor.contactPerson,
+          email: exhibitor.email,
+          stallNumber: exhibitor.stallNumber || undefined,
+        }).catch((err) => console.error('Exhibitor welcome email background error:', err));
+      }
+
+      res.json({
+        success: true,
+        message: 'Exhibitor booking request submitted!',
+        badgeCode,
+        exhibitor,
+      });
     } catch (error) {
       next(error);
     }

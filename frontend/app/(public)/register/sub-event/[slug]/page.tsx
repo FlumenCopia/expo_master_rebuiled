@@ -3,6 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/api-client';
+import { downloadIcsFile, getGoogleCalendarUrl } from '@/lib/calendar-utils';
 
 interface SubEventData {
   id: string;
@@ -400,24 +401,105 @@ export default function SubEventRegisterPage({ params }: { params: Promise<{ slu
           </div>
         </section>
 
-        {/* SUCCESS MODAL */}
+        {/* SUCCESS OVERLAY MODAL */}
         {showModal && (
-          <div className="badge-modal-contain">
-            <div className="bdg-overlay show"></div>
-            <div className="bdg-modal show">
-              <div className="bdg-contain">
-                <div><span className="close" onClick={() => setShowModal(false)}><i className="fa-solid fa-xmark"></i></span></div>
-                <div className="bdge-cont">
-                  <p style={{ fontSize: '22px', fontWeight: 800, marginBottom: '6px' }}>Registration Confirmed! 🎉</p>
-                  <p style={{ fontSize: '14px', color: '#a0aec0' }}>
-                    Thank you <strong style={{ color: '#fff' }}>{visitorName}</strong>! You are registered for <strong>{displayTitle}</strong>.
-                  </p>
-                </div>
+          <div id="sub-success-modal" className="show" role="dialog" aria-modal="true" style={{ display: 'flex', position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '20px' }}>
+            <div className="success-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(3,150,35,0.15)', border: '2px solid #7fee00', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', color: '#95c841', marginBottom: '20px' }}>✓</div>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontSize: '28px', fontWeight: 800, marginBottom: '10px', color: '#fff', textAlign: 'center' }}>Registration Confirmed! 🎉</h2>
+            <p style={{ fontSize: '14.5px', color: '#a0aec0', maxWidth: '440px', lineHeight: 1.6, marginBottom: '16px', textAlign: 'center' }}>
+              Thank you, <strong style={{ color: '#fff' }}>{visitorName}</strong>! You are registered for <strong>{displayTitle}</strong> at Masters Kerala RE 2.0 EXPO26.
+            </p>
 
-                <div className="generate-bdg" style={{ marginTop: '14px' }}>
-                  <Link href={badgeUrl} target="_blank">Generate &amp; Print Badge Pass</Link>
-                </div>
+            {email && (
+              <div className="ex-email-notice" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(3,150,35,0.12)', border: '1px solid rgba(3,150,35,0.3)', borderRadius: '10px', padding: '12px 16px', color: '#e2e8f0', fontSize: '13.5px', maxWidth: '480px', margin: '12px 0' }}>
+                <i className="fa-solid fa-envelope-circle-check" style={{ color: '#95c841', fontSize: '18px' }}></i>
+                <span>A welcome confirmation message has been sent to <strong>{email}</strong></span>
               </div>
+            )}
+
+            {/* ACTION BUTTONS */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginTop: '16px', width: '100%', maxWidth: '380px' }}>
+              <Link
+                href={badgeUrl}
+                target="_blank"
+                style={{
+                  width: '100%',
+                  textAlign: 'center',
+                  background: '#7fee00',
+                  color: '#03151a',
+                  fontWeight: 800,
+                  padding: '13px 20px',
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  fontSize: '14.5px',
+                  boxShadow: '0 4px 14px rgba(127, 238, 0, 0.3)',
+                  transition: 'all 0.3s'
+                }}
+              >
+                <i className="fa-solid fa-id-card"></i> Generate &amp; Print Badge Pass
+              </Link>
+
+              <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                <button
+                  type="button"
+                  onClick={() => downloadIcsFile()}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255,255,255,0.08)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    fontWeight: 600,
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '13px',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-plus" style={{ color: '#7fee00' }}></i> Device Calendar (.ics)
+                </button>
+
+                <a
+                  href={getGoogleCalendarUrl()}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255,255,255,0.08)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    fontWeight: 600,
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '13px',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <i className="fa-brands fa-google" style={{ color: '#4285F4' }}></i> Google Calendar
+                </a>
+              </div>
+
+              <Link
+                href="/"
+                onClick={() => setShowModal(false)}
+                className="success-back-btn"
+                style={{ color: '#a0aec0', fontSize: '13.5px', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.15)', padding: '8px 24px', borderRadius: '100px', transition: 'all 0.3s', marginTop: '4px' }}
+              >
+                &#8592; Back to Main Site
+              </Link>
             </div>
           </div>
         )}

@@ -9,6 +9,8 @@ import checkinRoutes from './checkin.routes';
 import statsRoutes from './stats.routes';
 import adminManagementRoutes from './admin-management.routes';
 import gateRoutes from './gate.routes';
+import reminderRoutes from './reminder.routes';
+import campaignRoutes from './campaign.routes';
 
 const apiRouter = Router();
 
@@ -28,5 +30,7 @@ apiRouter.use('/', checkinRoutes);
 apiRouter.use('/', statsRoutes);
 apiRouter.use('/', adminManagementRoutes);
 apiRouter.use('/', gateRoutes);
+apiRouter.use('/reminders', reminderRoutes);
+apiRouter.use('/campaigns', campaignRoutes);
 
 export default apiRouter;

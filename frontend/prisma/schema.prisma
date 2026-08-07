@@ -1,5 +1,5 @@
 // Enterprise Prisma Schema for Masters EXPO26 Backend
-// Optimized for 75,000+ High-Scale Registrations with B-Tree Indexes
+// Optimized for High-Scale Registrations with B-Tree Indexes
 
 generator client {
   provider = "prisma-client-js"

@@ -1,5 +1,5 @@
 // Enterprise Prisma Schema for Masters EXPO26 Backend
-// Optimized for 75,000+ High-Scale Registrations with B-Tree Indexes
+// Optimized for High-Scale Registrations with B-Tree Indexes
 
 generator client {
   provider = "prisma-client-js"
@@ -207,6 +207,27 @@ model GateLog {
   @@index([scanType])
   @@index([status])
 }
+
+model EmailCampaign {
+  id              String    @id @default(cuid())
+  title           String
+  subject         String
+  targetAudience  String    @default("VISITORS") // VISITORS, EXHIBITORS, ALL
+  templateType    String    @default("CUSTOM") // WELCOME, REMINDER, ANNOUNCEMENT, CUSTOM
+  content         String
+  status          String    @default("DRAFT") // DRAFT, SCHEDULED, IN_PROGRESS, COMPLETED, FAILED
+  scheduledAt     DateTime?
+  sentAt          DateTime?
+  totalRecipients Int       @default(0)
+  sentCount       Int       @default(0)
+  failedCount     Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+  @@index([targetAudience])
+}
+
 
 
 

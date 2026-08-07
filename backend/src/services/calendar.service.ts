@@ -64,17 +64,17 @@ export class CalendarService {
    * Default Expo Event Calendar Details
    */
   static getDefaultExpoEvent() {
-    const startDate = new Date('2026-09-15T09:00:00Z');
-    const endDate = new Date('2026-09-17T18:00:00Z');
+    const startDate = new Date('2026-09-25T09:00:00+05:30');
+    const endDate = new Date('2026-09-27T18:00:00+05:30');
 
     const options: CalendarEventOptions = {
-      title: 'Masters EXPO26 - International Trade Expo',
-      description: 'Official Entry Pass for Masters EXPO26. Please present your digital QR badge at the entrance gate for instant access.',
-      location: 'Main Exhibition Centre, Kochi, Kerala, India',
+      title: 'Masters Kerala RE 2.0 EXPO26',
+      description: 'Official Registration Confirmation for Masters Kerala RE 2.0 EXPO26. Show your badge pass at the venue entrance scanner.',
+      location: 'Calicut Trade Centre, Kozhikode, Kerala, India',
       startTime: startDate,
       endTime: endDate,
       organizerName: 'Masters EXPO Team',
-      organizerEmail: 'support@mastersexpo.com',
+      organizerEmail: 'info@solarmasters.org',
     };
 
     return {

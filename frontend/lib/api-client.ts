@@ -15,6 +15,19 @@ export function getApiBaseUrl(): string {
 
 export const API_BASE_URL = getApiBaseUrl();
 
+export function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('expo_admin_token');
+    if (stored && stored !== 'null' && stored !== 'undefined') {
+      headers['Authorization'] = `Bearer ${stored}`;
+    }
+  }
+  return headers;
+}
+
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   let token: string | null = null;
   

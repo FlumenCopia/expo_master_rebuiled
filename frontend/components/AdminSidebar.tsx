@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  Mail,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -227,6 +228,20 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
                 >
                   <FileSpreadsheet className="w-4 h-4" />
                   <span>Reports</span>
+                </Link>
+
+                {/* Email Campaigns & Trigger Mails */}
+                <Link
+                  href="/admin/email-campaigns"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    isActive('/admin/email-campaigns')
+                      ? 'bg-[#01A64E]/15 text-[#79C143] border border-[#01A64E]/30 shadow-md shadow-[#01A64E]/10'
+                      : 'text-slate-300 hover:text-white hover:bg-[#0b3d46]/60'
+                  }`}
+                >
+                  <Mail className="w-4 h-4 text-purple-400" />
+                  <span>Email Campaigns</span>
                 </Link>
 
                 {/* Gate Scanner */}
