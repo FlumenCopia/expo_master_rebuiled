@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import './TopBar.css';
 
 interface TopBarProps {
   logo1Path?: string;
@@ -18,20 +19,10 @@ export default function TopBar({
   variant = 'solid',
   className = '',
 }: TopBarProps) {
-  const getHeaderClass = () => {
-    let base = 'header w-full transition-all duration-300';
-    if (variant === 'solid') {
-      base += ' visitor-header bg-[#00252e] relative py-3 px-4 md:px-8';
-    } else if (variant === 'absolute') {
-      base += ' absolute top-[30px] left-0 right-0 z-10 py-3 px-4 md:px-8';
-    } else {
-      base += ' bg-transparent relative py-3 px-4 md:px-8';
-    }
-    return `${base} ${className}`.trim();
-  };
+  const variantClass = variant === 'solid' ? 'visitor-header topbar-solid' : variant === 'absolute' ? 'topbar-absolute' : 'topbar-transparent';
 
   return (
-    <header className={getHeaderClass()}>
+    <header className={`header topbar-header ${variantClass} ${className}`.trim()}>
       <div className="hdr-cont container mx-auto">
         <div className="header-conts flex items-center justify-between">
           {/* Logos on the Left */}

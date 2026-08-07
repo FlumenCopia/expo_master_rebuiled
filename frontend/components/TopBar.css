@@ -1,0 +1,40 @@
+.topbar-header {
+  width: 100%;
+  transition: all 0.3s ease;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .topbar-header {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.topbar-header.topbar-solid,
+.topbar-header.visitor-header {
+  background-color: #00252e !important;
+  position: relative !important;
+  top: auto !important;
+  z-index: 10 !important;
+}
+
+.topbar-header.topbar-absolute {
+  background-color: transparent !important;
+  position: absolute !important;
+  top: 30px !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10 !important;
+}
+
+.topbar-header.topbar-transparent {
+  background-color: transparent !important;
+  position: relative !important;
+  top: auto !important;
+  z-index: 10 !important;
+}
+
