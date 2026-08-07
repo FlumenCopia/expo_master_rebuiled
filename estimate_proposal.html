@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Estimate & Infrastructure Proposal - Expo Platform Rebuild</title>
+    <title>Masters Kerala RE EXPO26 - Official Project Proposal</title>
     <style>
         :root {
             --primary: #0f172a;
-            --primary-accent: #2563eb;
+            --primary-accent: #01A64E;
+            --secondary-accent: #79C143;
             --text-main: #1e293b;
             --text-muted: #64748b;
             --bg-light: #f8fafc;
             --border-color: #e2e8f0;
             --card-bg: #ffffff;
-            --success-color: #16a34a;
+            --brand-dark: #072228;
+            --brand-border: #0b3d46;
         }
 
         * {
@@ -26,23 +28,22 @@
         body {
             background-color: #f1f5f9;
             color: var(--text-main);
-            line-height: 1.5;
+            line-height: 1.6;
             padding: 40px 20px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
         .paper {
-            max-width: 850px;
+            max-width: 880px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 48px;
-            border-radius: 12px;
+            padding: 50px;
+            border-radius: 16px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             border: 1px solid var(--border-color);
         }
 
-        /* Print styling optimized for A4 */
         @media print {
             body {
                 background: none;
@@ -63,9 +64,8 @@
             }
         }
 
-        /* Action Bar */
         .action-bar {
-            max-width: 850px;
+            max-width: 880px;
             margin: 0 auto 20px auto;
             display: flex;
             justify-content: space-between;
@@ -76,9 +76,9 @@
             background-color: var(--primary-accent);
             color: #fff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -88,176 +88,196 @@
         }
 
         .btn-print:hover {
-            background-color: #1d4ed8;
+            background-color: #01863f;
         }
 
-        /* Header Layout */
+        /* HEADER & BRANDING MATCHING PROPOSAL TEMPLATE */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 3px solid var(--primary-accent);
             padding-bottom: 24px;
             margin-bottom: 32px;
         }
 
-        .brand h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary);
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .company-logo {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 20px;
             letter-spacing: -0.5px;
-            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .brand p {
-            font-size: 13px;
+        .company-logo span {
+            color: var(--secondary-accent);
+        }
+
+        .address-box p {
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
+            line-height: 1.4;
         }
 
-        .meta-details {
+        .doc-meta {
             text-align: right;
         }
 
         .proposal-badge {
             display: inline-block;
-            background-color: #eff6ff;
+            background-color: #f0fdf4;
             color: var(--primary-accent);
+            border: 1px solid #bbf7d0;
             font-size: 12px;
-            font-weight: 700;
-            padding: 4px 12px;
+            font-weight: 800;
+            padding: 5px 14px;
             border-radius: 20px;
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .meta-details p {
+        .doc-meta p {
             font-size: 13px;
             color: var(--text-muted);
         }
 
-        .meta-details p span {
+        .doc-meta p span {
             color: var(--text-main);
-            font-weight: 600;
-        }
-
-        /* Executive Summary Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 32px;
-        }
-
-        .info-block h4 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .info-block p {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .info-block span {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: normal;
-        }
-
-        /* Section Headings */
-        .section-title {
-            font-size: 16px;
             font-weight: 700;
+        }
+
+        .proposal-title {
+            font-size: 26px;
+            font-weight: 900;
             color: var(--primary);
-            margin-bottom: 16px;
+            margin-bottom: 24px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .section-heading {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 32px 0 16px 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
         }
 
-        .section-title::after {
+        .section-heading::after {
             content: "";
             flex: 1;
             height: 1px;
             background-color: var(--border-color);
-            margin-left: 16px;
+            margin-left: 8px;
         }
 
-        /* Tables */
+        p.body-text {
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 14px;
+            line-height: 1.65;
+        }
+
+        ul.bullet-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        ul.bullet-list.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        ul.bullet-list li {
+            font-size: 13.5px;
+            color: #334155;
+            background: var(--bg-light);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        ul.bullet-list li::before {
+            content: "•";
+            color: var(--primary-accent);
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* TABLES STYLING */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 32px;
+            margin-top: 16px;
+            margin-bottom: 24px;
             font-size: 13.5px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         th {
             background-color: var(--bg-light);
             color: var(--text-muted);
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             font-size: 11px;
             letter-spacing: 0.5px;
             text-align: left;
-            padding: 10px 14px;
-            border-top: 1px solid var(--border-color);
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
         }
 
         td {
-            padding: 12px 14px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
-            vertical-align: top;
+            vertical-align: middle;
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        .feature-name {
-            font-weight: 600;
-            color: var(--primary);
-        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
 
-        .feature-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* Pricing Totals Box */
+        /* BUDGET SUMMARY BOX */
         .summary-card {
             background-color: var(--primary);
             color: #ffffff;
             padding: 24px;
-            border-radius: 8px;
-            margin-bottom: 32px;
+            border-radius: 12px;
+            margin: 28px 0;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
         }
 
         .summary-item h5 {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -266,7 +286,7 @@
 
         .summary-item .amount {
             font-size: 22px;
-            font-weight: 800;
+            font-weight: 900;
             color: #ffffff;
         }
 
@@ -276,67 +296,41 @@
             margin-top: 2px;
         }
 
-        /* Timeline / Scope Highlights */
-        .scope-notes {
-            margin-bottom: 32px;
-        }
-
-        .scope-notes ul {
-            list-style: none;
-            padding-left: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .scope-notes li {
+        .callout-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 14px 18px;
+            border-radius: 8px;
             font-size: 13px;
-            color: var(--text-main);
-            background: var(--bg-light);
-            padding: 10px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #166534;
+            margin-bottom: 20px;
         }
 
-        .scope-notes li::before {
-            content: "✓";
-            color: var(--success-color);
-            font-weight: bold;
-        }
+        .callout-box strong { color: #14532d; }
 
-        /* Footer & Signatures */
+        .callout-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+        }
+        .callout-info strong { color: #0c4a6e; }
+
         .footer {
             border-top: 1px solid var(--border-color);
             padding-top: 24px;
+            margin-top: 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
             color: var(--text-muted);
         }
-
-        .term-box {
-            background: #fffbe6;
-            border: 1px solid #ffe58f;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #856404;
-            margin-bottom: 24px;
-        }
-
-        .term-box strong {
-            color: #533f03;
-        }
     </style>
 </head>
 <body>
 
     <div class="action-bar no-print">
-        <span style="font-size: 14px; color: #475569; font-weight: 500;">Tip: Press Ctrl+P (or Cmd+P) or click Print to save as PDF.</span>
+        <span style="font-size: 14px; color: #475569; font-weight: 500;">Tip: Click "Print / Save as PDF" or press Ctrl+P to generate official document.</span>
         <button class="btn-print" onclick="window.print()">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"></path></svg>
             Print / Save as PDF
@@ -344,230 +338,208 @@
     </div>
 
     <div class="paper">
-        <!-- HEADER -->
+        <!-- HEADER WITH COMPANY LOGO & CONTACT -->
         <header class="header">
-            <div class="brand">
-                <h1>PROJECT ESTIMATE PROPOSAL</h1>
-                <p>Full-Stack Application Rebuild & Infrastructure Scaling</p>
+            <div>
+                <div class="logo-box">
+                    <div class="company-logo">
+                        FLUMEN<span>X</span>
+                    </div>
+                </div>
+                <div class="address-box">
+                    <p><strong>FLUMENX SOFTWARE SOLUTIONS</strong></p>
+                    <p>Gautham Villa T.C 7/82 Kanjirampara PO,</p>
+                    <p>Kanjirampara, Thiruvananthapuram, Kerala 695030</p>
+                </div>
             </div>
-            <div class="meta-details">
-                <div class="proposal-badge">Estimate / Billing Quote</div>
+            <div class="doc-meta">
+                <div class="proposal-badge">Official Scope & Cost Proposal</div>
                 <p>Date: <span>August 07, 2026</span></p>
-                <p>Estimate ID: <span>EST-2026-EXPO75K</span></p>
-                <p>Target Traffic: <span>75,000 Attendees</span></p>
+                <p>Proposal Ref: <span>FX-2026-EXPO26-P1</span></p>
+                <p>Target Traffic: <span>75,000+ Concurrent Capacity</span></p>
             </div>
         </header>
 
-        <!-- CLIENT & PROJECT OVERVIEW -->
-        <div class="info-grid">
-            <div class="info-block">
-                <h4>Project Scope</h4>
-                <p>Expo & Event Management System</p>
-                <span>Converted static HTML to Next.js 14, Node.js API & PostgreSQL database architecture.</span>
-            </div>
-            <div class="info-block">
-                <h4>Infrastructure Target</h4>
-                <p>Hostinger VPS High-Concurrency Architecture</p>
-                <span>Optimized for low-latency QR check-in, real-time live attendance & 75,000 visitors.</span>
-            </div>
-        </div>
+        <h1 class="proposal-title">Masters Kerala RE EXPO26 – Full Platform Rebuild & High-Scale Infrastructure Proposal</h1>
 
-        <!-- FEATURE & BUILD ESTIMATE TABLE -->
-        <div class="section-title">1. Development Scope & System Modules</div>
-        <table>
+        <!-- 1. EXECUTIVE SUMMARY -->
+        <div class="section-heading">1. Executive Summary</div>
+        <p class="body-text">
+            This proposal outlines the full-stack architecture rebuild, module stabilization, and cloud infrastructure deployment for the <strong>Masters Kerala RE EXPO26</strong> platform. The system has been transformed from legacy static interfaces into a high-concurrency Node.js Express API, Next.js 14 frontend, and PostgreSQL database architecture.
+        </p>
+        <p class="body-text">
+            The rebuilt platform is engineered to support over <strong>75,000+ visitor registrations</strong>, instant dual-mode QR gate check-ins, automated `.ics` calendar invites, and live real-time attendance analytics with sub-20ms database queries.
+        </p>
+
+        <!-- 2. PROJECT OBJECTIVES -->
+        <div class="section-heading">2. Core System Objectives</div>
+        <ul class="bullet-list two-col">
+            <li>Stabilize and optimize core event management workflows to guarantee 99.9% uptime.</li>
+            <li>Establish clean, modular TypeScript architecture with PostgreSQL B-Tree database indexes.</li>
+            <li>Deliver responsive modern UI/UX for desktop, mobile scanners, and admin management.</li>
+            <li>Provide Dual-Mode QR Gate Scanning (ENTRY & EXIT) with complete audit trail logging.</li>
+            <li>Automate instant transactional emails, digital badge QR generation, and iCal invites.</li>
+            <li>Provision Hostinger KVM 8 High-Concurrency VPS for 75,000+ concurrent attendees.</li>
+        </ul>
+
+        <!-- 3. SCOPE OF WORK -->
+        <div class="section-heading">3. Detailed Scope of Work</div>
+        <ul class="bullet-list">
+            <li><strong>Architecture & Database Core:</strong> PostgreSQL DB indexing, Prisma ORM, JWT Authentication, and 3-Tier Role-Based Security (SUPER_ADMIN, EVENT_MANAGER, GATE_OFFICER).</li>
+            <li><strong>Visitor Management & Automated iCal Invites:</strong> Registration CRUD, instant digital badge QR codes, welcome email triggers, and Google Calendar / `.ics` attachments.</li>
+            <li><strong>Exhibitor Portal & Approval System:</strong> Public registration, pending approval workflow, admin stall allocation, and exhibitor staff pass management.</li>
+            <li><strong>Gate Control & Dual-Mode Scanner:</strong> Gates CRUD, live web QR scanner supporting ENTRY & EXIT validation, and live on-site attendee tracking.</li>
+            <li><strong>Gate Audit Logging:</strong> Complete audit trail logging for every scan event (Visitor ID, Gatekeeper ID, Gate Name, Scan Type, Status, Timestamp).</li>
+            <li><strong>Sub-Events & Schedule Engine:</strong> Date, stage, and capacity management for main expo seminars and technical presentations.</li>
+            <li><strong>Admin Dashboard & Real-Time Analytics:</strong> Dynamic real-time counters for active on-site attendees, gate traffic graphs, and CSV/PDF export tools.</li>
+        </ul>
+
+        <!-- 4. DEVELOPMENT METHODOLOGY -->
+        <div class="section-heading">4. Development Methodology & Tech Stack</div>
+        <p class="body-text">
+            The platform follows a modular component-driven development workflow to ensure stability, high test coverage, and clean maintainability.
+        </p>
+        <table style="margin-top: 10px;">
             <thead>
                 <tr>
-                    <th style="width: 70%;">Module / Feature Description</th>
-                    <th class="text-right" style="width: 30%;">Tech Stack</th>
+                    <th style="width: 30%;">Layer</th>
+                    <th style="width: 70%;">Technologies Used</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>
-                        <div class="feature-name">Architecture & Database Schema</div>
-                        <div class="feature-desc">PostgreSQL DB indexing, Prisma ORM, JWT Auth, Role-Based Access Control.</div>
-                    </td>
-                    <td class="text-right">Node.js / PostgreSQL</td>
+                    <td><strong>Frontend Application</strong></td>
+                    <td>Next.js 14, React, TailwindCSS, Lucide Icons, Recharts</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">Visitor Management & Auto Calendar (.ics)</div>
-                        <div class="feature-desc">Visitor CRUD, digital QR badges, welcome email dispatch & Google Calendar / .ics invite.</div>
-                    </td>
-                    <td class="text-right">Next.js / Nodemailer</td>
+                    <td><strong>Backend API Service</strong></td>
+                    <td>Node.js, Express, TypeScript, JWT, BcryptJS, Nodemailer</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">Exhibitor Portal & Admin Approval Workflow</div>
-                        <div class="feature-desc">Public registration, pending approval state, Admin approve/reject controls & stall allocation.</div>
-                    </td>
-                    <td class="text-right">Next.js / REST API</td>
+                    <td><strong>Database Engine</strong></td>
+                    <td>PostgreSQL, Prisma ORM, PgBouncer Connection Pooling</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">Gate Control & Dual-Mode QR Scanner</div>
-                        <div class="feature-desc">Gates CRUD management, scanner with ENTRY & EXIT modes, real-time venue attendance.</div>
-                    </td>
-                    <td class="text-right">Next.js / WebSockets</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">Comprehensive Gate Audit Logging</div>
-                        <div class="feature-desc">Audit logs for every scan (visitor ID, gatekeeper ID, gate name, entry/exit, status, timestamp).</div>
-                    </td>
-                    <td class="text-right">PostgreSQL / Express</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">Events & Sub-Events Schedule Engine</div>
-                        <div class="feature-desc">Schedule management for main expo dates, hall locations & sub-event seminars.</div>
-                    </td>
-                    <td class="text-right">Next.js / Prisma</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">Staff & Gatekeeper User Control</div>
-                        <div class="feature-desc">Account creation & role assignment for admins and gate officer scanner logins.</div>
-                    </td>
-                    <td class="text-right">Next.js / Bcrypt</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">Master Data & System Settings</div>
-                        <div class="feature-desc">Configurable categories, halls, designations & global event system settings.</div>
-                    </td>
-                    <td class="text-right">Next.js / REST API</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">Admin Dashboard & Real-Time Analytics</div>
-                        <div class="feature-desc">Live counter for "Currently Inside Venue", gate traffic graphs & CSV/PDF report exports.</div>
-                    </td>
-                    <td class="text-right">Next.js / Recharts</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="feature-name">DevOps, Load Tuning & Hostinger Deployment</div>
-                        <div class="feature-desc">Hostinger VPS provisioning, Nginx reverse proxy, PM2 cluster mode & 75k load testing.</div>
-                    </td>
-                    <td class="text-right">Docker / Nginx / VPS</td>
+                    <td><strong>DevOps & VPS Infrastructure</strong></td>
+                    <td>Hostinger KVM 8 VPS (8 vCPU, 32 GB RAM), Nginx Reverse Proxy, PM2 Cluster Mode</td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- HOSTING & INFRASTRUCTURE TABLE -->
-        <div class="section-title">2. Hosting & Infrastructure Cost (Hostinger KVM 8 - 75,000 Capacity)</div>
+        <!-- 5. PROJECT TIMELINE -->
+        <div class="section-heading">5. Implementation Timeline</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 45%;">Service Component</th>
-                    <th style="width: 25%;">Specifications</th>
-                    <th class="text-center" style="width: 15%;">Billing Cycle</th>
-                    <th class="text-right" style="width: 15%;">Cost (₹)</th>
+                    <th style="width: 20%;">Phase</th>
+                    <th style="width: 55%;">Key Deliverables</th>
+                    <th class="text-right" style="width: 25%;">Duration</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>
-                        <div class="feature-name">Hostinger KVM 8 VPS Plan (High-Concurrency App & DB Server)</div>
-                        <div class="feature-desc">Dedicated Virtual Private Server hosting Node.js backend cluster, Next.js frontend & PostgreSQL DB for high concurrent load.</div>
-                    </td>
-                    <td>8 vCPU, 32 GB RAM, 400 GB NVMe Storage, 32 TB Bandwidth</td>
-                    <td class="text-center">Monthly</td>
-                    <td class="text-right">₹4,999 / mo</td>
+                    <td><strong>Phase 1</strong></td>
+                    <td>Database Schema, Prisma ORM, JWT Auth & Security Seeder</td>
+                    <td class="text-right">1 Week</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">PostgreSQL Database Engine & Connection Pooler</div>
-                        <div class="feature-desc">Self-hosted PostgreSQL DB with PgBouncer connection pooling on KVM 8 VPS + automated daily local backups.</div>
-                    </td>
-                    <td>Hosted on Hostinger KVM 8 VPS</td>
-                    <td class="text-center">Included</td>
-                    <td class="text-right">₹0.00</td>
+                    <td><strong>Phase 2</strong></td>
+                    <td>Visitor & Exhibitor Portals, Automated Email & iCal Engine</td>
+                    <td class="text-right">1.5 Weeks</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">Transactional Email & Calendar Invite Engine</div>
-                        <div class="feature-desc">Integrated Nodemailer service connected to Hostinger Domain Webmail SMTP for badge & calendar invites.</div>
-                    </td>
-                    <td>Nodemailer + Hostinger Domain SMTP</td>
-                    <td class="text-center">Included</td>
-                    <td class="text-right">₹0.00</td>
+                    <td><strong>Phase 3</strong></td>
+                    <td>Gate Control, Dual-Mode Scanner, Gate Audit Logs & Analytics</td>
+                    <td class="text-right">1.5 Weeks</td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="feature-name">Domain Name, Custom DNS & SSL Security</div>
-                        <div class="feature-desc">Free 1-Year Domain registration / DNS mapping + Domain privacy protection & SSL Certificate.</div>
-                    </td>
-                    <td>Hostinger Order Bonus / Client Domain</td>
-                    <td class="text-center">Included</td>
-                    <td class="text-right">₹0.00</td>
+                    <td><strong>Phase 4</strong></td>
+                    <td>Hostinger KVM 8 VPS Provisioning, Nginx, PM2 & 75k Load Testing</td>
+                    <td class="text-right">1 Week</td>
                 </tr>
-                <tr style="background-color: #fafafa; font-weight: 600;">
-                    <td colspan="3" class="text-right" style="color: var(--primary);">Hostinger KVM 8 VPS Plan Rate:</td>
-                    <td class="text-right" style="color: var(--primary-accent);">₹4,999 / mo</td>
-                </tr>
-                <tr style="background-color: #f1f5f9; font-weight: 700;">
-                    <td colspan="3" class="text-right" style="color: var(--primary);">Total Infrastructure & Hosting (Monthly):</td>
-                    <td class="text-right" style="color: var(--primary-accent);">₹4,999 / mo</td>
+                <tr style="background-color: var(--bg-light); font-weight: 800;">
+                    <td colspan="2">Total Delivery Timeline</td>
+                    <td class="text-right" style="color: var(--primary-accent);">5 Weeks (Completed)</td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- TOTAL PRICING SUMMARY CARD -->
-        <div class="summary-card" style="grid-template-columns: repeat(4, 1fr);">
+        <!-- 6. BUDGET & COST ESTIMATION -->
+        <div class="section-heading">6. Project Financials & Infrastructure Budget</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 55%;">Item Description</th>
+                    <th style="width: 25%;">Specifications / Cycle</th>
+                    <th class="text-right" style="width: 20%;">Cost (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Full Platform Rebuild & Stabilization Fee (A)</strong></td>
+                    <td>Full-Stack Node.js/Next.js/PostgreSQL Rebuild</td>
+                    <td class="text-right"><strong>₹35,000</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Hostinger KVM 8 VPS High-Scale Server (B)</strong></td>
+                    <td>8 vCPU, 32 GB RAM, 400 GB NVMe Storage (Monthly)</td>
+                    <td class="text-right"><strong>₹4,999 / mo</strong></td>
+                </tr>
+                <tr>
+                    <td>Self-Hosted PostgreSQL DB & PgBouncer Engine</td>
+                    <td>Hosted on KVM 8 VPS + Local Daily Backups</td>
+                    <td class="text-right">₹0.00 (Included)</td>
+                </tr>
+                <tr>
+                    <td>Transactional Email & iCal Invite Engine</td>
+                    <td>Hostinger Domain Webmail SMTP + Nodemailer</td>
+                    <td class="text-right">₹0.00 (Included)</td>
+                </tr>
+                <tr>
+                    <td>Domain Name, DNS Mapping & Free SSL Security</td>
+                    <td>Client Domain / Hostinger Order Bonus</td>
+                    <td class="text-right">₹0.00 (Included)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- SUMMARY CARD -->
+        <div class="summary-card">
             <div class="summary-item">
-                <h5>Development Time</h5>
-                <div class="amount">40 Hours</div>
-                <div class="subtext">5 Days Execution</div>
+                <h5>Execution Time</h5>
+                <div class="amount">5 Weeks</div>
+                <div class="subtext">Full Rebuild</div>
             </div>
             <div class="summary-item">
                 <h5>Rebuild Fee (A)</h5>
                 <div class="amount">₹35,000</div>
-                <div class="subtext">One-time Development</div>
+                <div class="subtext">One-time Fee</div>
             </div>
             <div class="summary-item">
                 <h5>Hostinger KVM 8 (B)</h5>
                 <div class="amount">₹4,999 <span style="font-size:12px; font-weight:normal;">/mo</span></div>
-                <div class="subtext">KVM 8 Plan Rate</div>
+                <div class="subtext">VPS Server Rate</div>
             </div>
             <div class="summary-item">
-                <h5>Grand Total</h5>
+                <h5>Total Initial Investment</h5>
                 <div class="amount" style="color: #7fee00;">₹39,999</div>
-                <div class="subtext">Build + 1st Month Hosting</div>
+                <div class="subtext">Build + 1st Mo Hosting</div>
             </div>
         </div>
 
-        <!-- KEY HIGHLIGHTS / SCOPE DELIVERABLES -->
-        <div class="section-title">3. Key Deliverables & System Capabilities</div>
-        <div class="scope-notes">
-            <ul>
-                <li>Full Static HTML to Dynamic Next.js SSR Conversion</li>
-                <li>Custom Domain DNS Mapping & Free SSL Security Setup</li>
-                <li>Self-Hosted PostgreSQL DB & Node.js API tuned for 75k concurrent users</li>
-                <li>Exhibitor Self-Registration & Admin Approval Workflow</li>
-                <li>Visitor Registration, Digital Badges & Auto-Calendar (.ics) Invites</li>
-                <li>Automated Instant Email Triggers (QR Badges, Welcome Mail & iCal)</li>
-                <li>Gatekeeper Dual-Mode Scanner (ENTRY & EXIT) with Gate Audit Logging</li>
-                <li>Staff & Gate Officer User Control with Role-Based Security</li>
-            </ul>
+        <!-- SPECIAL NOTES -->
+        <div class="callout-box">
+            <strong>Bundled Campaign Scope Note (No Extra Cost):</strong> Google Analytics 4 integration, Pre-registration landing page, Website updates, and Automated Calendar Reminder triggers are included under the primary Masters Expo 2026 contract scope at <strong>No Additional Cost (₹0.00 / Bundled)</strong>.
         </div>
 
-        <!-- TERMS & NOTES -->
-        <div class="term-box">
-            <strong>Hosting Note:</strong> Hostinger KVM 8 plan rate is ₹4,999 / month (8 vCPU, 32 GB RAM, 400 GB NVMe Storage). It hosts the Node.js / Next.js web application, PostgreSQL DB engine, and Nodemailer domain SMTP service together with zero extra database or email service fees.
-        </div>
-        <div class="term-box" style="background-color: #f0fdf4; border-color: #bbf7d0; color: #166534;">
-            <strong style="color: #14532d;">Bundled Campaign Scope Note (No Cost):</strong> Google Analytics 4 integration, Pre-registration landing page, Website updates, and Automated Calendar Reminder triggers are included under the primary Masters Expo 2026 contract scope at <strong>No Additional Cost (₹0.00 / Bundled)</strong>.
-        </div>
-        <div class="term-box" style="background-color: #f0f9ff; border-color: #bae6fd; color: #0369a1;">
-            <strong style="color: #0c4a6e;">Scope & Additional Features Note:</strong> This estimate covers all core features and deliverables listed in this document. Any additional custom features, new modules, or out-of-scope enhancements requested beyond this agreed scope will be billed extra at standard hourly rates.
+        <div class="callout-box callout-info">
+            <strong>Disclaimer & Legal Considerations:</strong> Hosting & infrastructure renewals are billed directly at Hostinger KVM 8 plan rates. Any future out-of-scope custom feature requests post-delivery will be evaluated separately under standard hourly rates.
         </div>
 
         <!-- FOOTER -->
         <footer class="footer">
-            <p>Generated for Client Review • Confidential Proposal</p>
-            <p>Valid for 30 Days from Issue Date</p>
+            <p>© 2026 FLUMENX SOFTWARE SOLUTIONS • Confidential Project Proposal</p>
+            <p>Proposal Ref: FX-2026-EXPO26-P1</p>
         </footer>
 
     </div>
