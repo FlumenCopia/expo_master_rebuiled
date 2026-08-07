@@ -25,22 +25,27 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
         body {
             background-color: #f1f5f9;
             color: var(--text-main);
-            line-height: 1.6;
-            padding: 40px 20px;
+            line-height: 1.5;
+            padding: 30px 15px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
         .paper {
-            max-width: 880px;
+            max-width: 860px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 48px 50px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            padding: 40px 45px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border-color);
         }
 
@@ -62,11 +67,14 @@
             .page-break {
                 page-break-before: always;
             }
+            table, .summary-card, .callout-box, .section-heading {
+                page-break-inside: avoid;
+            }
         }
 
         .action-bar {
-            max-width: 880px;
-            margin: 0 auto 20px auto;
+            max-width: 860px;
+            margin: 0 auto 16px auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -76,14 +84,14 @@
             background-color: var(--primary-accent);
             color: #fff;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 13px;
             transition: background 0.2s;
         }
 
@@ -91,34 +99,26 @@
             background-color: #01863f;
         }
 
-        /* HEADER & BRANDING MATCHING PROPOSAL TEMPLATE */
+        /* HEADER & BRANDING */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 3px solid var(--primary-accent);
-            padding-bottom: 24px;
-            margin-bottom: 32px;
-        }
-
-        .logo-box {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            border-bottom: 2.5px solid var(--primary-accent);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .company-logo {
             background: #0f172a;
             color: #ffffff;
-            padding: 10px 18px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
             font-weight: 900;
-            font-size: 20px;
+            font-size: 18px;
             letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            display: inline-block;
+            margin-bottom: 10px;
         }
 
         .company-logo span {
@@ -126,9 +126,9 @@
         }
 
         .address-box p {
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--text-muted);
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
         .doc-meta {
@@ -140,18 +140,19 @@
             background-color: #f0fdf4;
             color: var(--primary-accent);
             border: 1px solid #bbf7d0;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 5px 14px;
-            border-radius: 20px;
-            margin-bottom: 8px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .doc-meta p {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
+            line-height: 1.4;
         }
 
         .doc-meta p span {
@@ -160,19 +161,19 @@
         }
 
         .proposal-title {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 900;
             color: var(--primary);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             line-height: 1.3;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
         }
 
         .section-heading {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--primary);
-            margin: 28px 0 12px 0;
+            margin: 22px 0 10px 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -187,19 +188,19 @@
         }
 
         p.body-text {
-            font-size: 14px;
+            font-size: 13px;
             color: #334155;
-            margin-bottom: 14px;
-            line-height: 1.65;
+            margin-bottom: 10px;
+            line-height: 1.55;
         }
 
         ul.bullet-list {
             list-style: none;
             padding-left: 0;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
         ul.bullet-list.two-col {
@@ -207,22 +208,23 @@
         }
 
         ul.bullet-list li {
-            font-size: 13.5px;
+            font-size: 12.5px;
             color: #334155;
             background: var(--bg-light);
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 8px;
+            line-height: 1.45;
         }
 
         ul.bullet-list li::before {
             content: "•";
             color: var(--primary-accent);
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1;
         }
 
@@ -230,10 +232,10 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
-            margin-bottom: 24px;
-            font-size: 13.5px;
-            border-radius: 8px;
+            margin-top: 10px;
+            margin-bottom: 18px;
+            font-size: 12.5px;
+            border-radius: 6px;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
@@ -243,18 +245,19 @@
             color: var(--text-muted);
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 11px;
+            font-size: 10.5px;
             letter-spacing: 0.5px;
             text-align: left;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border-color);
         }
 
         td {
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
             vertical-align: middle;
+            line-height: 1.45;
         }
 
         tr:last-child td {
@@ -268,16 +271,16 @@
         .summary-card {
             background-color: var(--primary);
             color: #ffffff;
-            padding: 24px;
-            border-radius: 12px;
-            margin: 28px 0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
+            gap: 12px;
         }
 
         .summary-item h5 {
-            font-size: 11px;
+            font-size: 10.5px;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -285,13 +288,13 @@
         }
 
         .summary-item .amount {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             color: #ffffff;
         }
 
         .summary-item .subtext {
-            font-size: 11px;
+            font-size: 10.5px;
             color: #cbd5e1;
             margin-top: 2px;
         }
@@ -299,11 +302,12 @@
         .callout-box {
             background-color: #f0fdf4;
             border: 1px solid #bbf7d0;
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12.5px;
             color: #166534;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
+            line-height: 1.45;
         }
 
         .callout-box strong { color: #14532d; }
@@ -317,12 +321,12 @@
 
         .footer {
             border-top: 1px solid var(--border-color);
-            padding-top: 24px;
-            margin-top: 40px;
+            padding-top: 18px;
+            margin-top: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
         }
     </style>
@@ -330,7 +334,7 @@
 <body>
 
     <div class="action-bar no-print">
-        <span style="font-size: 14px; color: #475569; font-weight: 500;">Tip: Click "Print / Save as PDF" or press Ctrl+P to generate official document.</span>
+        <span style="font-size: 13px; color: #475569; font-weight: 500;">Tip: Click "Print / Save as PDF" or press Ctrl+P to generate official document.</span>
         <button class="btn-print" onclick="window.print()">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"></path></svg>
             Print / Save as PDF
@@ -341,15 +345,13 @@
         <!-- HEADER WITH COMPANY LOGO & CONTACT -->
         <header class="header">
             <div>
-                <div class="logo-box">
-                    <div class="company-logo">
-                        FLUMEN<span>X</span>
-                    </div>
+                <div class="company-logo">
+                    FLUMEN<span>X</span>
                 </div>
                 <div class="address-box">
                     <p><strong>FLUMENX SOFTWARE SOLUTIONS</strong></p>
                     <p>Gautham Villa T.C 7/82 Kanjirampara PO,</p>
-                    <p>Kanjirampara, Thiruvananthapuram, Kerala 695030</p>
+                    <p>Thiruvananthapuram, Kerala 695030</p>
                 </div>
             </div>
             <div class="doc-meta">
@@ -395,15 +397,12 @@
         </ul>
 
         <!-- 4. DEVELOPMENT METHODOLOGY -->
-        <div class="section-heading">4. Development Methodology & Tech Stack</div>
-        <p class="body-text">
-            The platform follows a modular component-driven development workflow to ensure stability, high test coverage, and clean maintainability.
-        </p>
-        <table style="margin-top: 10px;">
+        <div class="section-heading">4. Development Tech Stack</div>
+        <table style="margin-top: 8px;">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Layer</th>
-                    <th style="width: 70%;">Technologies Used</th>
+                    <th style="width: 28%;">Layer</th>
+                    <th style="width: 72%;">Technologies Used</th>
                 </tr>
             </thead>
             <tbody>
@@ -431,19 +430,19 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20%;">Phase</th>
-                    <th style="width: 55%;">Key Deliverables</th>
-                    <th class="text-right" style="width: 25%;">Duration</th>
+                    <th style="width: 22%;">Phase</th>
+                    <th style="width: 60%;">Key Deliverables</th>
+                    <th class="text-right" style="width: 18%;">Duration</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Phase 1 (Days 1 – 5)</strong><br><span style="font-size:11px;color:#01A64E;font-weight:700;">🟢 Live & Hosted by Day 5</span></td>
+                    <td><strong>Phase 1 (Days 1 – 5)</strong><br><span style="font-size:10.5px;color:#01A64E;font-weight:700;">🟢 Live & Hosted by Day 5</span></td>
                     <td>Minimal Running Setup — Visitor & Exhibitor Portals, Digital QR Badges, Automated Email (Nodemailer) & iCal Invites. <strong>Platform deployed and live on Hostinger KVM 8 VPS</strong> with Nginx reverse proxy, PM2 cluster & SSL certificate activated.</td>
                     <td class="text-right">5 Days</td>
                 </tr>
                 <tr>
-                    <td><strong>Phase 2 (Days 6 – 10)</strong><br><span style="font-size:11px;color:#64748b;font-weight:700;">⚙️ Core Features Rollout</span></td>
+                    <td><strong>Phase 2 (Days 6 – 10)</strong><br><span style="font-size:10.5px;color:#64748b;font-weight:700;">⚙️ Core Features Rollout</span></td>
                     <td>Full Event Management Engine, Gate Control (Dual ENTRY/EXIT QR Scanner), Gate Audit Logs, Admin Analytics Dashboard & 75k load tuning on the live production server.</td>
                     <td class="text-right">5 Days</td>
                 </tr>
@@ -454,8 +453,8 @@
             </tbody>
         </table>
 
-        <div class="callout-box" style="display:flex; align-items:flex-start; gap:12px; margin-top:0;">
-            <span style="font-size:22px; line-height:1;">🚀</span>
+        <div class="callout-box" style="display:flex; align-items:flex-start; gap:10px; margin-top:0;">
+            <span style="font-size:18px; line-height:1;">🚀</span>
             <div>
                 <strong>Day 5 Milestone — Platform Goes Live:</strong> By the end of Phase 1 (Day 5), the full minimal platform is deployed and publicly accessible on <strong>Hostinger KVM 8 VPS</strong> with Nginx reverse proxy, PM2 cluster mode, and SSL certificate active. Registrations, digital QR badges, and automated email confirmations will be operational from Day 5 onwards.
             </div>
@@ -514,7 +513,7 @@
             </div>
             <div class="summary-item">
                 <h5>Hostinger KVM 8 (B)</h5>
-                <div class="amount">₹4,999 <span style="font-size:12px; font-weight:normal;">/mo</span></div>
+                <div class="amount">₹4,999 <span style="font-size:11px; font-weight:normal;">/mo</span></div>
                 <div class="subtext">VPS Server Rate</div>
             </div>
             <div class="summary-item">
