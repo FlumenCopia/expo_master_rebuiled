@@ -32,14 +32,14 @@ export default function TopBar({
               <img
                 src={logo1Path}
                 alt="Masters Expo Logo"
-                className="h-10 md:h-12 w-auto object-contain"
+                className="h-12 md:h-16 w-auto object-contain"
               />
             </Link>
             {logo2Path && (
               <img
                 src={logo2Path}
                 alt="Partner Logo"
-                className="h-10 md:h-12 w-auto object-contain"
+                className="h-12 md:h-16 w-auto object-contain"
               />
             )}
           </div>
