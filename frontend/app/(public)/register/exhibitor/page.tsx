@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/api-client';
+import TopBar from '@/components/TopBar';
 
 export default function ExhibitorRegisterPage() {
   const [selectedDays, setSelectedDays] = useState<string[]>(['Sep 25', 'Sep 26', 'Sep 27']);
@@ -57,14 +58,15 @@ export default function ExhibitorRegisterPage() {
 
   return (
     <>
+
+    <TopBar />
       {/* HEADER */}
-      <header className="header hdr2 visitor-header">
+      {/* <header className="header hdr2 visitor-header">
         <div className="hdr-cont">
           <div className="container">
             <div className="header-conts">
               <div className="hdr-logos">
                 <Link href="/">
-                  {/* eslint-disable-next-html-element-for-jsx */}
                   <img src="/assets/logo/logo3.png" alt="Masters Expo" />
                 </Link>
                 <img src="/assets/logo/1.png" alt="Partner Logo" />
@@ -77,7 +79,7 @@ export default function ExhibitorRegisterPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <main className="vis-pg">
         <section className="vis-sec">

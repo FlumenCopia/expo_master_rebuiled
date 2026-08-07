@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import TopBar from '@/components/TopBar';
 import { API_BASE_URL } from '@/lib/api-client';
 
 const COUNTRIES = [
@@ -184,26 +185,7 @@ export default function VisitorRegisterPage() {
   return (
     <>
       {/* HEADER */}
-      <header className="header hdr2 visitor-header">
-        <div className="hdr-cont">
-          <div className="container">
-            <div className="header-conts">
-              <div className="hdr-logos">
-                <Link href="/">
-                  {/* eslint-disable-next-html-element-for-jsx */}
-                  <img src="/assets/logo/logo3.png" alt="Masters Expo" />
-                </Link>
-                <img src="/assets/logo/1.png" alt="Partner Logo" />
-              </div>
-              <div className="pg-cnt-btn">
-                <Link href="/#cnct">
-                  <div className="ind-cnct-btn"><p>Contact</p></div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <TopBar  />
 
       <main className="vis-pg">
         <section className="vis-sec">
