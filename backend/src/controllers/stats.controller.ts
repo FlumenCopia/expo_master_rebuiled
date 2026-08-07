@@ -16,6 +16,7 @@ export class StatsController {
         gateInTotal,
         gateOutUsed,
         gateOutTotal,
+        totalGateLogs,
         recentVisitors,
       ] = await Promise.all([
         prisma.visitor.count().catch(() => 0),
@@ -28,35 +29,36 @@ export class StatsController {
         prisma.gatePass.count({ where: { type: 'GATE_IN' } }).catch(() => 0),
         prisma.gatePass.count({ where: { type: 'GATE_OUT', status: 'USED' } }).catch(() => 0),
         prisma.gatePass.count({ where: { type: 'GATE_OUT' } }).catch(() => 0),
+        prisma.gateLog.count().catch(() => 0),
         prisma.visitor.findMany({ orderBy: { createdAt: 'desc' }, take: 6 }).catch(() => []),
       ]);
 
-      // "Currently Inside" = CHECKED_IN + ON_BREAK (on break but not departed)
+      // "Currently Inside" = CHECKED_IN + ON_BREAK
       const currentlyInside = checkedInCount + onBreakCount;
 
       res.json({
         success: true,
         stats: {
-          currentExhibitors: totalExhibitors || 102,
-          currentEventRegistrations: totalVisitors || 4960,
-          totalRegistrationCount: totalVisitors || 4960,
-          totalVisitorsCount: currentlyInside,
-          currentEventVisitors: currentlyInside || 4021,
-          currentExhibitorEmployees: companyEmployeesCount || 598,
+          currentExhibitors: totalExhibitors,
+          currentEventRegistrations: totalVisitors,
+          totalRegistrationCount: totalVisitors,
+          totalVisitorsCount: totalGateLogs,
+          currentEventVisitors: currentlyInside,
+          currentExhibitorEmployees: companyEmployeesCount,
           checkedInCount,
           onBreakCount,
           checkedOutCount,
           gateInPasses: {
-            used: gateInUsed || 100,
-            unused: Math.max(0, (gateInTotal || 100) - (gateInUsed || 100)),
-            total: gateInTotal || 100,
-            usedPercentage: gateInTotal > 0 ? Math.round((gateInUsed / gateInTotal) * 100) : 100,
+            used: gateInUsed,
+            unused: Math.max(0, gateInTotal - gateInUsed),
+            total: gateInTotal,
+            usedPercentage: gateInTotal > 0 ? Math.round((gateInUsed / gateInTotal) * 100) : 0,
           },
           gateOutPasses: {
-            used: gateOutUsed || 12,
-            unused: Math.max(0, (gateOutTotal || 100) - (gateOutUsed || 12)),
-            total: gateOutTotal || 100,
-            usedPercentage: gateOutTotal > 0 ? Math.round((gateOutUsed / gateOutTotal) * 100) : 12.5,
+            used: gateOutUsed,
+            unused: Math.max(0, gateOutTotal - gateOutUsed),
+            total: gateOutTotal,
+            usedPercentage: gateOutTotal > 0 ? Math.round((gateOutUsed / gateOutTotal) * 100) : 0,
           },
           recentVisitors,
         },
@@ -66,3 +68,4 @@ export class StatsController {
     }
   }
 }
+

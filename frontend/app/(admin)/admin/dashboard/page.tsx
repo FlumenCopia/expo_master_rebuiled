@@ -10,26 +10,22 @@ import {
   ArrowUpRight,
   TrendingUp,
   ShieldCheck,
-  Plus,
   RefreshCw,
   Ticket,
   BadgeCheck,
-  Clock,
-  Sparkles,
-  Award,
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>({
-    currentExhibitors: 102,
-    currentEventRegistrations: 4960,
-    totalRegistrationCount: 4960,
+    currentExhibitors: 0,
+    currentEventRegistrations: 0,
+    totalRegistrationCount: 0,
     totalVisitorsCount: 0,
-    currentEventVisitors: 4021,
-    currentExhibitorEmployees: 598,
-    gateInPasses: { used: 100, unused: 0, usedPercentage: 100 },
-    gateOutPasses: { used: 12.5, unused: 87.5, usedPercentage: 12.5 },
+    currentEventVisitors: 0,
+    currentExhibitorEmployees: 0,
+    gateInPasses: { used: 0, unused: 0, usedPercentage: 0 },
+    gateOutPasses: { used: 0, unused: 0, usedPercentage: 0 },
     recentVisitors: [],
   });
   const [loading, setLoading] = useState(true);
@@ -55,7 +51,7 @@ export default function AdminDashboardPage() {
   const statCards = [
     {
       title: 'Current Exhibitors',
-      value: stats.currentExhibitors || 102,
+      value: (stats.currentExhibitors ?? 0).toLocaleString(),
       subtitle: 'Verified Stalls & Brands',
       icon: Building2,
       color: 'from-emerald-500 to-teal-500',
@@ -63,7 +59,7 @@ export default function AdminDashboardPage() {
     },
     {
       title: 'Event Registrations',
-      value: (stats.currentEventRegistrations || 4960).toLocaleString(),
+      value: (stats.currentEventRegistrations ?? 0).toLocaleString(),
       subtitle: 'Registered Attendees',
       icon: Users,
       color: 'from-blue-500 to-indigo-500',
@@ -71,7 +67,7 @@ export default function AdminDashboardPage() {
     },
     {
       title: 'Total Registrations',
-      value: (stats.totalRegistrationCount || 4960).toLocaleString(),
+      value: (stats.totalRegistrationCount ?? 0).toLocaleString(),
       subtitle: 'Cumulative Total',
       icon: Ticket,
       color: 'from-cyan-500 to-sky-500',
@@ -79,7 +75,7 @@ export default function AdminDashboardPage() {
     },
     {
       title: 'Total Visitors Count',
-      value: (stats.totalVisitorsCount || 0).toLocaleString(),
+      value: (stats.totalVisitorsCount ?? 0).toLocaleString(),
       subtitle: 'Gate Scanned Attendees',
       icon: UserCheck,
       color: 'from-purple-500 to-indigo-500',
@@ -87,7 +83,7 @@ export default function AdminDashboardPage() {
     },
     {
       title: 'Current Event Visitors',
-      value: (stats.currentEventVisitors || 4021).toLocaleString(),
+      value: (stats.currentEventVisitors ?? 0).toLocaleString(),
       subtitle: 'Active On-Site Visitors',
       icon: TrendingUp,
       color: 'from-amber-500 to-orange-500',
@@ -95,13 +91,17 @@ export default function AdminDashboardPage() {
     },
     {
       title: "Exhibitor's Employees",
-      value: (stats.currentExhibitorEmployees || 598).toLocaleString(),
+      value: (stats.currentExhibitorEmployees ?? 0).toLocaleString(),
       subtitle: 'Booths & Staff Pass Holders',
       icon: BadgeCheck,
       color: 'from-rose-500 to-pink-500',
       badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
     },
   ];
+
+  const gateInPct = stats.gateInPasses?.usedPercentage ?? 0;
+  const gateOutPct = stats.gateOutPasses?.usedPercentage ?? 0;
+  const circumference = 2 * Math.PI * 40;
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-10">
@@ -141,7 +141,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* 6 STAT CARDS GRID - CLEAN 3-COLUMN RESPONSIVE LAYOUT */}
+      {/* 6 STAT CARDS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {statCards.map((card, idx) => {
           const Icon = card.icon;
@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
               <p className="text-xs text-slate-400">Total entry pass utilization</p>
             </div>
             <span className="px-3 py-1 rounded-full bg-[#01A64E]/15 border border-[#01A64E]/30 text-[#79C143] text-xs font-bold">
-              100% Validated
+              {gateInPct}% Validated
             </span>
           </div>
 
@@ -209,14 +209,14 @@ export default function AdminDashboardPage() {
                   r="40"
                   className="stroke-[#01A64E] transition-all duration-1000 ease-out"
                   strokeWidth="10"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={0}
+                  strokeDasharray={`${circumference}`}
+                  strokeDashoffset={`${circumference * (1 - gateInPct / 100)}`}
                   strokeLinecap="round"
                   fill="transparent"
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl font-black text-white tracking-tight">100.0%</span>
+                <span className="text-2xl font-black text-white tracking-tight">{gateInPct}%</span>
                 <span className="text-[10px] font-extrabold text-[#79C143] uppercase tracking-widest mt-0.5">
                   Used
                 </span>
@@ -230,7 +230,7 @@ export default function AdminDashboardPage() {
                   <div className="w-3.5 h-3.5 rounded-md bg-[#01A64E]" />
                   <span className="text-xs font-bold text-slate-300">Used Passes</span>
                 </div>
-                <span className="text-xs font-black text-white font-mono">100.0%</span>
+                <span className="text-xs font-black text-white font-mono">{stats.gateInPasses?.used ?? 0}</span>
               </div>
 
               <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-[#03151a] border border-[#0b3d46]">
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                   <div className="w-3.5 h-3.5 rounded-md bg-[#0b3d46]" />
                   <span className="text-xs font-bold text-slate-400">Unused Passes</span>
                 </div>
-                <span className="text-xs font-black text-slate-400 font-mono">0.0%</span>
+                <span className="text-xs font-black text-slate-400 font-mono">{stats.gateInPasses?.unused ?? 0}</span>
               </div>
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
               <p className="text-xs text-slate-400">Exit pass checkout validation</p>
             </div>
             <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold">
-              12.5% Checked Out
+              {gateOutPct}% Checked Out
             </span>
           </div>
 
@@ -274,14 +274,14 @@ export default function AdminDashboardPage() {
                   r="40"
                   className="stroke-cyan-400 transition-all duration-1000 ease-out"
                   strokeWidth="10"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - 0.125)}`}
+                  strokeDasharray={`${circumference}`}
+                  strokeDashoffset={`${circumference * (1 - gateOutPct / 100)}`}
                   strokeLinecap="round"
                   fill="transparent"
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl font-black text-white tracking-tight">12.5%</span>
+                <span className="text-2xl font-black text-white tracking-tight">{gateOutPct}%</span>
                 <span className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest mt-0.5">
                   Checked Out
                 </span>
@@ -295,7 +295,7 @@ export default function AdminDashboardPage() {
                   <div className="w-3.5 h-3.5 rounded-md bg-cyan-400 shadow-sm shadow-cyan-400/50" />
                   <span className="text-xs font-bold text-slate-300">Used (Out)</span>
                 </div>
-                <span className="text-xs font-black text-white font-mono">12.5%</span>
+                <span className="text-xs font-black text-white font-mono">{stats.gateOutPasses?.used ?? 0}</span>
               </div>
 
               <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-800">
@@ -303,7 +303,7 @@ export default function AdminDashboardPage() {
                   <div className="w-3.5 h-3.5 rounded-md bg-slate-700" />
                   <span className="text-xs font-bold text-slate-400">Unused (Remaining)</span>
                 </div>
-                <span className="text-xs font-black text-slate-400 font-mono">87.5%</span>
+                <span className="text-xs font-black text-slate-400 font-mono">{stats.gateOutPasses?.unused ?? 0}</span>
               </div>
             </div>
           </div>
@@ -370,31 +370,11 @@ export default function AdminDashboardPage() {
                   </tr>
                 ))
               ) : (
-                [
-                  { badgeCode: 'EXPO26-10004', fullName: 'KAVITHA MENON', category: 'EXHIBITOR', status: 'CHECKED_IN' },
-                  { badgeCode: 'EXPO26-10003', fullName: 'DR. SUJITH NAIR', category: 'VIP', status: 'CHECKED_IN' },
-                  { badgeCode: 'EXPO26-10002', fullName: 'ARUN PRADEEP KUMAR', category: 'DELEGATE', status: 'CHECKED_IN' },
-                  { badgeCode: 'EXPO26-10001', fullName: 'ABHIJITH SURESH MOOTHEDATH', category: 'VISITOR', status: 'CHECKED_IN' },
-                ].map((v: any, index: number) => (
-                  <tr key={index} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 px-5 font-mono font-extrabold text-emerald-400">
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                        {v.badgeCode}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-5 text-white font-bold text-sm">{v.fullName}</td>
-                    <td className="py-3.5 px-5">
-                      <span className="px-2.5 py-1 rounded-md text-[11px] font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
-                        {v.category}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-5">
-                      <span className="px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                        Checked In
-                      </span>
-                    </td>
-                  </tr>
-                ))
+                <tr className="hover:bg-slate-800/40 transition-colors">
+                  <td colSpan={4} className="py-8 px-5 text-center text-slate-400 font-medium">
+                    No recent visitor registrations found
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -403,3 +383,4 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
