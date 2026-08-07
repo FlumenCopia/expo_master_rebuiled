@@ -110,6 +110,15 @@ html, body {
   color: #ffffff !important;
 }
 
+.mn-btns .p1,
+.mn-btns .p2,
+.mn-btns p,
+.mn-btns a,
+.ind-cnct-btn p,
+.ind-cnct-btn a {
+  color: #ffffff !important;
+}
+
 .fr-und-ln.active {
   color: #652368 !important;
 }
