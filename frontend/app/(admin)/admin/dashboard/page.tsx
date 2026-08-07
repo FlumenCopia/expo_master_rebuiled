@@ -54,48 +54,42 @@ export default function AdminDashboardPage() {
       value: (stats.currentExhibitors ?? 0).toLocaleString(),
       subtitle: 'Verified Stalls & Brands',
       icon: Building2,
-      color: 'from-emerald-500 to-teal-500',
-      badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      href: '/admin/exhibitors',
     },
     {
       title: 'Event Registrations',
       value: (stats.currentEventRegistrations ?? 0).toLocaleString(),
       subtitle: 'Registered Attendees',
       icon: Users,
-      color: 'from-blue-500 to-indigo-500',
-      badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      href: '/admin/visitors',
     },
     {
       title: 'Total Registrations',
       value: (stats.totalRegistrationCount ?? 0).toLocaleString(),
       subtitle: 'Cumulative Total',
       icon: Ticket,
-      color: 'from-cyan-500 to-sky-500',
-      badgeBg: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+      href: '/admin/visitors',
     },
     {
       title: 'Total Visitors Count',
       value: (stats.totalVisitorsCount ?? 0).toLocaleString(),
       subtitle: 'Gate Scanned Attendees',
       icon: UserCheck,
-      color: 'from-purple-500 to-indigo-500',
-      badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+      href: '/admin/visitors',
     },
     {
       title: 'Current Event Visitors',
       value: (stats.currentEventVisitors ?? 0).toLocaleString(),
       subtitle: 'Active On-Site Visitors',
       icon: TrendingUp,
-      color: 'from-amber-500 to-orange-500',
-      badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      href: '/admin/visitors',
     },
     {
       title: "Exhibitor's Employees",
       value: (stats.currentExhibitorEmployees ?? 0).toLocaleString(),
       subtitle: 'Booths & Staff Pass Holders',
       icon: BadgeCheck,
-      color: 'from-rose-500 to-pink-500',
-      badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+      href: '/admin/company-employees',
     },
   ];
 
@@ -124,7 +118,7 @@ export default function AdminDashboardPage() {
           <button
             onClick={loadStats}
             disabled={loading}
-            className="p-3 rounded-2xl bg-[#0b3d46] text-slate-200 hover:text-white hover:bg-[#0f4d58] border border-[#0b3d46] transition-all flex items-center gap-2 text-xs font-bold shrink-0"
+            className="p-3 rounded-2xl bg-[#0b3d46] text-slate-200 hover:text-white hover:bg-[#0f4d58] border border-[#0b3d46] transition-all flex items-center gap-2 text-xs font-bold shrink-0 cursor-pointer"
             title="Refresh Live Data"
           >
             <RefreshCw className={`w-4 h-4 text-[#79C143] ${loading ? 'animate-spin' : ''}`} />
@@ -146,20 +140,21 @@ export default function AdminDashboardPage() {
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div
+            <Link
               key={idx}
-              className="bg-[#072228] border border-[#0b3d46] p-5 rounded-2xl flex flex-col justify-between hover:border-[#01A64E]/40 transition-all shadow-xl"
+              href={card.href}
+              className="bg-[#072228] border border-[#0b3d46] p-5 rounded-2xl flex flex-col justify-between hover:border-[#01A64E]/40 hover:bg-[#092c34] transition-all shadow-xl group cursor-pointer"
             >
               <div className="flex items-start justify-between gap-2 mb-4">
                 <div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#79C143] block">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#79C143] block group-hover:text-white transition-colors">
                     {card.title}
                   </span>
                   <span className="text-[11px] font-semibold text-slate-400 block mt-0.5">
                     {card.subtitle}
                   </span>
                 </div>
-                <div className="p-3 rounded-xl bg-[#0b3d46] text-[#79C143] border border-[#0b3d46] shrink-0">
+                <div className="p-3 rounded-xl bg-[#0b3d46] text-[#79C143] border border-[#0b3d46] shrink-0 group-hover:scale-105 transition-transform">
                   <Icon className="w-5 h-5 stroke-[2]" />
                 </div>
               </div>
@@ -172,7 +167,7 @@ export default function AdminDashboardPage() {
                   Live Sync
                 </span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

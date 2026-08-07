@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Building2, CheckCircle2, Clock, XCircle, Search, Edit3, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { Building2, CheckCircle2, Clock, XCircle, Search, Edit3, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import AdminNavbar from '@/components/AdminNavbar';
 
@@ -75,12 +76,20 @@ export default function AdminExhibitorsPage() {
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-2">
               <Building2 className="w-7 h-7 text-[#79C143]" />
-              Exhibitors & Stall Booking Directory
+              Exhibitors &amp; Stall Booking Directory
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
               Review exhibitor applications, assign stall numbers, and manage approval status.
             </p>
           </div>
+
+          <Link
+            href="/admin/company-employees"
+            className="px-5 py-3 rounded-2xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-[#01A64E]/20 transition-all shrink-0 active:scale-[0.98]"
+          >
+            <Users className="w-4 h-4" />
+            <span>Manage Staff Badges / Employees</span>
+          </Link>
         </div>
 
         {/* STATS OVERVIEW */}

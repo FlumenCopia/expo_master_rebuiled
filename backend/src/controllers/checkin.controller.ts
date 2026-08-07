@@ -14,13 +14,31 @@ export class CheckInController {
 
       const { badgeCode, gateName, mode } = validation.data;
       const cleanCode = badgeCode.trim().toUpperCase();
-      const visitor = await prisma.visitor.findUnique({ where: { badgeCode: cleanCode } });
+      let visitor = await prisma.visitor.findUnique({ where: { badgeCode: cleanCode } });
+
+      if (!visitor) {
+        const emp = await prisma.companyEmployee.findFirst({ where: { badgeCode: cleanCode } });
+        if (emp) {
+          visitor = await prisma.visitor.create({
+            data: {
+              badgeCode: emp.badgeCode || cleanCode,
+              fullName: emp.fullName,
+              email: String(emp.email || 'staff@expokerala.com'),
+              phone: String(emp.phone || '0000000000'),
+              company: emp.companyName,
+              designation: emp.designation || 'Exhibitor Staff',
+              category: 'EXHIBITOR',
+              status: 'REGISTERED',
+            },
+          });
+        }
+      }
 
       if (!visitor) {
         res.status(404).json({
           success: false,
           code: 'NOT_FOUND',
-          message: '❌ Invalid Badge! Visitor record not found.',
+          message: '❌ Invalid Badge! Attendee or Staff record not found.',
         });
         return;
       }

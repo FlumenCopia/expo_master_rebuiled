@@ -202,19 +202,46 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
                   )}
                 </div>
 
-                {/* Exhibitors */}
-                <Link
-                  href="/admin/exhibitors"
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive('/admin/exhibitors')
-                      ? 'bg-[#01A64E]/15 text-[#79C143] border border-[#01A64E]/30 shadow-md shadow-[#01A64E]/10'
-                      : 'text-slate-300 hover:text-white hover:bg-[#0b3d46]/60'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4" />
-                  <span>Exhibitors</span>
-                </Link>
+                {/* Exhibitors Dropdown */}
+                <div>
+                  <button
+                    onClick={() => toggleMenu('exhibitors')}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-[#0b3d46]/60 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Building2 className="w-4 h-4 text-cyan-400" />
+                      <span>Exhibitors</span>
+                    </div>
+                    {openMenus.exhibitors ? <ChevronDown className="w-3.5 h-3.5 text-[#79C143]" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                  </button>
+
+                  {openMenus.exhibitors && (
+                    <div className="ml-7 mt-1 space-y-1 border-l border-[#0b3d46] pl-3">
+                      <Link
+                        href="/admin/exhibitors"
+                        onClick={() => setMobileOpen(false)}
+                        className={`block py-2 px-2.5 rounded-lg text-xs font-semibold ${
+                          isActive('/admin/exhibitors')
+                            ? 'text-[#79C143] bg-[#01A64E]/10'
+                            : 'text-slate-300 hover:text-white'
+                        }`}
+                      >
+                        Exhibitor Stalls
+                      </Link>
+                      <Link
+                        href="/admin/company-employees"
+                        onClick={() => setMobileOpen(false)}
+                        className={`block py-2 px-2.5 rounded-lg text-xs font-semibold ${
+                          isActive('/admin/company-employees')
+                            ? 'text-[#79C143] bg-[#01A64E]/10'
+                            : 'text-slate-300 hover:text-white'
+                        }`}
+                      >
+                        Exhibitor Staff / Badges
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
                 {/* Reports */}
                 <Link

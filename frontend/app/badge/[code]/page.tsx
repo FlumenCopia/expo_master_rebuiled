@@ -20,6 +20,27 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
     });
 
     if (!visitor) {
+      const emp = await prisma.companyEmployee.findFirst({
+        where: { badgeCode: code.toUpperCase() },
+      });
+
+      if (emp) {
+        visitor = {
+          badgeCode: emp.badgeCode,
+          fullName: emp.fullName,
+          email: emp.email,
+          phone: emp.phone,
+          company: emp.companyName,
+          designation: emp.designation || 'Exhibitor Staff',
+          category: 'EXHIBITOR STAFF',
+          subEvents: [],
+          city: '',
+          state: '',
+        } as any;
+      }
+    }
+
+    if (!visitor) {
       notFound();
     }
 

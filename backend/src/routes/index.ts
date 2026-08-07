@@ -11,6 +11,8 @@ import adminManagementRoutes from './admin-management.routes';
 import gateRoutes from './gate.routes';
 import reminderRoutes from './reminder.routes';
 import campaignRoutes from './campaign.routes';
+import companyEmployeeRoutes from './company-employee.routes';
+import masterRoutes from './master.routes';
 
 const apiRouter = Router();
 
@@ -30,6 +32,8 @@ apiRouter.use('/', checkinRoutes);
 apiRouter.use('/', statsRoutes);
 apiRouter.use('/', adminManagementRoutes);
 apiRouter.use('/', gateRoutes);
+apiRouter.use('/', companyEmployeeRoutes);
+apiRouter.use('/', masterRoutes);
 apiRouter.use('/reminders', reminderRoutes);
 apiRouter.use('/campaigns', campaignRoutes);
 

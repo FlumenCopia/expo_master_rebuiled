@@ -31,12 +31,25 @@ export class SchedulerService {
   static async checkAndProcessScheduledCampaigns() {
     try {
       const now = new Date();
-      const dueCampaigns = await prisma.emailCampaign.findMany({
-        where: {
-          status: 'SCHEDULED',
-          scheduledAt: { lte: now },
-        },
-      });
+      let dueCampaigns: any[] = [];
+
+      try {
+        dueCampaigns = await prisma.emailCampaign.findMany({
+          where: {
+            status: 'SCHEDULED',
+            scheduledAt: { lte: now },
+          },
+        });
+      } catch {
+        // Handle serverless PostgreSQL connection reset gracefully
+        await prisma.$connect().catch(() => {});
+        dueCampaigns = await prisma.emailCampaign.findMany({
+          where: {
+            status: 'SCHEDULED',
+            scheduledAt: { lte: now },
+          },
+        }).catch(() => []);
+      }
 
       if (dueCampaigns.length === 0) return;
 

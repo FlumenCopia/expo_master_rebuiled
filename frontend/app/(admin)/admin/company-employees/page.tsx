@@ -256,7 +256,19 @@ export default function AdminCompanyEmployeesPage() {
                       <div>{emp.email}</div>
                       <div className="text-[10px] text-slate-500">{emp.phone}</div>
                     </td>
-                    <td className="py-4 px-4 text-right">
+                    <td className="py-4 px-4 text-right flex items-center justify-end gap-2">
+                      {emp.badgeCode && (
+                        <a
+                          href={`/badge/${emp.badgeCode}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-bold flex items-center gap-1"
+                          title="View & Print Staff Badge Pass"
+                        >
+                          <QrCode className="w-3.5 h-3.5" />
+                          <span>Badge</span>
+                        </a>
+                      )}
                       <button
                         onClick={() => handleDelete(emp.id)}
                         className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 cursor-pointer"
