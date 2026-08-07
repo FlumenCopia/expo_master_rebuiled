@@ -167,6 +167,28 @@ html, body {
   color: #ffffff !important;
 }
 
+.ind5-flx {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+.ind5-rnd {
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  min-height: 8px !important;
+  background-color: #ffffff !important;
+  border-radius: 50% !important;
+  margin-top: 8px !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+
+.ind5-rnd img {
+  display: none !important;
+}
+
 /* VISITOR & EXHIBITOR REGISTRATION FORM CONTAINER */
 .vis-pg {
   background-color: #FFFAF6 !important;
