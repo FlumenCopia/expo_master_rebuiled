@@ -6,8 +6,48 @@ import { generateBadgeCode } from '../middleware/security';
 export class CompanyEmployeeController {
   static async getAdminEmployees(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const employees = await prisma.companyEmployee.findMany({ orderBy: { createdAt: 'desc' } });
-      res.json({ success: true, employees });
+      const search = (req.query.search as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
+
+      const where: any = {};
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { fullName: { contains: q, mode: 'insensitive' } },
+          { companyName: { contains: q, mode: 'insensitive' } },
+          { email: { contains: q, mode: 'insensitive' } },
+          { phone: { contains: q, mode: 'insensitive' } },
+          { badgeCode: { contains: q, mode: 'insensitive' } },
+          { designation: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [employees, totalCount] = await Promise.all([
+        prisma.companyEmployee.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.companyEmployee.count({ where }),
+      ]);
+
+      res.json({
+        success: true,
+        employees,
+        stats: {
+          total: totalCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+        },
+      });
     } catch (error) {
       next(error);
     }

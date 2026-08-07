@@ -41,13 +41,62 @@ export class ExhibitorController {
     }
   }
 
-  // Admin Exhibitors List
+  // Admin Exhibitors List with search, status filters, pagination, and stats
   static async getAdminExhibitors(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const exhibitors = await prisma.exhibitor.findMany({
-        orderBy: { createdAt: 'desc' },
+      const search = (req.query.search as string) || '';
+      const status = (req.query.status as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
+
+      const where: any = {};
+
+      if (status && status !== 'ALL') {
+        where.status = status;
+      }
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { companyName: { contains: q, mode: 'insensitive' } },
+          { contactPerson: { contains: q, mode: 'insensitive' } },
+          { email: { contains: q, mode: 'insensitive' } },
+          { phone: { contains: q, mode: 'insensitive' } },
+          { stallNumber: { contains: q, mode: 'insensitive' } },
+          { productCategory: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [exhibitors, totalCount, pendingCount, approvedCount, rejectedCount] = await Promise.all([
+        prisma.exhibitor.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.exhibitor.count({ where }),
+        prisma.exhibitor.count({ where: { status: 'PENDING' } }),
+        prisma.exhibitor.count({ where: { status: 'APPROVED' } }),
+        prisma.exhibitor.count({ where: { status: 'REJECTED' } }),
+      ]);
+
+      res.json({
+        success: true,
+        exhibitors,
+        stats: {
+          total: totalCount,
+          pending: pendingCount,
+          approved: approvedCount,
+          rejected: rejectedCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+        },
       });
-      res.json({ success: true, exhibitors });
     } catch (error) {
       next(error);
     }

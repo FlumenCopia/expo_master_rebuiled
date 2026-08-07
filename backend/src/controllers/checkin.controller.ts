@@ -169,15 +169,42 @@ export class CheckInController {
     }
   }
 
-  // Get Recent Gate Audit Logs
+  // Get Recent Gate Audit Logs with search, filters, pagination, and count statistics
   static async getGateLogs(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const search = (req.query.search as string) || '';
+      const scanType = (req.query.scanType as string) || '';
+      const status = (req.query.status as string) || '';
       const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
-      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '30', 10)));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
       const skip = (page - 1) * limit;
 
-      const [logs, total] = await Promise.all([
+      const where: any = {};
+
+      if (scanType && scanType !== 'ALL') {
+        where.scanType = scanType;
+      }
+
+      if (status && status !== 'ALL') {
+        where.status = status;
+      }
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { gateName: { contains: q, mode: 'insensitive' } },
+          { notes: { contains: q, mode: 'insensitive' } },
+          { visitor: { fullName: { contains: q, mode: 'insensitive' } } },
+          { visitor: { badgeCode: { contains: q, mode: 'insensitive' } } },
+          { visitor: { company: { contains: q, mode: 'insensitive' } } },
+          { scannedBy: { name: { contains: q, mode: 'insensitive' } } },
+          { scannedBy: { email: { contains: q, mode: 'insensitive' } } },
+        ];
+      }
+
+      const [logs, total, totalEntry, totalExit, totalDenied] = await Promise.all([
         prisma.gateLog.findMany({
+          where,
           orderBy: { scannedAt: 'desc' },
           skip,
           take: limit,
@@ -186,13 +213,27 @@ export class CheckInController {
             scannedBy: { select: { name: true, email: true } },
           },
         }),
-        prisma.gateLog.count(),
+        prisma.gateLog.count({ where }),
+        prisma.gateLog.count({ where: { scanType: 'ENTRY', status: 'SUCCESS' } }),
+        prisma.gateLog.count({ where: { scanType: 'EXIT', status: 'SUCCESS' } }),
+        prisma.gateLog.count({ where: { status: 'DENIED' } }),
       ]);
 
       res.json({
         success: true,
         logs,
-        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+        stats: {
+          totalCheckIns: totalEntry,
+          totalExits: totalExit,
+          totalDenied,
+          totalLogs: total,
+        },
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(total / limit)),
+        },
       });
     } catch (error) {
       next(error);

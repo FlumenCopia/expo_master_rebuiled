@@ -5,19 +5,63 @@ import { prisma } from '../lib/prisma';
 export class UserController {
   static async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      });
+      const search = (req.query.search as string) || '';
+      const role = (req.query.role as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
 
-      res.json({ success: true, users });
+      const where: any = {};
+
+      if (role && role !== 'ALL') {
+        where.role = role;
+      }
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { name: { contains: q, mode: 'insensitive' } },
+          { email: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [users, totalCount, superAdminsCount, eventManagersCount, gateOfficersCount] = await Promise.all([
+        prisma.user.findMany({
+          where,
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.user.count({ where }),
+        prisma.user.count({ where: { role: 'SUPER_ADMIN' } }),
+        prisma.user.count({ where: { role: 'EVENT_MANAGER' } }),
+        prisma.user.count({ where: { role: 'GATE_OFFICER' } }),
+      ]);
+
+      res.json({
+        success: true,
+        users,
+        stats: {
+          total: totalCount,
+          superAdmins: superAdminsCount,
+          eventManagers: eventManagersCount,
+          gateOfficers: gateOfficersCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+        },
+      });
     } catch (error) {
       next(error);
     }

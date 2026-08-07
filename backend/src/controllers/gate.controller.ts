@@ -3,13 +3,57 @@ import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
 
 export class GateController {
-  // Get all Gates
+  // Get Gates with search, status filters, pagination, and stats
   static async getGates(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const gates = await prisma.gate.findMany({
-        orderBy: { code: 'asc' },
+      const search = (req.query.search as string) || '';
+      const status = (req.query.status as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
+
+      const where: any = {};
+
+      if (status && status !== 'ALL') {
+        where.status = status;
+      }
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { name: { contains: q, mode: 'insensitive' } },
+          { code: { contains: q, mode: 'insensitive' } },
+          { hall: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [gates, totalCount, activeCount, inactiveCount] = await Promise.all([
+        prisma.gate.findMany({
+          where,
+          orderBy: { code: 'asc' },
+          skip,
+          take: limit,
+        }),
+        prisma.gate.count({ where }),
+        prisma.gate.count({ where: { status: 'ACTIVE' } }),
+        prisma.gate.count({ where: { status: 'INACTIVE' } }),
+      ]);
+
+      res.json({
+        success: true,
+        gates,
+        stats: {
+          total: totalCount,
+          active: activeCount,
+          inactive: inactiveCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+        },
       });
-      res.json({ success: true, gates });
     } catch (error) {
       next(error);
     }

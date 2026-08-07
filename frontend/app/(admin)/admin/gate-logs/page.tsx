@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   ShieldCheck, RefreshCw, Search, LogIn, LogOut,
   CheckCircle2, XCircle, AlertTriangle, DoorOpen, Clock,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 
@@ -34,38 +35,45 @@ export default function AdminGateLogsPage() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<string>('ALL');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
+  const [stats, setStats] = useState({ totalCheckIns: 0, totalExits: 0, totalDenied: 0, totalLogs: 0 });
 
-  const loadLogs = async () => {
+  const loadLogs = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await fetchApi<any>('/api/checkin/logs?limit=100');
+      const query = new URLSearchParams({
+        search,
+        scanType: filterType,
+        status: filterStatus,
+        page: String(page),
+        limit: String(limit),
+      });
+
+      const data = await fetchApi<any>(`/api/checkin/logs?${query.toString()}`);
       if (data?.logs) {
         setLogs(data.logs);
+      }
+      if (data?.pagination) {
+        setPagination(data.pagination);
+      }
+      if (data?.stats) {
+        setStats(data.stats);
       }
     } catch (err) {
       console.error('Failed to load gate logs:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, filterType, filterStatus, page, limit]);
 
-  useEffect(() => { loadLogs(); }, []);
-
-  const filteredLogs = logs.filter((log) => {
-    const visitorName = log.visitor?.fullName || '';
-    const badgeCode = log.visitor?.badgeCode || '';
-    const gateName = log.gateName || '';
-
-    const matchesSearch =
-      visitorName.toLowerCase().includes(search.toLowerCase()) ||
-      badgeCode.toLowerCase().includes(search.toLowerCase()) ||
-      gateName.toLowerCase().includes(search.toLowerCase());
-
-    const matchesType = filterType === 'ALL' || log.scanType === filterType;
-    const matchesStatus = filterStatus === 'ALL' || log.status === filterStatus;
-
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadLogs();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [loadLogs]);
 
   // Strip trailing "(ENTRY)" / "(EXIT)" / "(RE-ENTRY)" suffix that the controller appends
   const cleanGateName = (raw?: string) => {
@@ -80,9 +88,8 @@ export default function AdminGateLogsPage() {
     return log.scanType === 'ENTRY' ? 'ENTRY' : 'EXIT';
   };
 
-  const totalEntry = logs.filter((l) => l.scanType === 'ENTRY' && l.status === 'SUCCESS').length;
-  const totalExit  = logs.filter((l) => l.scanType === 'EXIT'  && l.status === 'SUCCESS').length;
-  const totalDenied = logs.filter((l) => l.status === 'DENIED').length;
+  const rangeStart = pagination.total === 0 ? 0 : (page - 1) * limit + 1;
+  const rangeEnd = Math.min(page * limit, pagination.total);
 
   return (
     <div className="space-y-6">
@@ -111,15 +118,15 @@ export default function AdminGateLogsPage() {
       {/* Stats Summary */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-[#79C143]">{totalEntry}</div>
+          <div className="text-2xl font-black text-[#79C143]">{stats.totalCheckIns.toLocaleString()}</div>
           <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Check-Ins</div>
         </div>
         <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-amber-400">{totalExit}</div>
+          <div className="text-2xl font-black text-amber-400">{stats.totalExits.toLocaleString()}</div>
           <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Exits</div>
         </div>
         <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-rose-400">{totalDenied}</div>
+          <div className="text-2xl font-black text-rose-400">{stats.totalDenied.toLocaleString()}</div>
           <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Denied</div>
         </div>
       </div>
@@ -132,7 +139,10 @@ export default function AdminGateLogsPage() {
             type="text"
             placeholder="Search visitor, badge code, gate..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#03151a] border border-[#0b3d46] text-white text-xs focus:outline-none focus:border-[#01A64E] transition-all"
           />
         </div>
@@ -141,7 +151,10 @@ export default function AdminGateLogsPage() {
           {(['ALL', 'ENTRY', 'EXIT'] as const).map((type) => (
             <button
               key={type}
-              onClick={() => setFilterType(type)}
+              onClick={() => {
+                setFilterType(type);
+                setPage(1);
+              }}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 filterType === type
                   ? 'bg-[#01A64E] text-white shadow-md shadow-[#01A64E]/20'
@@ -157,7 +170,10 @@ export default function AdminGateLogsPage() {
           {(['ALL', 'SUCCESS', 'DENIED', 'DUPLICATE_ENTRY'] as const).map((s) => (
             <button
               key={s}
-              onClick={() => setFilterStatus(s)}
+              onClick={() => {
+                setFilterStatus(s);
+                setPage(1);
+              }}
               className={`flex-1 sm:flex-initial px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
                 filterStatus === s
                   ? s === 'SUCCESS' ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
@@ -170,6 +186,20 @@ export default function AdminGateLogsPage() {
               {s === 'ALL' ? 'All Status' : s === 'SUCCESS' ? '✅ Approved' : s === 'DENIED' ? '❌ Denied' : '⚠️ Duplicate'}
             </button>
           ))}
+
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(Number(e.target.value));
+              setPage(1);
+            }}
+            className="px-3 py-2 rounded-xl bg-[#03151a] border border-[#0b3d46] text-slate-300 text-xs font-semibold focus:outline-none focus:border-[#01A64E]"
+          >
+            <option value={10}>10 per page</option>
+            <option value={25}>25 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={100}>100 per page</option>
+          </select>
         </div>
       </div>
 
@@ -194,12 +224,12 @@ export default function AdminGateLogsPage() {
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-500">Loading audit logs...</td>
                 </tr>
-              ) : filteredLogs.length === 0 ? (
+              ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-500">No gate scan records found.</td>
                 </tr>
               ) : (
-                filteredLogs.map((log, idx) => {
+                logs.map((log, idx) => {
                   const mode = getScanMode(log);
                   const gateName = cleanGateName(log.gateName);
                   const ts = new Date(log.scannedAt || log.createdAt);
@@ -208,7 +238,7 @@ export default function AdminGateLogsPage() {
                     <tr key={log.id} className="hover:bg-[#0b3d46]/40 transition-colors">
                       {/* Row # */}
                       <td className="p-4 text-slate-500 font-mono text-[11px]">
-                        {filteredLogs.length - idx}
+                        {rangeStart + idx}
                       </td>
 
                       {/* Timestamp */}
@@ -294,12 +324,41 @@ export default function AdminGateLogsPage() {
           </table>
         </div>
 
-        {filteredLogs.length > 0 && (
-          <div className="px-6 py-3 border-t border-[#0b3d46] text-[11px] text-slate-500 flex items-center justify-between">
-            <span>Showing <strong className="text-slate-300">{filteredLogs.length}</strong> of <strong className="text-slate-300">{logs.length}</strong> scan records</span>
-            <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> Live audit trail</span>
+        {/* Pagination Footer */}
+        <div className="px-6 py-4 bg-[#03151a] border-t border-[#0b3d46] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div>
+            Showing <strong className="text-white">{rangeStart} - {rangeEnd}</strong> of{' '}
+            <strong className="text-[#79C143]">{pagination.total.toLocaleString()}</strong> scan records
           </div>
-        )}
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <button
+                disabled={page <= 1 || loading}
+                onClick={() => setPage(page - 1)}
+                className="p-2 rounded-xl bg-[#072228] border border-[#0b3d46] disabled:opacity-30 hover:bg-[#0b3d46] text-white transition-all cursor-pointer"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="px-3 py-1 text-xs">
+                Page <strong className="text-white">{page}</strong> of{' '}
+                <strong className="text-white">{pagination.totalPages}</strong>
+              </span>
+              <button
+                disabled={page >= pagination.totalPages || loading}
+                onClick={() => setPage(page + 1)}
+                className="p-2 rounded-xl bg-[#072228] border border-[#0b3d46] disabled:opacity-30 hover:bg-[#0b3d46] text-white transition-all cursor-pointer"
+                title="Next Page"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <span className="flex items-center gap-1 text-[11px] text-slate-500 hidden md:inline-flex">
+              <Clock className="w-3 h-3" /> Live audit trail
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

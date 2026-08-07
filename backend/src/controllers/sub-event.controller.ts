@@ -40,13 +40,49 @@ export class SubEventController {
     }
   }
 
-  // Admin Sub-Events List
+  // Admin Sub-Events List with search, pagination, and stats
   static async getAdminSubEvents(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const subEvents = await prisma.subEvent.findMany({
-        orderBy: { createdAt: 'desc' },
+      const search = (req.query.search as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
+
+      const where: any = {};
+
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { title: { contains: q, mode: 'insensitive' } },
+          { description: { contains: q, mode: 'insensitive' } },
+          { speaker: { contains: q, mode: 'insensitive' } },
+          { location: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [subEvents, totalCount] = await Promise.all([
+        prisma.subEvent.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.subEvent.count({ where }),
+      ]);
+
+      res.json({
+        success: true,
+        subEvents,
+        stats: {
+          total: totalCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+        },
       });
-      res.json({ success: true, subEvents });
     } catch (error) {
       next(error);
     }
