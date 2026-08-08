@@ -299,8 +299,10 @@ export default function AdminVisitorsPage() {
         {/* PAGINATION */}
         <div className={`p-4 border-t ${isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
           <Pagination
-            currentPage={page}
+            page={page}
             totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={limit}
             onPageChange={(p) => setPage(p)}
           />
         </div>
