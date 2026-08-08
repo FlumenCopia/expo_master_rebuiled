@@ -228,22 +228,38 @@ export default function AdminCheckinPage() {
       }
       setManualCode('');
     } catch (err: any) {
-      // Fallback to offline queue on network drop
-      try {
-        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
-        q.push({ ...payload, queuedAt: new Date().toISOString() });
-        localStorage.setItem('offlineScanQueue', JSON.stringify(q));
-        setOfflineCount(q.length);
-        playSound('success');
-        setScanResult({
-          success: true,
-          code: 'OFFLINE_QUEUED',
-          message: `⚡ Network Lagged: Scan for ${cleanCode} buffered locally and queued for auto-sync!`,
-        });
-        addHistoryItem(cleanCode, 'Buffered Scan', 'PASS', 'VERIFIED');
-      } catch {
+      const isNetworkError =
+        err.name === 'TypeError' ||
+        err.message?.includes('Failed to fetch') ||
+        err.message?.includes('timed out') ||
+        (typeof navigator !== 'undefined' && !navigator.onLine);
+
+      if (isNetworkError) {
+        // Fallback to offline queue on true network connection drop
+        try {
+          const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
+          q.push({ ...payload, queuedAt: new Date().toISOString() });
+          localStorage.setItem('offlineScanQueue', JSON.stringify(q));
+          setOfflineCount(q.length);
+          playSound('success');
+          setScanResult({
+            success: true,
+            code: 'OFFLINE_QUEUED',
+            message: `⚡ Network Lagged: Scan for ${cleanCode} buffered locally and queued for auto-sync!`,
+          });
+          addHistoryItem(cleanCode, 'Buffered Scan', 'PASS', 'VERIFIED');
+        } catch {
+          playSound('error');
+          setScanResult({ success: false, code: 'ERROR', message: `❌ ${err.message || 'Invalid badge or server error'}` });
+          addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
+        }
+      } else {
         playSound('error');
-        setScanResult({ success: false, code: 'ERROR', message: `❌ ${err.message || 'Invalid badge or server error'}` });
+        setScanResult({
+          success: false,
+          code: 'NOT_FOUND',
+          message: err.message || '❌ Invalid Badge! Attendee or Staff record not found',
+        });
         addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
       }
     } finally {
