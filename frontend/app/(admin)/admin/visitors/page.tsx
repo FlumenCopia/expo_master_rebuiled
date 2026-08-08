@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { Search, Download, RefreshCw, QrCode, Users, Trash2 } from 'lucide-react';
 import { fetchApi, API_BASE_URL } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
 
 export default function AdminVisitorsPage() {
   const { isDark } = useAdminTheme();
+  const { success: toastSuccess, error: toastError } = useToast();
   const [visitors, setVisitors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -32,12 +34,12 @@ export default function AdminVisitorsPage() {
       const data = await fetchApi<any>(`/api/admin/visitors?${query.toString()}`);
       setVisitors(data.visitors || []);
       setPagination(data.pagination || { total: 0, totalPages: 1 });
-    } catch (err) {
-      console.error('Failed to fetch visitors:', err);
+    } catch (err: any) {
+      toastError(err.message || 'Failed to load visitor records', 'Data Load Error');
     } finally {
       setLoading(false);
     }
-  }, [search, statusFilter, categoryFilter, page, limit]);
+  }, [search, statusFilter, categoryFilter, page, limit, toastError]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,9 +52,10 @@ export default function AdminVisitorsPage() {
     if (!confirm(`Are you sure you want to delete visitor "${name}"?`)) return;
     try {
       await fetchApi(`/api/admin/visitors?id=${id}`, { method: 'DELETE' });
+      toastSuccess(`Visitor "${name}" deleted successfully`, 'Visitor Deleted');
       fetchVisitors();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete visitor');
+      toastError(err.message || 'Failed to delete visitor', 'Delete Error');
     }
   };
 

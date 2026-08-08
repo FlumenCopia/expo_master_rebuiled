@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL, getAuthHeaders } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
 import {
   Mail,
@@ -61,6 +62,7 @@ const TEMPLATE_PRESETS = [
 
 export default function EmailCampaignsPage() {
   const { isDark } = useAdminTheme();
+  const { success: toastSuccess, error: toastError } = useToast();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -126,6 +128,7 @@ export default function EmailCampaignsPage() {
 
   const handleSendTestEmail = async () => {
     if (!testEmail || !subject || !content) {
+      toastError('Please enter Test Email address, Subject, and Body Content', 'Form Validation');
       setMessage({ type: 'error', text: 'Please enter Test Email address, Subject, and Body Content' });
       return;
     }

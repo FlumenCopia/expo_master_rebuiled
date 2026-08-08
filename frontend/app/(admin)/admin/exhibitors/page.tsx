@@ -7,10 +7,12 @@ import {
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
 
 export default function AdminExhibitorsPage() {
   const { isDark } = useAdminTheme();
+  const { success: toastSuccess, error: toastError } = useToast();
   const [exhibitors, setExhibitors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -38,12 +40,12 @@ export default function AdminExhibitorsPage() {
         if (data.pagination) setPagination(data.pagination);
         if (data.stats) setStats(data.stats);
       }
-    } catch (err) {
-      console.error('Failed to load exhibitors:', err);
+    } catch (err: any) {
+      toastError(err.message || 'Failed to load exhibitor records', 'Data Load Error');
     } finally {
       setLoading(false);
     }
-  }, [search, statusFilter, page, limit]);
+  }, [search, statusFilter, page, limit, toastError]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,9 +60,10 @@ export default function AdminExhibitorsPage() {
         method: 'PATCH',
         body: JSON.stringify({ status }),
       });
+      toastSuccess(`Exhibitor status updated to ${status}`, 'Status Updated');
       loadExhibitors();
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toastError(err.message || 'Failed to update exhibitor status', 'Update Error');
     }
   };
 
@@ -70,10 +73,11 @@ export default function AdminExhibitorsPage() {
         method: 'PATCH',
         body: JSON.stringify({ stallNumber }),
       });
+      toastSuccess(`Stall number assigned: ${stallNumber || 'Unassigned'}`, 'Stall Updated');
       setEditingStall(null);
       loadExhibitors();
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toastError(err.message || 'Failed to assign stall number', 'Update Error');
     }
   };
 
