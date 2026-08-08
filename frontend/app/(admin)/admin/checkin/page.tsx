@@ -122,7 +122,6 @@ export default function AdminCheckinPage() {
   const [selectedSubEvent, setSelectedSubEvent] = useState<string>('General Entry');
   const [subEvents, setSubEvents] = useState<string[]>(['General Entry']);
   const selectedSubEventRef = useRef<string>('General Entry');
-  const [offlineCount, setOfflineCount] = useState<number>(0);
 
   useEffect(() => {
     selectedSubEventRef.current = selectedSubEvent;
@@ -138,32 +137,6 @@ export default function AdminCheckinPage() {
         }
       })
       .catch(() => {});
-
-    // Check offline queue count
-    try {
-      const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
-      setOfflineCount(q.length);
-    } catch {}
-
-    // Online event listener to auto-sync offline scans
-    const handleOnline = async () => {
-      try {
-        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
-        if (q.length > 0) {
-          for (const item of q) {
-            await fetchApi<any>('/api/checkin/verify', {
-              method: 'POST',
-              body: JSON.stringify(item),
-            }).catch(() => {});
-          }
-          localStorage.removeItem('offlineScanQueue');
-          setOfflineCount(0);
-        }
-      } catch {}
-    };
-
-    window.addEventListener('online', handleOnline);
-    return () => window.removeEventListener('online', handleOnline);
   }, []);
 
   const verifyBadge = async (codeStr: string) => {
@@ -186,28 +159,6 @@ export default function AdminCheckinPage() {
       subEventTitle: selectedSubEventRef.current || selectedSubEvent,
     };
 
-    // Offline mode handling
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      try {
-        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
-        q.push({ ...payload, queuedAt: new Date().toISOString() });
-        localStorage.setItem('offlineScanQueue', JSON.stringify(q));
-        setOfflineCount(q.length);
-
-        playSound('success');
-        setScanResult({
-          success: true,
-          code: 'OFFLINE_QUEUED',
-          message: `📡 OFFLINE SCAN QUEUED! ${cleanCode} saved locally. Will auto-sync when online.`,
-        });
-        addHistoryItem(cleanCode, 'Offline Scan', 'PASS', 'VERIFIED');
-      } catch {}
-      loadingRef.current = false;
-      setLoading(false);
-      setManualCode('');
-      return;
-    }
-
     try {
       const data = await fetchApi<any>('/api/checkin/verify', {
         method: 'POST',
@@ -228,40 +179,13 @@ export default function AdminCheckinPage() {
       }
       setManualCode('');
     } catch (err: any) {
-      const isNetworkError =
-        err.name === 'TypeError' ||
-        err.message?.includes('Failed to fetch') ||
-        err.message?.includes('timed out') ||
-        (typeof navigator !== 'undefined' && !navigator.onLine);
-
-      if (isNetworkError) {
-        // Fallback to offline queue on true network connection drop
-        try {
-          const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
-          q.push({ ...payload, queuedAt: new Date().toISOString() });
-          localStorage.setItem('offlineScanQueue', JSON.stringify(q));
-          setOfflineCount(q.length);
-          playSound('success');
-          setScanResult({
-            success: true,
-            code: 'OFFLINE_QUEUED',
-            message: `⚡ Network Lagged: Scan for ${cleanCode} buffered locally and queued for auto-sync!`,
-          });
-          addHistoryItem(cleanCode, 'Buffered Scan', 'PASS', 'VERIFIED');
-        } catch {
-          playSound('error');
-          setScanResult({ success: false, code: 'ERROR', message: `❌ ${err.message || 'Invalid badge or server error'}` });
-          addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
-        }
-      } else {
-        playSound('error');
-        setScanResult({
-          success: false,
-          code: 'NOT_FOUND',
-          message: err.message || '❌ Invalid Badge! Attendee or Staff record not found',
-        });
-        addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
-      }
+      playSound('error');
+      setScanResult({
+        success: false,
+        code: 'ERROR',
+        message: err.message || '❌ Invalid Badge! Attendee or Staff record not found',
+      });
+      addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -443,16 +367,6 @@ export default function AdminCheckinPage() {
           </button>
         </div>
       </div>
-
-      {/* Offline Queue Warning Banner */}
-      {offlineCount > 0 && (
-        <div className="bg-amber-500/15 border border-amber-500/40 text-amber-300 px-4 py-2.5 rounded-2xl flex items-center justify-between text-xs font-bold shadow-md">
-          <div className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
-            <span>Offline Resilience Active: {offlineCount} scan(s) saved locally. Auto-syncing when online...</span>
-          </div>
-        </div>
-      )}
 
       {/* Gate Mode Selector */}
       <div className={`border p-2 rounded-2xl flex items-center justify-between gap-2 shadow-xs flex-wrap sm:flex-nowrap ${
