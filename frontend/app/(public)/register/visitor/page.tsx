@@ -314,27 +314,27 @@ export default function VisitorRegisterPage() {
                         />
                       </div>
 
-                      {/* Company Name */}
+                      {/* Company Name (Optional for General Visitors) */}
                       <div className="vist-input">
                         <input
                           className="fr-rmv-str"
                           type="text"
-                          placeholder={`Enter Company Name ${isFieldRequired ? '*' : ''}`}
+                          placeholder="Enter Company Name (Optional)"
                           name="company_name"
-                          required={isFieldRequired}
+                          required={false}
                           value={companyName}
                           onChange={(e) => setCompanyName(e.target.value)}
                         />
                       </div>
 
-                      {/* Designation */}
+                      {/* Designation (Optional for General Visitors) */}
                       <div className="vist-input">
                         <input
                           className="fr-rmv-str"
                           type="text"
-                          placeholder={`Enter Your Designation ${isFieldRequired ? '*' : ''}`}
+                          placeholder="Enter Your Designation (Optional)"
                           name="designation"
-                          required={isFieldRequired}
+                          required={false}
                           value={designation}
                           onChange={(e) => setDesignation(e.target.value)}
                         />

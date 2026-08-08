@@ -36,6 +36,22 @@ export class StatsController {
       // "Currently Inside" = CHECKED_IN
       const currentlyInside = checkedInCount;
 
+      // Dynamic Venue Capacity calculation (Read from SystemSetting or scale with total registrations)
+      const capacitySetting = await prisma.systemSetting.findUnique({ where: { key: 'MAX_VENUE_CAPACITY' } }).catch(() => null);
+      const configuredCapacity = capacitySetting ? parseInt(capacitySetting.value, 10) : 0;
+      const venueCapacity = configuredCapacity > 0 
+        ? Math.max(configuredCapacity, currentlyInside)
+        : Math.max(totalVisitors, 150000);
+
+      const occupancyPercentage = Math.min(100, Math.round((currentlyInside / venueCapacity) * 100));
+      const occupancyStatus = occupancyPercentage >= 90 ? 'CRITICAL' : occupancyPercentage >= 75 ? 'WARNING' : 'NORMAL';
+
+      const oneHourAgo = new Date(Date.now() - 3600000);
+      const [entriesPastHour, exitsPastHour] = await Promise.all([
+        prisma.gateLog.count({ where: { scanType: 'ENTRY', status: 'SUCCESS', scannedAt: { gte: oneHourAgo } } }).catch(() => 0),
+        prisma.gateLog.count({ where: { scanType: 'EXIT', status: 'SUCCESS', scannedAt: { gte: oneHourAgo } } }).catch(() => 0),
+      ]);
+
       res.json({
         success: true,
         stats: {
@@ -44,6 +60,12 @@ export class StatsController {
           totalRegistrationCount: totalVisitors,
           totalVisitorsCount: totalGateLogs,
           currentEventVisitors: currentlyInside,
+          currentlyInside,
+          venueCapacity,
+          occupancyPercentage,
+          occupancyStatus,
+          entriesPastHour,
+          exitsPastHour,
           currentExhibitorEmployees: companyEmployeesCount,
           checkedInCount,
           onBreakCount,

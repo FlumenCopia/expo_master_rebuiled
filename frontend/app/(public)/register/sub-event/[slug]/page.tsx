@@ -276,25 +276,25 @@ export default function SubEventRegisterPage({ params }: { params: Promise<{ slu
                         />
                       </div>
 
-                      {/* Company Name */}
+                      {/* Company Name (Optional) */}
                       <div className="vist-input">
                         <input
                           className="fr-rmv-str"
                           type="text"
-                          placeholder={`Company Name ${isFieldRequired ? '*' : ''}`}
-                          required={isFieldRequired}
+                          placeholder="Company Name (Optional)"
+                          required={false}
                           value={companyName}
                           onChange={(e) => setCompanyName(e.target.value)}
                         />
                       </div>
 
-                      {/* Designation */}
+                      {/* Designation (Optional) */}
                       <div className="vist-input">
                         <input
                           className="fr-rmv-str"
                           type="text"
-                          placeholder={`Designation ${isFieldRequired ? '*' : ''}`}
-                          required={isFieldRequired}
+                          placeholder="Designation (Optional)"
+                          required={false}
                           value={designation}
                           onChange={(e) => setDesignation(e.target.value)}
                         />

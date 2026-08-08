@@ -6,28 +6,42 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database with Admin users...');
 
-  const adminUsers = [
-    { email: 'mastersassociationmedia@gmail.com', name: 'Kerala reexpo Founder', role: 'SUPER_ADMIN' },
-    { email: 'mastersassociationmeadia@gmail.com', name: 'Kerala reexpo Founder', role: 'SUPER_ADMIN' },
-    { email: 'admin@expokerala.com', name: 'System Admin', role: 'SUPER_ADMIN' },
-  ];
+  const isProd = process.env.NODE_ENV === 'production';
+  const adminEmail = (process.env.ADMIN_EMAIL || 'mastersassociationmedia@gmail.com').trim().toLowerCase();
+  const rawPassword = process.env.ADMIN_PASSWORD;
 
-  const hashedPassword = await bcrypt.hash('123456', 10);
-
-  for (const user of adminUsers) {
-    await prisma.user.upsert({
-      where: { email: user.email },
-      update: { password: hashedPassword, role: user.role as any, name: user.name },
-      create: {
-        email: user.email,
-        name: user.name,
-        password: hashedPassword,
-        role: user.role as any,
-      },
-    });
+  if (isProd && (!rawPassword || rawPassword === '123456')) {
+    console.warn('⚠️ [SECURITY WARNING] Cannot run seed script in production without custom ADMIN_PASSWORD set.');
+    return;
   }
 
-  console.log(`✅ Admin users seeded: ${adminUsers.map((u) => u.email).join(', ')}`);
+  const passwordToUse = rawPassword || '123456';
+  const hashedPassword = await bcrypt.hash(passwordToUse, 12);
+
+  const adminUsers = [
+    { email: adminEmail, name: 'Kerala EXPO Super Admin', role: 'SUPER_ADMIN' },
+  ];
+
+  if (!isProd) {
+    adminUsers.push({ email: 'admin@expokerala.com', name: 'System Admin', role: 'SUPER_ADMIN' });
+  }
+
+  for (const user of adminUsers) {
+    const existing = await prisma.user.findUnique({ where: { email: user.email } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email: user.email,
+          name: user.name,
+          password: hashedPassword,
+          role: user.role as any,
+        },
+      });
+      console.log(`✅ Admin user seeded: ${user.email}`);
+    } else {
+      console.log(`ℹ️ Admin user already exists: ${user.email}`);
+    }
+  }
 }
 
 main()

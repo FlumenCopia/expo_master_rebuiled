@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
 import { CheckInVerificationSchema, sanitizeCsvCell } from '../middleware/security';
+import { memoryCache } from '../services/cache.service';
 
 export class CheckInController {
   static async verifyCheckIn(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
@@ -12,25 +13,35 @@ export class CheckInController {
         return;
       }
 
-      const { badgeCode, gateName, mode } = validation.data;
+      const { badgeCode, gateName, mode, subEventTitle } = validation.data;
       const cleanCode = badgeCode.trim().toUpperCase();
-      let visitor = await prisma.visitor.findUnique({ where: { badgeCode: cleanCode } });
+      const cacheKey = `visitor_badge:${cleanCode}`;
+
+      let visitor = memoryCache.get<any>(cacheKey);
 
       if (!visitor) {
-        const emp = await prisma.companyEmployee.findFirst({ where: { badgeCode: cleanCode } });
-        if (emp) {
-          visitor = await prisma.visitor.create({
-            data: {
-              badgeCode: emp.badgeCode || cleanCode,
-              fullName: emp.fullName,
-              email: String(emp.email || 'staff@expokerala.com'),
-              phone: String(emp.phone || '0000000000'),
-              company: emp.companyName,
-              designation: emp.designation || 'Exhibitor Staff',
-              category: 'EXHIBITOR',
-              status: 'REGISTERED',
-            },
-          });
+        visitor = await prisma.visitor.findUnique({ where: { badgeCode: cleanCode } });
+
+        if (!visitor) {
+          const emp = await prisma.companyEmployee.findFirst({ where: { badgeCode: cleanCode } });
+          if (emp) {
+            visitor = await prisma.visitor.create({
+              data: {
+                badgeCode: emp.badgeCode || cleanCode,
+                fullName: emp.fullName,
+                email: String(emp.email || 'staff@expokerala.com'),
+                phone: String(emp.phone || '0000000000'),
+                company: emp.companyName,
+                designation: emp.designation || 'Exhibitor Staff',
+                category: 'EXHIBITOR',
+                status: 'REGISTERED',
+              },
+            });
+          }
+        }
+
+        if (visitor) {
+          memoryCache.set(cacheKey, visitor, 60);
         }
       }
 
@@ -41,6 +52,57 @@ export class CheckInController {
           message: '❌ Invalid Badge! Attendee or Staff record not found.',
         });
         return;
+      }
+
+      // --- 5-SECOND DOUBLE-SCAN GRACE WINDOW ---
+      // Suppresses scanner button bounce / rapid double taps at the same gate
+      const fiveSecondsAgo = new Date(Date.now() - 5000);
+      const recentScan = await prisma.gateLog.findFirst({
+        where: {
+          visitorId: visitor.id,
+          scannedAt: { gte: fiveSecondsAgo },
+          status: 'SUCCESS',
+        },
+      });
+
+      if (recentScan) {
+        res.json({
+          success: true,
+          code: 'VERIFIED_GRACE_PERIOD',
+          message: `✅ APPROVED (Recent Scan): ${visitor.fullName} (${visitor.category})`,
+          visitor,
+        });
+        return;
+      }
+
+      // --- SUB-EVENT SESSION ACCESS VALIDATION ---
+      if (subEventTitle && subEventTitle !== 'ALL_ACCESS' && subEventTitle !== 'General Entry') {
+        const isAuthorized =
+          visitor.category === 'VIP' ||
+          visitor.category === 'SPEAKER' ||
+          visitor.category === 'EXHIBITOR' ||
+          (Array.isArray(visitor.subEvents) && visitor.subEvents.includes(subEventTitle));
+
+        if (!isAuthorized) {
+          await prisma.gateLog.create({
+            data: {
+              visitorId: visitor.id,
+              scannedById: req.user?.id,
+              gateName: `${gateName || 'Main Entrance'} [Session: ${subEventTitle}]`,
+              scanType: 'ENTRY',
+              status: 'DENIED',
+              notes: `Not registered for sub-event: ${subEventTitle}`,
+            },
+          });
+
+          res.json({
+            success: false,
+            code: 'SUB_EVENT_DENIED',
+            message: `⛔ ACCESS DENIED! ${visitor.fullName} is not registered for session: "${subEventTitle}".`,
+            visitor,
+          });
+          return;
+        }
       }
 
       // --- EXIT MODE ---
@@ -81,6 +143,8 @@ export class CheckInController {
             },
           },
         });
+
+        memoryCache.invalidate(cleanCode);
 
         res.json({
           success: true,
@@ -130,6 +194,8 @@ export class CheckInController {
           },
         },
       });
+
+      memoryCache.invalidate(cleanCode);
 
       res.json({
         success: true,

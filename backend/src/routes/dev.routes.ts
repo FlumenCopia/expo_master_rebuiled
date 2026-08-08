@@ -1,18 +1,21 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import http from 'http';
 import https from 'https';
 
 const router = Router();
 
-// Middleware to ensure load test runner is only executable in dev or by admin
+// Middleware to ensure load test runner is only executable in dev or by authorized Super Admin in production
 const devOnlyGuard = (req: Request, res: Response, next: NextFunction) => {
   const isDev = process.env.NODE_ENV !== 'production';
-  // Allow if in dev or if dev bypass header is set
-  if (isDev || req.headers['x-dev-load-test'] === 'enabled') {
+  if (isDev) {
     return next();
   }
-  res.status(403).json({ error: 'Load testing endpoint is restricted to development environment' });
+  // In production, strictly require Super Admin JWT authentication
+  return authenticateJWT(req, res, () => {
+    requireRoles('SUPER_ADMIN')(req, res, next);
+  });
 };
 
 router.use(devOnlyGuard);

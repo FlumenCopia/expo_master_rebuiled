@@ -22,6 +22,9 @@ import {
   Sun,
   Moon,
   Zap,
+  Activity,
+  Printer,
+  Star,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAdminTheme } from '@/context/AdminThemeContext';
@@ -371,6 +374,24 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
                   <span>Email Campaigns</span>
                 </Link>
 
+                {/* Desk Kiosk */}
+                <Link
+                  href="/admin/kiosk"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    isActive('/admin/kiosk')
+                      ? isDark
+                        ? 'bg-[#01A64E]/20 text-[#79C143] border border-[#01A64E]/30'
+                        : 'bg-[#01A64E]/10 text-[#01A64E] border border-[#01A64E]/20 shadow-xs'
+                      : isDark
+                      ? 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                  }`}
+                >
+                  <Printer className="w-4 h-4 text-emerald-400" />
+                  <span>Desk Kiosk &amp; Badges</span>
+                </Link>
+
                 {/* Gate Scanner */}
                 <Link
                   href="/admin/checkin"
@@ -443,26 +464,26 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
                   <span>Staff &amp; Gatekeepers</span>
                 </Link>
 
-                {/* Load Capacity Tester (Dev Tool) */}
+                {/* System Health & Telemetry Monitor */}
                 <Link
                   href="/admin/load-tester"
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                     isActive('/admin/load-tester')
                       ? isDark
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-amber-50 text-amber-600 border border-amber-200 shadow-xs'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-xs'
                       : isDark
                       ? 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Zap className="w-4 h-4 text-amber-400" />
-                    <span>Load Capacity Tester</span>
+                    <Activity className="w-4 h-4 text-emerald-400" />
+                    <span>System Health &amp; Telemetry</span>
                   </div>
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    DEV
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    LIVE
                   </span>
                 </Link>
               </>

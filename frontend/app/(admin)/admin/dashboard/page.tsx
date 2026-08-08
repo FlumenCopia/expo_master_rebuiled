@@ -184,6 +184,69 @@ export default function AdminDashboardPage() {
         })}
       </div>
 
+      {/* LIVE VENUE OCCUPANCY & SAFETY METER */}
+      <div className={`border p-6 rounded-3xl transition-colors ${
+        stats.occupancyStatus === 'CRITICAL'
+          ? 'bg-rose-950/30 border-rose-500/50 text-white'
+          : stats.occupancyStatus === 'WARNING'
+          ? 'bg-amber-950/30 border-amber-500/50 text-white'
+          : isDark
+          ? 'bg-[#131B2A] border-slate-800 text-white shadow-xl'
+          : 'bg-white border-slate-200 text-slate-900 shadow-sm'
+      }`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`w-3 h-3 rounded-full animate-ping ${
+                stats.occupancyStatus === 'CRITICAL' ? 'bg-rose-500' : stats.occupancyStatus === 'WARNING' ? 'bg-amber-400' : 'bg-emerald-500'
+              }`} />
+              <h2 className="text-lg md:text-xl font-black tracking-tight flex items-center gap-2">
+                <span>Live Venue Occupancy &amp; Safety Gauge</span>
+              </h2>
+            </div>
+            <p className={`text-xs mt-1 font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Real-time headcount inside main exhibition halls vs maximum venue capacity limit ({(stats.venueCapacity || 150000).toLocaleString()} attendees).
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-2xl font-black">{(stats.currentlyInside || 0).toLocaleString()} / {(stats.venueCapacity || 150000).toLocaleString()}</div>
+              <div className="text-[11px] font-extrabold uppercase text-[#79C143]">Active Attendees Inside</div>
+            </div>
+            <span className={`px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
+              stats.occupancyStatus === 'CRITICAL'
+                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
+                : stats.occupancyStatus === 'WARNING'
+                ? 'bg-amber-500 text-slate-950 font-black'
+                : 'bg-emerald-500/20 text-[#79C143] border border-emerald-500/40'
+            }`}>
+              {stats.occupancyPercentage || 0}% Cap ({stats.occupancyStatus || 'NORMAL'})
+            </span>
+          </div>
+        </div>
+
+        {/* Progress Capacity Bar */}
+        <div className="w-full bg-slate-800/60 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700/50 mb-3">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              stats.occupancyStatus === 'CRITICAL'
+                ? 'bg-gradient-to-r from-rose-500 to-red-600'
+                : stats.occupancyStatus === 'WARNING'
+                ? 'bg-gradient-to-r from-amber-400 to-yellow-500'
+                : 'bg-gradient-to-r from-[#01A64E] to-[#79C143]'
+            }`}
+            style={{ width: `${Math.min(100, stats.occupancyPercentage || 0)}%` }}
+          />
+        </div>
+
+        <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
+          <span>0 (Empty)</span>
+          <span>Hourly Flow: +{(stats.entriesPastHour || 0).toLocaleString()} Entered / -{(stats.exitsPastHour || 0).toLocaleString()} Exited</span>
+          <span>{(stats.venueCapacity || 150000).toLocaleString()} (Max Capacity)</span>
+        </div>
+      </div>
+
       {/* 2 PASS ANALYTICS CARDS (GATE IN & GATE OUT) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GATE IN PASSES */}

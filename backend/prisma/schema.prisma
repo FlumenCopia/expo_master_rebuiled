@@ -79,6 +79,7 @@ model Visitor {
   updatedAt    DateTime        @updatedAt
 
   GateLogs     GateLog[]
+  ExhibitorLeads ExhibitorLead[]
 
   // Indexes for 75,000+ Scale & Under-20ms Queries
   @@index([badgeCode])
@@ -106,10 +107,28 @@ model Exhibitor {
   updatedAt       DateTime        @updatedAt
 
   employees       CompanyEmployee[]
+  leads           ExhibitorLead[]
 
   @@index([companyName])
   @@index([email])
   @@index([status])
+}
+
+model ExhibitorLead {
+  id          String    @id @default(cuid())
+  exhibitorId String
+  exhibitor   Exhibitor @relation(fields: [exhibitorId], references: [id], onDelete: Cascade)
+  visitorId   String
+  visitor     Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  rating      String    @default("WARM") // HOT, WARM, COLD
+  notes       String?
+  scannedBy   String?
+  scannedAt   DateTime  @default(now())
+
+  @@unique([exhibitorId, visitorId])
+  @@index([exhibitorId])
+  @@index([visitorId])
+  @@index([rating])
 }
 
 model Event {
@@ -231,6 +250,32 @@ model EmailCampaign {
 
   @@index([status])
   @@index([targetAudience])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  userEmail  String?
+  action     String   // e.g., EXPORT_LEADS_CSV, EXPORT_VISITORS_CSV, USER_LOGIN, DELETE_VISITOR
+  details    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([createdAt])
+}
+
+model GateDevice {
+  id          String   @id @default(cuid())
+  deviceName  String
+  deviceToken String   @unique
+  gateName    String   @default("Main Entrance")
+  status      String   @default("ACTIVE") // ACTIVE, REVOKED
+  lastActive  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([deviceToken])
+  @@index([status])
 }
 
 

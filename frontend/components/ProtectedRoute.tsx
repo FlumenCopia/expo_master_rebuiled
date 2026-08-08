@@ -5,7 +5,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useAdminTheme } from '@/context/AdminThemeContext';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export default function ProtectedRoute({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { isDark } = useAdminTheme();
   const pathname = usePathname();

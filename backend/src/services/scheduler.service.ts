@@ -114,6 +114,9 @@ export class SchedulerService {
 
           if (success) sentCount++;
           else failedCount++;
+
+          // 200ms Throttling Delay (~5 emails/sec) to respect Gmail SMTP rate limits
+          await new Promise((resolve) => setTimeout(resolve, 200));
         }
 
         await prisma.emailCampaign.update({

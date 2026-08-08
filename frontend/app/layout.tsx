@@ -3,7 +3,15 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Masters EXPO26 - Kerala's Premier Renewable Energy Showcase",
-  description: "Masters Kerala RE 2.0 EXPO26 - September 25-27, 2026 at Lulu Mall, Trivandrum.",
+  description: "Masters Kerala RE 2.0 EXPO26 - September 25-27, 2026 at Calicut Trade Centre, Kozhikode, Kerala.",
+  keywords: ["Masters EXPO26", "Renewable Energy Expo Kerala", "Solar Masters Expo", "Kozhikode Trade Centre", "Kerala RE 2.0"],
+  authors: [{ name: "Masters Association" }],
+  openGraph: {
+    title: "Masters EXPO26 - Kerala's Premier Renewable Energy Showcase",
+    description: "Join 75,000+ industry leaders, innovators, and visitors at Masters Kerala RE 2.0 EXPO26.",
+    type: "website",
+    locale: "en_IN",
+  },
   icons: {
     icon: "/assets/logo/favic.png",
   },

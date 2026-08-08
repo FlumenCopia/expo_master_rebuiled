@@ -171,21 +171,40 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
       {/* Print Styles */}
       <style>{`
         @media print {
+          @page {
+            size: 4in 3in;
+            margin: 0;
+          }
           .no-print { display: none !important; }
-          body {
+          html, body {
             background: white !important;
             color: black !important;
             padding: 0 !important;
             margin: 0 !important;
+            width: 4in !important;
+            height: 3in !important;
+            overflow: hidden !important;
           }
           .badge-card {
-            border: 2px solid #059669 !important;
+            width: 3.8in !important;
+            height: 2.8in !important;
+            border: 2px solid #000 !important;
             box-shadow: none !important;
-            background: #0f172a !important;
-            color: white !important;
+            background: #ffffff !important;
+            color: #000000 !important;
             margin: 0 auto !important;
+            padding: 10px !important;
+            border-radius: 8px !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            page-break-after: always;
+          }
+          .badge-card * {
+            color: #000000 !important;
+          }
+          .badge-card .bg-\\[\\#090D16\\] {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
           }
         }
       `}</style>

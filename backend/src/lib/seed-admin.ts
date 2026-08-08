@@ -3,18 +3,21 @@ import { prisma } from './prisma';
 
 export async function ensureDefaultAdminUser(): Promise<void> {
   try {
+    const isProd = process.env.NODE_ENV === 'production';
     const adminEmail = (process.env.ADMIN_EMAIL || 'mastersassociationmedia@gmail.com').trim().toLowerCase();
-    const rawPassword = process.env.ADMIN_PASSWORD || '123456';
-    const hashedPassword = await bcrypt.hash(rawPassword, 12);
+    const rawPassword = process.env.ADMIN_PASSWORD;
 
-    const targetEmails = Array.from(
-      new Set([
-        adminEmail,
-        'mastersassociationmedia@gmail.com',
-        'mastersassociationmeadia@gmail.com',
-        'admin@expokerala.com',
-      ])
-    );
+    if (isProd && (!rawPassword || rawPassword === '123456' || rawPassword === 'change_this_admin_password')) {
+      console.warn('⚠️ [SECURITY WARNING] Production environment detected without custom ADMIN_PASSWORD set in env. Default admin auto-seeding skipped to prevent default password vulnerability.');
+      return;
+    }
+
+    const passwordToUse = rawPassword || '123456';
+    const hashedPassword = await bcrypt.hash(passwordToUse, 12);
+
+    const targetEmails = isProd
+      ? [adminEmail]
+      : Array.from(new Set([adminEmail, 'admin@expokerala.com']));
 
     for (const email of targetEmails) {
       const existing = await prisma.user.findUnique({ where: { email } });

@@ -119,6 +119,53 @@ export default function AdminCheckinPage() {
     }
   };
 
+  const [selectedSubEvent, setSelectedSubEvent] = useState<string>('General Entry');
+  const [subEvents, setSubEvents] = useState<string[]>(['General Entry']);
+  const selectedSubEventRef = useRef<string>('General Entry');
+  const [offlineCount, setOfflineCount] = useState<number>(0);
+
+  useEffect(() => {
+    selectedSubEventRef.current = selectedSubEvent;
+  }, [selectedSubEvent]);
+
+  // Load sub-events dynamically for room session verification
+  useEffect(() => {
+    fetchApi<any>('/api/sub-events')
+      .then((res) => {
+        if (res?.data?.length > 0) {
+          const titles = res.data.map((s: any) => s.title).filter(Boolean);
+          setSubEvents(['General Entry', ...titles]);
+        }
+      })
+      .catch(() => {});
+
+    // Check offline queue count
+    try {
+      const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
+      setOfflineCount(q.length);
+    } catch {}
+
+    // Online event listener to auto-sync offline scans
+    const handleOnline = async () => {
+      try {
+        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
+        if (q.length > 0) {
+          for (const item of q) {
+            await fetchApi<any>('/api/checkin/verify', {
+              method: 'POST',
+              body: JSON.stringify(item),
+            }).catch(() => {});
+          }
+          localStorage.removeItem('offlineScanQueue');
+          setOfflineCount(0);
+        }
+      } catch {}
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, []);
+
   const verifyBadge = async (codeStr: string) => {
     const cleanCode = codeStr.trim().toUpperCase();
     if (!cleanCode || loadingRef.current) return;
@@ -132,14 +179,39 @@ export default function AdminCheckinPage() {
     setLoading(true);
     setScanResult(null);
 
+    const payload = {
+      badgeCode: cleanCode,
+      gateName: selectedGateRef.current || selectedGate,
+      mode: modeRef.current || mode,
+      subEventTitle: selectedSubEventRef.current || selectedSubEvent,
+    };
+
+    // Offline mode handling
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      try {
+        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
+        q.push({ ...payload, queuedAt: new Date().toISOString() });
+        localStorage.setItem('offlineScanQueue', JSON.stringify(q));
+        setOfflineCount(q.length);
+
+        playSound('success');
+        setScanResult({
+          success: true,
+          code: 'OFFLINE_QUEUED',
+          message: `📡 OFFLINE SCAN QUEUED! ${cleanCode} saved locally. Will auto-sync when online.`,
+        });
+        addHistoryItem(cleanCode, 'Offline Scan', 'PASS', 'VERIFIED');
+      } catch {}
+      loadingRef.current = false;
+      setLoading(false);
+      setManualCode('');
+      return;
+    }
+
     try {
       const data = await fetchApi<any>('/api/checkin/verify', {
         method: 'POST',
-        body: JSON.stringify({
-          badgeCode: cleanCode,
-          gateName: selectedGateRef.current || selectedGate,
-          mode: modeRef.current || mode,
-        }),
+        body: JSON.stringify(payload),
       });
 
       setScanResult(data);
@@ -156,9 +228,24 @@ export default function AdminCheckinPage() {
       }
       setManualCode('');
     } catch (err: any) {
-      playSound('error');
-      setScanResult({ success: false, code: 'ERROR', message: `❌ ${err.message || 'Invalid badge or server error'}` });
-      addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
+      // Fallback to offline queue on network drop
+      try {
+        const q = JSON.parse(localStorage.getItem('offlineScanQueue') || '[]');
+        q.push({ ...payload, queuedAt: new Date().toISOString() });
+        localStorage.setItem('offlineScanQueue', JSON.stringify(q));
+        setOfflineCount(q.length);
+        playSound('success');
+        setScanResult({
+          success: true,
+          code: 'OFFLINE_QUEUED',
+          message: `⚡ Network Lagged: Scan for ${cleanCode} buffered locally and queued for auto-sync!`,
+        });
+        addHistoryItem(cleanCode, 'Buffered Scan', 'PASS', 'VERIFIED');
+      } catch {
+        playSound('error');
+        setScanResult({ success: false, code: 'ERROR', message: `❌ ${err.message || 'Invalid badge or server error'}` });
+        addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
+      }
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -292,6 +379,22 @@ export default function AdminCheckinPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Sub-Event / Room Session Selector */}
+          <select
+            value={selectedSubEvent}
+            onChange={(e) => setSelectedSubEvent(e.target.value)}
+            className={`border text-xs font-extrabold rounded-xl px-3.5 py-2 focus:outline-none focus:border-[#01A64E] max-w-[180px] truncate ${
+              isDark ? 'bg-[#090D16] border-slate-700 text-purple-400' : 'bg-white border-slate-300 text-purple-600'
+            }`}
+            title="Select session or room to validate session-specific access"
+          >
+            {subEvents.map((title) => (
+              <option key={title} value={title}>
+                {title === 'General Entry' ? '🏛️ General Venue Entry' : `🎤 ${title}`}
+              </option>
+            ))}
+          </select>
+
           {gateOptions.length > 0 ? (
             <select
               value={selectedGate}
@@ -324,6 +427,16 @@ export default function AdminCheckinPage() {
           </button>
         </div>
       </div>
+
+      {/* Offline Queue Warning Banner */}
+      {offlineCount > 0 && (
+        <div className="bg-amber-500/15 border border-amber-500/40 text-amber-300 px-4 py-2.5 rounded-2xl flex items-center justify-between text-xs font-bold shadow-md">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
+            <span>Offline Resilience Active: {offlineCount} scan(s) saved locally. Auto-syncing when online...</span>
+          </div>
+        </div>
+      )}
 
       {/* Gate Mode Selector */}
       <div className={`border p-2 rounded-2xl flex items-center justify-between gap-2 shadow-xs flex-wrap sm:flex-nowrap ${

@@ -40,6 +40,7 @@ export const CheckInVerificationSchema = z.object({
   badgeCode: z.string().min(3, 'Badge code is required').max(30),
   gateName: z.string().optional().default('Main Entrance'),
   mode: z.enum(['IN', 'OUT', 'ENTRY', 'EXIT']).optional().default('IN'),
+  subEventTitle: z.string().optional(),
 });
 
 export const ExhibitorUpdateSchema = z.object({

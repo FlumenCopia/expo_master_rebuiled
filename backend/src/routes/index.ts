@@ -14,6 +14,7 @@ import campaignRoutes from './campaign.routes';
 import companyEmployeeRoutes from './company-employee.routes';
 import masterRoutes from './master.routes';
 import devRoutes from './dev.routes';
+import exhibitorLeadRoutes from './exhibitor-lead.routes';
 
 const apiRouter = Router();
 
@@ -37,6 +38,9 @@ apiRouter.use('/', companyEmployeeRoutes);
 apiRouter.use('/', masterRoutes);
 apiRouter.use('/reminders', reminderRoutes);
 apiRouter.use('/campaigns', campaignRoutes);
-apiRouter.use('/dev', devRoutes);
+apiRouter.use('/exhibitor-leads', exhibitorLeadRoutes);
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEV_ROUTES === 'true') {
+  apiRouter.use('/dev', devRoutes);
+}
 
 export default apiRouter;
