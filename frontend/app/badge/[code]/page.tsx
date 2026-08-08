@@ -55,21 +55,21 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
   const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Masters EXPO26')}&details=${encodeURIComponent('Official Entry Pass: ' + visitor.badgeCode)}&location=${encodeURIComponent('Main Exhibition Centre, Kochi, Kerala')}&dates=20260915T090000Z/20260917T180000Z`;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start sm:justify-center py-8 px-4 selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#080d16] text-slate-100 flex flex-col items-center justify-start sm:justify-center py-8 px-4 selection:bg-[#01A64E] selection:text-white">
       {/* Non-printable Top Navigation Bar */}
       <div className="no-print mb-6 flex items-center justify-center gap-3 flex-wrap z-10 shrink-0">
         <Link
           href="/"
-          className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-sm font-semibold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md"
+          className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white text-sm font-semibold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 text-slate-400" />
           <span>Home</span>
         </Link>
         <a
           href={googleCalUrl}
           target="_blank"
           rel="noreferrer"
-          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 transition-all shadow-md"
+          className="px-4 py-2.5 rounded-xl bg-[#01A64E] hover:bg-[#79C143] text-white text-sm font-extrabold flex items-center gap-2 transition-all shadow-md shadow-[#01A64E]/20"
         >
           <Calendar className="w-4 h-4" />
           <span>Add to Calendar</span>
@@ -78,90 +78,90 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
       </div>
 
       {/* Printable Visitor ID Badge Card */}
-      <div className="badge-card w-full max-w-md bg-slate-900 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden text-center flex flex-col items-center my-auto">
+      <div className="badge-card w-full max-w-md bg-[#0f172a] border-2 border-[#01A64E]/50 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden text-center flex flex-col items-center my-auto">
         {/* Top Decorative Gradient Accent */}
-        <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500" />
+        <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-[#01A64E] via-[#79C143] to-[#01A64E]" />
 
         {/* Badge Header */}
         <div className="flex items-center justify-center gap-2.5 mt-1 mb-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold shadow-sm">
+          <div className="w-8 h-8 rounded-xl bg-[#01A64E]/20 border border-[#01A64E]/30 text-[#79C143] flex items-center justify-center font-bold shadow-sm">
             <Zap className="w-4.5 h-4.5" />
           </div>
           <div className="text-left">
             <div className="text-lg font-black tracking-tight text-white leading-none">MASTERS EXPO26</div>
-            <div className="text-[10px] text-emerald-400 uppercase tracking-widest font-extrabold mt-0.5">Renewable Energy Exhibition</div>
+            <div className="text-[10px] text-[#79C143] uppercase tracking-widest font-extrabold mt-0.5">Renewable Energy Exhibition</div>
           </div>
         </div>
 
         {/* Category Badge Pill */}
-        <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-black uppercase tracking-widest mb-4">
+        <div className="inline-flex items-center px-4 py-1 rounded-full bg-[#01A64E]/15 border border-[#01A64E]/40 text-[#79C143] text-[11px] font-black uppercase tracking-widest mb-4">
           {visitor.category} PASS
         </div>
 
         {/* Visitor Details Section */}
-        <div className="w-full text-left bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80 mb-4 text-xs sm:text-sm space-y-2">
-          <div className="flex items-start justify-between border-b border-slate-800/60 pb-1.5">
-            <span className="text-slate-400 text-xs font-medium flex items-center gap-1.5 min-w-[85px]">
-              <User className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Name:
+        <div className="w-full text-left bg-[#080d16]/90 p-4 rounded-2xl border border-slate-800/80 mb-4 text-xs sm:text-sm space-y-2.5">
+          <div className="flex items-start justify-between border-b border-slate-800/80 pb-2">
+            <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
+              <User className="w-3.5 h-3.5 text-[#79C143] shrink-0" /> Name:
             </span>
-            <span className="font-bold text-white text-right leading-snug">{visitor.fullName}</span>
+            <span className="font-black text-white text-right leading-snug text-sm sm:text-base">{visitor.fullName}</span>
           </div>
 
-          <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
-            <span className="text-slate-400 text-xs font-medium flex items-center gap-1.5 min-w-[85px]">
-              <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Profile:
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
+              <Zap className="w-3.5 h-3.5 text-[#79C143] shrink-0" /> Profile:
             </span>
-            <span className="font-semibold text-emerald-400 text-right">{profileName}</span>
+            <span className="font-extrabold text-[#79C143] text-right">{profileName}</span>
           </div>
 
           {visitor.designation && (
-            <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
-              <span className="text-slate-400 text-xs font-medium flex items-center gap-1.5 min-w-[85px]">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Designation:
               </span>
-              <span className="text-slate-200 text-right">{visitor.designation}</span>
+              <span className="text-white font-bold text-right">{visitor.designation}</span>
             </div>
           )}
 
           {visitor.company && (
-            <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
-              <span className="text-slate-400 text-xs font-medium flex items-center gap-1.5 min-w-[85px]">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Company:
               </span>
-              <span className="text-slate-200 text-right font-medium">{visitor.company}</span>
+              <span className="text-white font-bold text-right">{visitor.company}</span>
             </div>
           )}
 
           {(visitor.city || (visitor as any).district || visitor.state) && (
-            <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
-              <span className="text-slate-400 text-xs font-medium flex items-center gap-1.5 min-w-[85px]">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Location:
               </span>
-              <span className="text-slate-200 text-right">{[visitor.city, (visitor as any).district, visitor.state].filter(Boolean).join(', ')}</span>
+              <span className="text-slate-200 font-medium text-right">{[visitor.city, (visitor as any).district, visitor.state].filter(Boolean).join(', ')}</span>
             </div>
           )}
 
           <div className="flex items-center justify-between pt-0.5">
-            <span className="text-slate-400 text-xs font-medium">Badge ID:</span>
-            <span className="font-mono font-bold text-emerald-400 tracking-wide text-xs sm:text-sm">{visitor.badgeCode}</span>
+            <span className="text-slate-300 text-xs font-extrabold">Badge ID:</span>
+            <span className="font-mono font-black text-[#79C143] tracking-wide text-xs sm:text-sm">{visitor.badgeCode}</span>
           </div>
         </div>
 
         {/* QR Code Container */}
-        <div className="bg-white p-2.5 rounded-2xl inline-block shadow-lg mb-3 border-2 border-emerald-500/30">
+        <div className="bg-white p-2.5 rounded-2xl inline-block shadow-lg mb-3 border-2 border-[#01A64E]/40">
           {/* eslint-disable-next-html-element-for-jsx */}
           <img src={qrCodeUrl} alt={`QR Code ${visitor.badgeCode}`} className="w-36 h-36 object-contain block" />
         </div>
 
         {/* Notice Message */}
-        <p className="text-[11px] text-amber-400/90 font-semibold mb-3 leading-tight">
+        <div className="w-full bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-1.5 mb-3 text-[11px] text-amber-300 font-bold leading-tight">
           Note: Show this badge pass at the entrance of the exhibition
-        </p>
+        </div>
 
         {/* Footer info */}
         <div className="w-full border-t border-slate-800 pt-2.5 flex items-center justify-between text-[11px] text-slate-400 font-medium">
           <span>Sept 25 - 27, 2026</span>
-          <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+          <span className="flex items-center gap-1 text-[#79C143] font-extrabold">
             <ShieldCheck className="w-3.5 h-3.5" /> Verified Pass
           </span>
           <span>Lulu Mall, TVM</span>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/context/AuthContext';
+import { AdminThemeProvider } from '@/context/AdminThemeContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminSidebar from '@/components/AdminSidebar';
 
@@ -13,16 +14,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (isLoginPage) {
     return (
       <AuthProvider>
-        <ProtectedRoute>{children}</ProtectedRoute>
+        <AdminThemeProvider>
+          <ProtectedRoute>{children}</ProtectedRoute>
+        </AdminThemeProvider>
       </AuthProvider>
     );
   }
 
   return (
     <AuthProvider>
-      <ProtectedRoute>
-        <AdminSidebar>{children}</AdminSidebar>
-      </ProtectedRoute>
+      <AdminThemeProvider>
+        <ProtectedRoute>
+          <AdminSidebar>{children}</AdminSidebar>
+        </ProtectedRoute>
+      </AdminThemeProvider>
     </AuthProvider>
   );
 }

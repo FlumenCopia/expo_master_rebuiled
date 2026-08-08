@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
+import { useAdminTheme } from '@/context/AdminThemeContext';
 
 interface GateLogItem {
   id: string;
@@ -30,6 +31,7 @@ interface GateLogItem {
 }
 
 export default function AdminGateLogsPage() {
+  const { isDark } = useAdminTheme();
   const [logs, setLogs] = useState<GateLogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -75,7 +77,6 @@ export default function AdminGateLogsPage() {
     return () => clearTimeout(timer);
   }, [loadLogs]);
 
-  // Strip trailing "(ENTRY)" / "(EXIT)" / "(RE-ENTRY)" suffix that the controller appends
   const cleanGateName = (raw?: string) => {
     if (!raw) return '—';
     return raw.replace(/\s*\((ENTRY|EXIT|RE-ENTRY|BREAK)\)\s*$/i, '').trim();
@@ -94,21 +95,27 @@ export default function AdminGateLogsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#072228] border border-[#0b3d46] p-6 rounded-3xl shadow-xl">
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border p-6 rounded-3xl transition-colors ${
+        isDark ? 'bg-[#131B2A] border-slate-800 text-white shadow-xl' : 'bg-white border-slate-200 text-slate-900 shadow-sm'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#01A64E]/15 border border-[#01A64E]/30 text-[#79C143] flex items-center justify-center">
+          <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
+            isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-[#01A64E]'
+          }`}>
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-extrabold text-white text-xl sm:text-2xl">Gate Audit Logs</h1>
-            <p className="text-xs text-slate-400">Live entry & exit scan history across all event gates</p>
+            <h1 className={`font-extrabold text-xl sm:text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>Gate Audit Logs</h1>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Live entry &amp; exit scan history across all event gates</p>
           </div>
         </div>
 
         <button
           onClick={loadLogs}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl bg-[#0b3d46] hover:bg-[#0f4d58] text-slate-200 text-xs font-extrabold flex items-center gap-2 border border-slate-700 transition-all self-start sm:self-auto"
+          className={`px-4 py-2.5 rounded-xl border text-xs font-extrabold flex items-center gap-2 transition-all self-start sm:self-auto cursor-pointer ${
+            isDark ? 'bg-[#090D16] border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+          }`}
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Logs</span>
@@ -117,22 +124,24 @@ export default function AdminGateLogsPage() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-[#79C143]">{stats.totalCheckIns.toLocaleString()}</div>
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Check-Ins</div>
+        <div className={`border rounded-2xl p-4 text-center ${isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200 shadow-xs'}`}>
+          <div className="text-2xl font-black text-[#01A64E]">{stats.totalCheckIns.toLocaleString()}</div>
+          <div className={`text-[11px] font-bold uppercase tracking-wider mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Check-Ins</div>
         </div>
-        <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-amber-400">{stats.totalExits.toLocaleString()}</div>
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Exits</div>
+        <div className={`border rounded-2xl p-4 text-center ${isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200 shadow-xs'}`}>
+          <div className="text-2xl font-black text-amber-500">{stats.totalExits.toLocaleString()}</div>
+          <div className={`text-[11px] font-bold uppercase tracking-wider mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Exits</div>
         </div>
-        <div className="bg-[#072228] border border-[#0b3d46] rounded-2xl p-4 text-center">
-          <div className="text-2xl font-black text-rose-400">{stats.totalDenied.toLocaleString()}</div>
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Denied</div>
+        <div className={`border rounded-2xl p-4 text-center ${isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200 shadow-xs'}`}>
+          <div className="text-2xl font-black text-rose-500">{stats.totalDenied.toLocaleString()}</div>
+          <div className={`text-[11px] font-bold uppercase tracking-wider mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Denied</div>
         </div>
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#072228] border border-[#0b3d46] p-4 rounded-2xl">
+      <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 border p-4 rounded-2xl ${
+        isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-xs'
+      }`}>
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
           <input
@@ -143,7 +152,9 @@ export default function AdminGateLogsPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#03151a] border border-[#0b3d46] text-white text-xs focus:outline-none focus:border-[#01A64E] transition-all"
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs transition-all focus:outline-none focus:border-[#01A64E] ${
+              isDark ? 'bg-[#090D16] border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+            }`}
           />
         </div>
 
@@ -155,17 +166,17 @@ export default function AdminGateLogsPage() {
                 setFilterType(type);
                 setPage(1);
               }}
-              className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 filterType === type
-                  ? 'bg-[#01A64E] text-white shadow-md shadow-[#01A64E]/20'
-                  : 'bg-[#03151a] text-slate-400 hover:text-white border border-[#0b3d46]'
+                  ? 'bg-[#01A64E] text-white shadow-xs'
+                  : isDark ? 'bg-[#090D16] border border-slate-700 text-slate-400 hover:text-white' : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               {type === 'ALL' ? 'All Scans' : type === 'ENTRY' ? '🟢 Entry' : '🔴 Exit'}
             </button>
           ))}
 
-          <div className="w-px h-5 bg-[#0b3d46] hidden sm:block" />
+          <div className={`w-px h-5 hidden sm:block ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
           {(['ALL', 'SUCCESS', 'DENIED', 'DUPLICATE_ENTRY'] as const).map((s) => (
             <button
@@ -174,13 +185,13 @@ export default function AdminGateLogsPage() {
                 setFilterStatus(s);
                 setPage(1);
               }}
-              className={`flex-1 sm:flex-initial px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
+              className={`flex-1 sm:flex-initial px-3 py-2 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
                 filterStatus === s
-                  ? s === 'SUCCESS' ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
-                  : s === 'DENIED' ? 'bg-rose-500/30 text-rose-300 border border-rose-500/40'
-                  : s === 'DUPLICATE_ENTRY' ? 'bg-amber-500/30 text-amber-300 border border-amber-500/40'
+                  ? s === 'SUCCESS' ? isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : s === 'DENIED' ? isDark ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-rose-50 text-rose-700 border border-rose-200'
+                  : s === 'DUPLICATE_ENTRY' ? isDark ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-200'
                   : 'bg-[#01A64E] text-white'
-                  : 'bg-[#03151a] text-slate-400 hover:text-white border border-[#0b3d46]'
+                  : isDark ? 'bg-[#090D16] border border-slate-700 text-slate-400 hover:text-white' : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               {s === 'ALL' ? 'All Status' : s === 'SUCCESS' ? '✅ Approved' : s === 'DENIED' ? '❌ Denied' : '⚠️ Duplicate'}
@@ -193,7 +204,9 @@ export default function AdminGateLogsPage() {
               setLimit(Number(e.target.value));
               setPage(1);
             }}
-            className="px-3 py-2 rounded-xl bg-[#03151a] border border-[#0b3d46] text-slate-300 text-xs font-semibold focus:outline-none focus:border-[#01A64E]"
+            className={`px-3 py-2 rounded-xl border text-xs font-semibold focus:outline-none focus:border-[#01A64E] ${
+              isDark ? 'bg-[#090D16] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-700'
+            }`}
           >
             <option value={10}>10 per page</option>
             <option value={25}>25 per page</option>
@@ -204,13 +217,15 @@ export default function AdminGateLogsPage() {
       </div>
 
       {/* Logs Audit Table */}
-      <div className="bg-[#072228] border border-[#0b3d46] rounded-3xl overflow-hidden shadow-xl">
+      <div className={`border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-[#03151a] text-slate-400 font-extrabold uppercase border-b border-[#0b3d46]">
+              <tr className={`border-b font-extrabold uppercase ${
+                isDark ? 'bg-[#090D16] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
+              }`}>
                 <th className="p-4 whitespace-nowrap">#</th>
-                <th className="p-4 whitespace-nowrap">Date & Time</th>
+                <th className="p-4 whitespace-nowrap">Date &amp; Time</th>
                 <th className="p-4 whitespace-nowrap">Scan Mode</th>
                 <th className="p-4 whitespace-nowrap">Visitor</th>
                 <th className="p-4 whitespace-nowrap">Badge ID</th>
@@ -219,102 +234,80 @@ export default function AdminGateLogsPage() {
                 <th className="p-4 whitespace-nowrap">Scanned By</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0b3d46]">
+            <tbody className={`divide-y ${isDark ? 'divide-slate-800/80 bg-[#131B2A]' : 'divide-slate-100 bg-white'}`}>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-500">Loading audit logs...</td>
+                  <td colSpan={8} className="p-8 text-center text-slate-500 font-medium">
+                    Loading gate scan logs...
+                  </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-500">No gate scan records found.</td>
+                  <td colSpan={8} className="p-8 text-center text-slate-500 font-medium">
+                    No gate scan records match current search filter.
+                  </td>
                 </tr>
               ) : (
-                logs.map((log, idx) => {
-                  const mode = getScanMode(log);
-                  const gateName = cleanGateName(log.gateName);
-                  const ts = new Date(log.scannedAt || log.createdAt);
-
+                logs.map((log, index) => {
+                  const modeTag = getScanMode(log);
                   return (
-                    <tr key={log.id} className="hover:bg-[#0b3d46]/40 transition-colors">
-                      {/* Row # */}
-                      <td className="p-4 text-slate-500 font-mono text-[11px]">
-                        {rangeStart + idx}
-                      </td>
-
-                      {/* Timestamp */}
-                      <td className="p-4 text-slate-300 font-mono text-[11px] whitespace-nowrap">
-                        <div>{ts.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
-                        <div className="text-slate-500">{ts.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</div>
-                      </td>
-
-                      {/* Scan Mode */}
-                      <td className="p-4">
-                        {mode === 'ENTRY' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[11px] whitespace-nowrap">
-                            <LogIn className="w-3.5 h-3.5" /> ENTRY
-                          </span>
-                        ) : mode === 'RE-ENTRY' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-bold text-[11px] whitespace-nowrap">
-                            <LogIn className="w-3.5 h-3.5" /> RE-ENTRY
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold text-[11px] whitespace-nowrap">
-                            <LogOut className="w-3.5 h-3.5" /> EXIT
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Visitor Name + Category */}
-                      <td className="p-4">
-                        <div className="font-extrabold text-white whitespace-nowrap">
-                          {log.visitor?.fullName || '—'}
+                    <tr key={log.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-slate-50/80'}`}>
+                      <td className={`p-4 font-mono text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{rangeStart + index}</td>
+                      <td className="p-4 whitespace-nowrap font-mono text-[11px]">
+                        <div className={`font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                          {new Date(log.scannedAt || log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                         </div>
-                        {log.visitor?.category && (
-                          <div className="text-[10px] text-slate-400 font-semibold mt-0.5">
-                            {log.visitor.category}
-                            {log.visitor.company ? ` · ${log.visitor.company}` : ''}
-                          </div>
-                        )}
+                        <div className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                          {new Date(log.scannedAt || log.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        </div>
                       </td>
 
-                      {/* Badge Code */}
-                      <td className="p-4">
-                        <span className="font-mono font-bold text-[#79C143] bg-[#01A64E]/10 px-2 py-0.5 rounded-lg border border-[#01A64E]/20 text-[11px] whitespace-nowrap">
-                          {log.visitor?.badgeCode || '—'}
+                      <td className="p-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${
+                          modeTag === 'ENTRY' ? isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          modeTag === 'RE-ENTRY' ? isDark ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' : 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                          isDark ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}>
+                          {modeTag === 'ENTRY' ? <LogIn className="w-3 h-3 text-emerald-400" /> :
+                           modeTag === 'RE-ENTRY' ? <Clock className="w-3 h-3 text-indigo-400" /> :
+                           <LogOut className="w-3 h-3 text-rose-400" />}
+                          <span>{modeTag}</span>
                         </span>
                       </td>
 
-                      {/* Gate Station */}
-                      <td className="p-4">
-                        <span className="inline-flex items-center gap-1.5 text-slate-200 font-bold text-[11px] whitespace-nowrap">
-                          <DoorOpen className="w-3.5 h-3.5 text-slate-500" />
-                          {gateName}
+                      <td className="p-4 whitespace-nowrap">
+                        <div className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{log.visitor?.fullName || 'Walk-In / Guest'}</div>
+                        <div className={isDark ? 'text-slate-400' : 'text-slate-500'}>{log.visitor?.company || log.visitor?.category || 'Attendee'}</div>
+                      </td>
+
+                      <td className="p-4 whitespace-nowrap">
+                        <span className="font-mono font-bold text-[#01A64E]">
+                          {log.visitor?.badgeCode || 'N/A'}
                         </span>
                       </td>
 
-                      {/* Status */}
-                      <td className="p-4">
-                        {log.status === 'SUCCESS' ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-400 font-bold text-[11px] whitespace-nowrap">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Approved
-                          </span>
-                        ) : log.status === 'DUPLICATE_ENTRY' ? (
-                          <span className="inline-flex items-center gap-1 text-amber-400 font-bold text-[11px] whitespace-nowrap">
-                            <AlertTriangle className="w-3.5 h-3.5" /> Already Scanned
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-rose-400 font-bold text-[11px] whitespace-nowrap">
-                            <XCircle className="w-3.5 h-3.5" /> Access Denied
-                          </span>
-                        )}
-                        {log.notes && (
-                          <div className="text-[10px] text-slate-500 mt-0.5 max-w-[160px] truncate">{log.notes}</div>
-                        )}
+                      <td className="p-4 whitespace-nowrap font-medium">
+                        <div className={`flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <DoorOpen className="w-3.5 h-3.5 text-[#01A64E]" />
+                          <span>{cleanGateName(log.gateName)}</span>
+                        </div>
                       </td>
 
-                      {/* Scanned By */}
-                      <td className="p-4 text-slate-400 text-[11px] whitespace-nowrap">
-                        {log.scannedBy?.name || 'Gate Officer'}
+                      <td className="p-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${
+                          log.status === 'SUCCESS' ? isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          log.status === 'DUPLICATE_ENTRY' ? isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200' :
+                          isDark ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}>
+                          {log.status === 'SUCCESS' ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> :
+                           log.status === 'DUPLICATE_ENTRY' ? <AlertTriangle className="w-3 h-3 text-amber-400" /> :
+                           <XCircle className="w-3 h-3 text-rose-400" />}
+                          <span>{log.status}</span>
+                        </span>
+                      </td>
+
+                      <td className={`p-4 whitespace-nowrap font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {log.scannedBy?.name || 'Gatekeeper Station'}
                       </td>
                     </tr>
                   );
@@ -325,38 +318,37 @@ export default function AdminGateLogsPage() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 bg-[#03151a] border-t border-[#0b3d46] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className={`p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs ${
+          isDark ? 'bg-[#090D16] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
+        }`}>
           <div>
-            Showing <strong className="text-white">{rangeStart} - {rangeEnd}</strong> of{' '}
-            <strong className="text-[#79C143]">{pagination.total.toLocaleString()}</strong> scan records
+            Showing <strong className={isDark ? 'text-white' : 'text-slate-900'}>{rangeStart} - {rangeEnd}</strong> of{' '}
+            <strong className="text-[#01A64E]">{pagination.total.toLocaleString()}</strong> log entries
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <button
-                disabled={page <= 1 || loading}
-                onClick={() => setPage(page - 1)}
-                className="p-2 rounded-xl bg-[#072228] border border-[#0b3d46] disabled:opacity-30 hover:bg-[#0b3d46] text-white transition-all cursor-pointer"
-                title="Previous Page"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="px-3 py-1 text-xs">
-                Page <strong className="text-white">{page}</strong> of{' '}
-                <strong className="text-white">{pagination.totalPages}</strong>
-              </span>
-              <button
-                disabled={page >= pagination.totalPages || loading}
-                onClick={() => setPage(page + 1)}
-                className="p-2 rounded-xl bg-[#072228] border border-[#0b3d46] disabled:opacity-30 hover:bg-[#0b3d46] text-white transition-all cursor-pointer"
-                title="Next Page"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-            <span className="flex items-center gap-1 text-[11px] text-slate-500 hidden md:inline-flex">
-              <Clock className="w-3 h-3" /> Live audit trail
+          <div className="flex items-center gap-2">
+            <button
+              disabled={page <= 1 || loading}
+              onClick={() => setPage(page - 1)}
+              className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
+                isDark ? 'bg-[#131B2A] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span>
+              Page <strong className={isDark ? 'text-white' : 'text-slate-900'}>{page}</strong> of{' '}
+              <strong className={isDark ? 'text-white' : 'text-slate-900'}>{pagination.totalPages}</strong>
             </span>
+            <button
+              disabled={page >= pagination.totalPages || loading}
+              onClick={() => setPage(page + 1)}
+              className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
+                isDark ? 'bg-[#131B2A] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>

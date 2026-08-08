@@ -7,11 +7,16 @@ export class CompanyEmployeeController {
   static async getAdminEmployees(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const search = (req.query.search as string) || '';
+      const exhibitorId = (req.query.exhibitorId as string) || '';
       const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
       const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
       const skip = (page - 1) * limit;
 
       const where: any = {};
+
+      if (exhibitorId.trim() !== '') {
+        where.exhibitorId = exhibitorId.trim();
+      }
 
       if (search.trim() !== '') {
         const q = search.trim();
@@ -28,6 +33,16 @@ export class CompanyEmployeeController {
       const [employees, totalCount] = await Promise.all([
         prisma.companyEmployee.findMany({
           where,
+          include: {
+            exhibitor: {
+              select: {
+                id: true,
+                companyName: true,
+                stallNumber: true,
+                status: true,
+              },
+            },
+          },
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,
@@ -55,15 +70,43 @@ export class CompanyEmployeeController {
 
   static async createEmployee(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { fullName, companyName, email, phone, designation } = req.body;
+      const { fullName, companyName, email, phone, designation, exhibitorId } = req.body;
+      let finalCompanyName = companyName || '';
+      let linkedExhibitorId = exhibitorId || null;
+
+      if (linkedExhibitorId) {
+        const exhibitor = await prisma.exhibitor.findUnique({ where: { id: linkedExhibitorId } });
+        if (exhibitor) {
+          finalCompanyName = exhibitor.companyName;
+        }
+      } else if (finalCompanyName) {
+        // Try matching existing exhibitor by name
+        const match = await prisma.exhibitor.findFirst({
+          where: { companyName: { equals: finalCompanyName, mode: 'insensitive' } },
+        });
+        if (match) {
+          linkedExhibitorId = match.id;
+        }
+      }
+
       const employee = await prisma.companyEmployee.create({
         data: {
           fullName,
-          companyName,
+          companyName: finalCompanyName,
           email,
           phone,
           designation: designation || '',
           badgeCode: generateBadgeCode(),
+          exhibitorId: linkedExhibitorId,
+        },
+        include: {
+          exhibitor: {
+            select: {
+              id: true,
+              companyName: true,
+              stallNumber: true,
+            },
+          },
         },
       });
       res.json({ success: true, message: 'Company employee added', employee });

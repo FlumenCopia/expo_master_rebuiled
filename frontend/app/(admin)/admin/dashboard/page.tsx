@@ -15,8 +15,10 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
+import { useAdminTheme } from '@/context/AdminThemeContext';
 
 export default function AdminDashboardPage() {
+  const { isDark } = useAdminTheme();
   const [stats, setStats] = useState<any>({
     currentExhibitors: 0,
     currentEventRegistrations: 0,
@@ -100,16 +102,18 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6 sm:space-y-8 pb-10">
       {/* DASHBOARD HEADER & QUICK ACTIONS */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-8 rounded-3xl shadow-xl">
+      <div className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 border p-5 sm:p-6 md:p-8 rounded-3xl transition-colors ${
+        isDark ? 'bg-[#131B2A] border-slate-800 text-white shadow-xl' : 'bg-white border-slate-200 text-slate-900 shadow-sm'
+      }`}>
         <div>
-          <div className="flex items-center gap-2 text-[#79C143] text-xs font-extrabold uppercase tracking-widest mb-1.5">
-            <ShieldCheck className="w-4 h-4 text-[#79C143]" />
+          <div className="flex items-center gap-2 text-[#01A64E] text-xs font-extrabold uppercase tracking-widest mb-1.5">
+            <ShieldCheck className="w-4 h-4 text-[#01A64E]" />
             <span>Masters Kerala RE 2.0 EXPO26</span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+          <h1 className={`text-xl sm:text-2xl md:text-3xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
             Event Management Overview
           </h1>
-          <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
+          <p className={`text-xs sm:text-sm mt-1 max-w-xl ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
             Real-time tracking of attendee check-ins, stall registrations, gate pass validation, and live analytics.
           </p>
         </div>
@@ -118,16 +122,18 @@ export default function AdminDashboardPage() {
           <button
             onClick={loadStats}
             disabled={loading}
-            className="p-3 rounded-2xl bg-[#0b3d46] text-slate-200 hover:text-white hover:bg-[#0f4d58] border border-[#0b3d46] transition-all flex items-center gap-2 text-xs font-bold shrink-0 cursor-pointer"
+            className={`p-3 rounded-2xl border transition-all flex items-center gap-2 text-xs font-bold shrink-0 cursor-pointer ${
+              isDark ? 'bg-[#090D16] border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs'
+            }`}
             title="Refresh Live Data"
           >
-            <RefreshCw className={`w-4 h-4 text-[#79C143] ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-[#01A64E] ${loading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh Data</span>
           </button>
 
           <Link
             href="/admin/checkin"
-            className="px-5 py-3 rounded-2xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2.5 shadow-lg shadow-[#01A64E]/20 transition-all active:scale-[0.98] shrink-0"
+            className="px-5 py-3 rounded-2xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2.5 shadow-sm shadow-[#01A64E]/20 transition-all active:scale-[0.98] shrink-0"
           >
             <QrCode className="w-4 h-4 stroke-[2.5]" />
             <span>Open Gate Scanner</span>
@@ -143,27 +149,33 @@ export default function AdminDashboardPage() {
             <Link
               key={idx}
               href={card.href}
-              className="bg-[#072228] border border-[#0b3d46] p-5 rounded-2xl flex flex-col justify-between hover:border-[#01A64E]/40 hover:bg-[#092c34] transition-all shadow-xl group cursor-pointer"
+              className={`border p-5 rounded-2xl flex flex-col justify-between transition-all group cursor-pointer ${
+                isDark ? 'bg-[#131B2A] border-slate-800 hover:border-[#01A64E]/50 shadow-xl' : 'bg-white border-slate-200 hover:border-[#01A64E]/50 shadow-xs hover:shadow-md'
+              }`}
             >
               <div className="flex items-start justify-between gap-2 mb-4">
                 <div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#79C143] block group-hover:text-white transition-colors">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#01A64E] block group-hover:text-[#79C143] transition-colors">
                     {card.title}
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-400 block mt-0.5">
+                  <span className={`text-[11px] font-semibold block mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {card.subtitle}
                   </span>
                 </div>
-                <div className="p-3 rounded-xl bg-[#0b3d46] text-[#79C143] border border-[#0b3d46] shrink-0 group-hover:scale-105 transition-transform">
+                <div className={`p-3 rounded-xl border shrink-0 group-hover:scale-105 transition-transform ${
+                  isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-[#79C143]' : 'bg-emerald-50 border-emerald-100 text-[#01A64E]'
+                }`}>
                   <Icon className="w-5 h-5 stroke-[2]" />
                 </div>
               </div>
 
-              <div className="flex items-baseline justify-between pt-3 border-t border-[#0b3d46]">
-                <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <div className={`flex items-baseline justify-between pt-3 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                <span className={`text-2xl sm:text-3xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {card.value}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#01A64E]/15 text-[#79C143] border border-[#01A64E]/30">
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                  isDark ? 'bg-emerald-500/10 text-[#79C143] border-emerald-500/20' : 'bg-emerald-50 text-[#01A64E] border-emerald-200/80'
+                }`}>
                   Live Sync
                 </span>
               </div>
@@ -175,13 +187,17 @@ export default function AdminDashboardPage() {
       {/* 2 PASS ANALYTICS CARDS (GATE IN & GATE OUT) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GATE IN PASSES */}
-        <div className="bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-7 rounded-3xl shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-[#0b3d46] pb-4 mb-6">
+        <div className={`border p-5 sm:p-6 md:p-7 rounded-3xl flex flex-col justify-between ${
+          isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'
+        }`}>
+          <div className={`flex items-center justify-between border-b pb-4 mb-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
-              <h3 className="font-extrabold text-white text-base">Gate In Passes</h3>
-              <p className="text-xs text-slate-400">Total entry pass utilization</p>
+              <h3 className={`font-extrabold text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>Gate In Passes</h3>
+              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Total entry pass utilization</p>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#01A64E]/15 border border-[#01A64E]/30 text-[#79C143] text-xs font-bold">
+            <span className={`px-3 py-1 rounded-full border text-xs font-bold ${
+              isDark ? 'bg-emerald-500/10 text-[#79C143] border-emerald-500/30' : 'bg-emerald-50 text-[#01A64E] border-emerald-200'
+            }`}>
               {gateInPct}% Validated
             </span>
           </div>
@@ -194,7 +210,7 @@ export default function AdminDashboardPage() {
                   cx="50"
                   cy="50"
                   r="40"
-                  className="stroke-[#0b3d46]"
+                  className={isDark ? 'stroke-slate-800' : 'stroke-slate-100'}
                   strokeWidth="10"
                   fill="transparent"
                 />
@@ -211,8 +227,8 @@ export default function AdminDashboardPage() {
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl font-black text-white tracking-tight">{gateInPct}%</span>
-                <span className="text-[10px] font-extrabold text-[#79C143] uppercase tracking-widest mt-0.5">
+                <span className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{gateInPct}%</span>
+                <span className="text-[10px] font-extrabold text-[#01A64E] uppercase tracking-widest mt-0.5">
                   Used
                 </span>
               </div>
@@ -220,33 +236,41 @@ export default function AdminDashboardPage() {
 
             {/* Metrics legend */}
             <div className="space-y-3 w-full sm:w-auto">
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-[#03151a] border border-[#0b3d46]">
+              <div className={`flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl border ${
+                isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200/80'
+              }`}>
                 <div className="flex items-center gap-2.5">
                   <div className="w-3.5 h-3.5 rounded-md bg-[#01A64E]" />
-                  <span className="text-xs font-bold text-slate-300">Used Passes</span>
+                  <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Used Passes</span>
                 </div>
-                <span className="text-xs font-black text-white font-mono">{stats.gateInPasses?.used ?? 0}</span>
+                <span className={`text-xs font-black font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{stats.gateInPasses?.used ?? 0}</span>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-[#03151a] border border-[#0b3d46]">
+              <div className={`flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl border ${
+                isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200/80'
+              }`}>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3.5 h-3.5 rounded-md bg-[#0b3d46]" />
-                  <span className="text-xs font-bold text-slate-400">Unused Passes</span>
+                  <div className={`w-3.5 h-3.5 rounded-md ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+                  <span className={`text-xs font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Unused Passes</span>
                 </div>
-                <span className="text-xs font-black text-slate-400 font-mono">{stats.gateInPasses?.unused ?? 0}</span>
+                <span className={`text-xs font-black font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{stats.gateInPasses?.unused ?? 0}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* GATE OUT PASSES */}
-        <div className="bg-[#072228] border border-[#0b3d46] p-5 sm:p-6 md:p-7 rounded-3xl shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-[#0b3d46] pb-4 mb-6">
+        <div className={`border p-5 sm:p-6 md:p-7 rounded-3xl flex flex-col justify-between ${
+          isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'
+        }`}>
+          <div className={`flex items-center justify-between border-b pb-4 mb-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
-              <h3 className="font-extrabold text-white text-base">Gate Out Passes</h3>
-              <p className="text-xs text-slate-400">Exit pass checkout validation</p>
+              <h3 className={`font-extrabold text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>Gate Out Passes</h3>
+              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Exit pass checkout validation</p>
             </div>
-            <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold">
+            <span className={`px-3 py-1 rounded-full border text-xs font-bold ${
+              isDark ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'bg-cyan-50 text-cyan-700 border-cyan-200'
+            }`}>
               {gateOutPct}% Checked Out
             </span>
           </div>
@@ -259,7 +283,7 @@ export default function AdminDashboardPage() {
                   cx="50"
                   cy="50"
                   r="40"
-                  className="stroke-slate-800"
+                  className={isDark ? 'stroke-slate-800' : 'stroke-slate-100'}
                   strokeWidth="10"
                   fill="transparent"
                 />
@@ -267,7 +291,7 @@ export default function AdminDashboardPage() {
                   cx="50"
                   cy="50"
                   r="40"
-                  className="stroke-cyan-400 transition-all duration-1000 ease-out"
+                  className="stroke-cyan-500 transition-all duration-1000 ease-out"
                   strokeWidth="10"
                   strokeDasharray={`${circumference}`}
                   strokeDashoffset={`${circumference * (1 - gateOutPct / 100)}`}
@@ -276,8 +300,8 @@ export default function AdminDashboardPage() {
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl font-black text-white tracking-tight">{gateOutPct}%</span>
-                <span className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest mt-0.5">
+                <span className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{gateOutPct}%</span>
+                <span className="text-[10px] font-extrabold text-cyan-500 uppercase tracking-widest mt-0.5">
                   Checked Out
                 </span>
               </div>
@@ -285,20 +309,24 @@ export default function AdminDashboardPage() {
 
             {/* Metrics legend */}
             <div className="space-y-4 w-full sm:w-auto">
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-800">
+              <div className={`flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl border ${
+                isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200/80'
+              }`}>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3.5 h-3.5 rounded-md bg-cyan-400 shadow-sm shadow-cyan-400/50" />
-                  <span className="text-xs font-bold text-slate-300">Used (Out)</span>
+                  <div className="w-3.5 h-3.5 rounded-md bg-cyan-500 shadow-xs" />
+                  <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Used (Out)</span>
                 </div>
-                <span className="text-xs font-black text-white font-mono">{stats.gateOutPasses?.used ?? 0}</span>
+                <span className={`text-xs font-black font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{stats.gateOutPasses?.used ?? 0}</span>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl bg-slate-800/50 border border-slate-800">
+              <div className={`flex items-center justify-between sm:justify-start gap-4 p-3 rounded-xl border ${
+                isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200/80'
+              }`}>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3.5 h-3.5 rounded-md bg-slate-700" />
-                  <span className="text-xs font-bold text-slate-400">Unused (Remaining)</span>
+                  <div className={`w-3.5 h-3.5 rounded-md ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+                  <span className={`text-xs font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Unused (Remaining)</span>
                 </div>
-                <span className="text-xs font-black text-slate-400 font-mono">{stats.gateOutPasses?.unused ?? 0}</span>
+                <span className={`text-xs font-black font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{stats.gateOutPasses?.unused ?? 0}</span>
               </div>
             </div>
           </div>
@@ -306,24 +334,30 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* RECENT REGISTRATIONS TABLE CARD */}
-      <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-6 md:p-7 backdrop-blur-xl shadow-2xl">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+      <div className={`border rounded-3xl p-6 md:p-7 shadow-sm ${
+        isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200'
+      }`}>
+        <div className={`flex items-center justify-between mb-6 pb-4 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
           <div>
-            <h3 className="text-lg font-black text-white tracking-tight">Recent Attendee Registrations</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Latest visitors registered & checked into the expo</p>
+            <h3 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Recent Attendee Registrations</h3>
+            <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Latest visitors registered &amp; checked into the expo</p>
           </div>
           <Link
             href="/admin/visitors"
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-extrabold transition-all flex items-center gap-1.5 border border-slate-700/60"
+            className={`px-3.5 py-2 rounded-xl text-[#01A64E] text-xs font-extrabold transition-all flex items-center gap-1.5 border ${
+              isDark ? 'bg-[#090D16] border-slate-700 hover:bg-slate-800 text-[#79C143]' : 'bg-slate-100 hover:bg-slate-200 border-slate-200/80'
+            }`}
           >
             <span>View All Visitors</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-slate-800/90 bg-slate-950/40">
+        <div className={`overflow-x-auto rounded-2xl border ${isDark ? 'bg-[#090D16] border-slate-800' : 'bg-white border-slate-200'}`}>
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950 uppercase text-[10px] font-extrabold text-slate-400 border-b border-slate-800">
+            <thead className={`uppercase text-[10px] font-extrabold border-b ${
+              isDark ? 'bg-[#090D16] text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-200'
+            }`}>
               <tr>
                 <th className="py-3.5 px-5">Badge Code</th>
                 <th className="py-3.5 px-5">Full Name</th>
@@ -331,42 +365,46 @@ export default function AdminDashboardPage() {
                 <th className="py-3.5 px-5">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-medium">
+            <tbody className={`divide-y font-medium ${isDark ? 'divide-slate-800/80' : 'divide-slate-100'}`}>
               {stats.recentVisitors && stats.recentVisitors.length > 0 ? (
                 stats.recentVisitors.map((v: any) => (
-                  <tr key={v.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 px-5 font-mono font-extrabold text-emerald-400">
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                  <tr key={v.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-slate-50/80'}`}>
+                    <td className="py-3.5 px-5 font-mono font-extrabold text-[#01A64E]">
+                      <span className={`px-2.5 py-1 rounded-lg border ${
+                        isDark ? 'bg-emerald-500/10 text-[#79C143] border-emerald-500/30' : 'bg-emerald-50 text-[#01A64E] border-emerald-200/80'
+                      }`}>
                         {v.badgeCode}
                       </span>
                     </td>
-                    <td className="py-3.5 px-5 text-white font-bold text-sm">{v.fullName}</td>
+                    <td className={`py-3.5 px-5 font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{v.fullName}</td>
                     <td className="py-3.5 px-5">
-                      <span className="px-2.5 py-1 rounded-md text-[11px] font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold border ${
+                        isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}>
                         {v.category}
                       </span>
                     </td>
                     <td className="py-3.5 px-5">
                       <span className={`px-3 py-1 rounded-full text-[11px] font-extrabold border ${
                         v.status === 'CHECKED_IN'
-                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                          ? isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           : v.status === 'ON_BREAK'
-                          ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                          ? isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200'
                           : v.status === 'CHECKED_OUT'
-                          ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
-                          : 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+                          ? isDark ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'
+                          : isDark ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200'
                       }`}>
-                        {v.status === 'CHECKED_IN' ? '✅ Checked In'
-                          : v.status === 'ON_BREAK' ? '☕ On Break'
-                          : v.status === 'CHECKED_OUT' ? '🔴 Checked Out'
-                          : '🟡 ' + v.status}
+                        {v.status === 'CHECKED_IN' ? 'Checked In'
+                          : v.status === 'ON_BREAK' ? 'On Break'
+                          : v.status === 'CHECKED_OUT' ? 'Checked Out'
+                          : v.status}
                       </span>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr className="hover:bg-slate-800/40 transition-colors">
-                  <td colSpan={4} className="py-8 px-5 text-center text-slate-400 font-medium">
+                <tr className="transition-colors">
+                  <td colSpan={4} className="py-8 px-5 text-center text-slate-500 font-medium">
                     No recent visitor registrations found
                   </td>
                 </tr>

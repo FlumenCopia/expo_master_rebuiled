@@ -126,6 +126,11 @@ export class ExhibitorController {
       const [exhibitors, totalCount, pendingCount, approvedCount, rejectedCount] = await Promise.all([
         prisma.exhibitor.findMany({
           where,
+          include: {
+            _count: {
+              select: { employees: true },
+            },
+          },
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,

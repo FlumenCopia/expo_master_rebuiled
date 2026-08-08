@@ -105,6 +105,8 @@ model Exhibitor {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
+  employees       CompanyEmployee[]
+
   @@index([companyName])
   @@index([email])
   @@index([status])
@@ -123,18 +125,21 @@ model Event {
 }
 
 model CompanyEmployee {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   fullName    String
   companyName String
-  email       String   @unique
+  email       String     @unique
   phone       String
   designation String?
   badgeCode   String?
-  status      String   @default("ACTIVE")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      String     @default("ACTIVE")
+  exhibitorId String?
+  exhibitor   Exhibitor? @relation(fields: [exhibitorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([companyName])
+  @@index([exhibitorId])
 }
 
 
