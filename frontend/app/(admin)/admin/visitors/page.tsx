@@ -7,6 +7,7 @@ import { fetchApi, API_BASE_URL } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
 import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
+import ConfirmModal from '@/components/ConfirmModal';
 
 export default function AdminVisitorsPage() {
   const { isDark } = useAdminTheme();
@@ -19,6 +20,10 @@ export default function AdminVisitorsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
+
+  // Confirm Modal State
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchVisitors = useCallback(async () => {
     setLoading(true);
@@ -48,14 +53,18 @@ export default function AdminVisitorsPage() {
     return () => clearTimeout(timer);
   }, [fetchVisitors]);
 
-  const handleDeleteVisitor = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete visitor "${name}"?`)) return;
+  const confirmDeleteVisitor = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await fetchApi(`/api/admin/visitors?id=${id}`, { method: 'DELETE' });
-      toastSuccess(`Visitor "${name}" deleted successfully`, 'Visitor Deleted');
+      await fetchApi(`/api/admin/visitors?id=${deleteTarget.id}`, { method: 'DELETE' });
+      toastSuccess(`Visitor "${deleteTarget.name}" deleted successfully`, 'Visitor Deleted');
+      setDeleteTarget(null);
       fetchVisitors();
     } catch (err: any) {
       toastError(err.message || 'Failed to delete visitor', 'Delete Error');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -270,7 +279,7 @@ export default function AdminVisitorsPage() {
                         )}
 
                         <button
-                          onClick={() => handleDeleteVisitor(v.id, v.fullName)}
+                          onClick={() => setDeleteTarget({ id: v.id, name: v.fullName })}
                           className={`p-2 rounded-xl border transition-colors cursor-pointer ${
                             isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20' : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'
                           }`}
@@ -290,14 +299,24 @@ export default function AdminVisitorsPage() {
         {/* PAGINATION */}
         <div className={`p-4 border-t ${isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
           <Pagination
-            page={page}
+            currentPage={page}
             totalPages={pagination.totalPages}
-            total={pagination.total}
-            limit={limit}
             onPageChange={(p) => setPage(p)}
           />
         </div>
       </div>
+
+      {/* CONFIRMATION MODAL FOR DANGEROUS DELETION */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Visitor Record?"
+        message={`Are you sure you want to permanently delete visitor "${deleteTarget?.name}"? This action cannot be undone and will remove their gate pass.`}
+        confirmText="Yes, Permanently Delete"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDeleteVisitor}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

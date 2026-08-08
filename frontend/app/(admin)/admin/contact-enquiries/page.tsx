@@ -24,6 +24,8 @@ import { useAdminTheme } from '@/context/AdminThemeContext';
 import { useToast } from '@/context/ToastContext';
 import { fetchApi } from '@/lib/api-client';
 
+import ConfirmModal from '@/components/ConfirmModal';
+
 interface ContactEnquiry {
   id: string;
   name: string;
@@ -53,6 +55,10 @@ export default function ContactEnquiriesAdminPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editNotes, setEditNotes] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  // Confirm Modal State
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadEnquiries = async () => {
     setLoading(true);
@@ -108,17 +114,21 @@ export default function ContactEnquiriesAdminPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this contact enquiry record?')) return;
+  const confirmDeleteEnquiry = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const res = await fetchApi<any>(`/api/admin/contact-enquiries/${id}`, { method: 'DELETE' });
+      const res = await fetchApi<any>(`/api/admin/contact-enquiries/${deleteTarget.id}`, { method: 'DELETE' });
       if (res.success) {
         toastSuccess('Contact enquiry record deleted');
-        if (selectedEnquiry?.id === id) setModalOpen(false);
+        if (selectedEnquiry?.id === deleteTarget.id) setModalOpen(false);
+        setDeleteTarget(null);
         loadEnquiries();
       }
     } catch (err: any) {
       toastError(err.message || 'Failed to delete record');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -313,7 +323,7 @@ export default function ContactEnquiriesAdminPage() {
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(e.id)}
+                          onClick={() => setDeleteTarget({ id: e.id, name: e.name })}
                           className="p-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-colors"
                           title="Delete Enquiry"
                         >
@@ -450,6 +460,18 @@ export default function ContactEnquiriesAdminPage() {
           </div>
         </div>
       )}
+
+      {/* CONFIRMATION MODAL FOR DELETING CONTACT ENQUIRY */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Contact Enquiry?"
+        message={`Are you sure you want to delete the enquiry message from "${deleteTarget?.name}"?`}
+        confirmText="Yes, Delete Message"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDeleteEnquiry}
+        onClose={() => setDeleteTarget(null)}
+      />
 
     </div>
   );
