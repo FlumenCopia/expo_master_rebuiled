@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
-  Building2, Search, CheckCircle2, XCircle, Clock, Edit3, ChevronLeft, ChevronRight, Users,
+  Building2, Search, CheckCircle2, XCircle, Clock, Edit3, Users,
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import Pagination from '@/components/Pagination';
 
 export default function AdminExhibitorsPage() {
   const { isDark } = useAdminTheme();
@@ -177,7 +178,7 @@ export default function AdminExhibitorsPage() {
       </div>
 
       {/* EXHIBITORS DATA TABLE */}
-      <div className={`border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
+      <div className={`admin-table-container custom-scrollbar border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
             <thead className={`text-[11px] uppercase tracking-wider font-extrabold border-b ${
@@ -320,38 +321,14 @@ export default function AdminExhibitorsPage() {
         </div>
 
         {/* PAGINATION FOOTER */}
-        <div className={`p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs ${
-          isDark ? 'bg-[#090D16] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
-        }`}>
-          <div>
-            Showing <strong className={isDark ? 'text-white' : 'text-slate-900'}>{rangeStart} - {rangeEnd}</strong> of{' '}
-            <strong className="text-[#01A64E]">{pagination.total.toLocaleString()}</strong> exhibitors
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              disabled={page <= 1 || loading}
-              onClick={() => setPage(page - 1)}
-              className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                isDark ? 'bg-[#131B2A] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span>
-              Page <strong className={isDark ? 'text-white' : 'text-slate-900'}>{page}</strong> of{' '}
-              <strong className={isDark ? 'text-white' : 'text-slate-900'}>{pagination.totalPages}</strong>
-            </span>
-            <button
-              disabled={page >= pagination.totalPages || loading}
-              onClick={() => setPage(page + 1)}
-              className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                isDark ? 'bg-[#131B2A] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+        <div className={`p-4 border-t ${isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+          <Pagination
+            page={page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={limit}
+            onPageChange={(p) => setPage(p)}
+          />
         </div>
       </div>
     </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Clock, Calendar, MapPin, Users, Plus, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Calendar, MapPin, Users, Plus, Trash2, Search } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import Pagination from '@/components/Pagination';
 
 export default function AdminSubEventsPage() {
   const { isDark } = useAdminTheme();
@@ -327,35 +328,13 @@ export default function AdminSubEventsPage() {
       <div className={`p-4 border rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs ${
         isDark ? 'bg-[#131B2A] border-slate-800 text-slate-400 shadow-xl' : 'bg-white border-slate-200 text-slate-500 shadow-xs'
       }`}>
-        <div>
-          Showing <strong className={isDark ? 'text-white' : 'text-slate-900'}>{rangeStart} - {rangeEnd}</strong> of{' '}
-          <strong className="text-[#01A64E]">{pagination.total}</strong> sub-events
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            disabled={page <= 1 || loading}
-            onClick={() => setPage(page - 1)}
-            className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-              isDark ? 'bg-[#090D16] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span>
-            Page <strong className={isDark ? 'text-white' : 'text-slate-900'}>{page}</strong> of{' '}
-            <strong className={isDark ? 'text-white' : 'text-slate-900'}>{pagination.totalPages}</strong>
-          </span>
-          <button
-            disabled={page >= pagination.totalPages || loading}
-            onClick={() => setPage(page + 1)}
-            className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-              isDark ? 'bg-[#090D16] border-slate-700 text-[#01A64E] hover:bg-slate-800' : 'bg-white border-slate-200 text-[#01A64E] hover:bg-slate-100'
-            }`}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+        <Pagination
+          page={page}
+          totalPages={pagination.totalPages}
+          total={pagination.total}
+          limit={limit}
+          onPageChange={(p) => setPage(p)}
+        />
       </div>
     </div>
   );

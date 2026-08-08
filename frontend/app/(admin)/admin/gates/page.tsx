@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { DoorOpen, Plus, Trash2, ShieldCheck, CheckCircle2, AlertCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { DoorOpen, Plus, Trash2, ShieldCheck, CheckCircle2, AlertCircle, Search } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import Pagination from '@/components/Pagination';
 
 interface GateItem {
   id: string;
@@ -101,7 +102,7 @@ export default function AdminGatesPage() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className={`flex items-center justify-between border p-6 rounded-3xl transition-colors ${
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border p-4 sm:p-6 rounded-3xl transition-colors ${
         isDark ? 'bg-[#131B2A] border-slate-800 text-white shadow-xl' : 'bg-white border-slate-200 text-slate-900 shadow-sm'
       }`}>
         <div className="flex items-center gap-3">
@@ -120,7 +121,7 @@ export default function AdminGatesPage() {
       </div>
 
       {/* STATS OVERVIEW CHIPS */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className={`border rounded-2xl p-4 text-center ${isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200 shadow-xs'}`}>
           <div className="text-2xl font-black text-[#01A64E]">{stats.total.toLocaleString()}</div>
           <div className={`text-[11px] font-bold uppercase tracking-wider mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Total Gates</div>
@@ -263,35 +264,13 @@ export default function AdminGatesPage() {
           <div className={`mt-6 pt-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs ${
             isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
           }`}>
-            <div>
-              Showing <strong className={isDark ? 'text-white' : 'text-slate-900'}>{rangeStart} - {rangeEnd}</strong> of{' '}
-              <strong className="text-[#01A64E]">{pagination.total}</strong> gates
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                disabled={page <= 1 || loading}
-                onClick={() => setPage(page - 1)}
-                className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                  isDark ? 'bg-[#090D16] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span>
-                Page <strong className={isDark ? 'text-white' : 'text-slate-900'}>{page}</strong> of{' '}
-                <strong className={isDark ? 'text-white' : 'text-slate-900'}>{pagination.totalPages}</strong>
-              </span>
-              <button
-                disabled={page >= pagination.totalPages || loading}
-                onClick={() => setPage(page + 1)}
-                className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                  isDark ? 'bg-[#090D16] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={pagination.totalPages}
+              total={pagination.total}
+              limit={limit}
+              onPageChange={(p) => setPage(p)}
+            />
           </div>
         </div>
       </div>

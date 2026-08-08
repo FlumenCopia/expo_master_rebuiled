@@ -13,6 +13,7 @@ import reminderRoutes from './reminder.routes';
 import campaignRoutes from './campaign.routes';
 import companyEmployeeRoutes from './company-employee.routes';
 import masterRoutes from './master.routes';
+import devRoutes from './dev.routes';
 
 const apiRouter = Router();
 
@@ -36,5 +37,6 @@ apiRouter.use('/', companyEmployeeRoutes);
 apiRouter.use('/', masterRoutes);
 apiRouter.use('/reminders', reminderRoutes);
 apiRouter.use('/campaigns', campaignRoutes);
+apiRouter.use('/dev', devRoutes);
 
 export default apiRouter;

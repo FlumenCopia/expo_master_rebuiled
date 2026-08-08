@@ -9,20 +9,49 @@ export class CampaignController {
    */
   static async getCampaigns(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const campaigns = await prisma.emailCampaign.findMany({
-        orderBy: { createdAt: 'desc' },
-      });
+      const search = (req.query.search as string) || '';
+      const status = (req.query.status as string) || '';
+      const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
+      const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
+      const skip = (page - 1) * limit;
 
-      const totalSent = campaigns.reduce((acc, c) => acc + c.sentCount, 0);
-      const scheduledCount = campaigns.filter((c) => c.status === 'SCHEDULED').length;
+      const where: any = {};
+      if (status && status !== 'ALL') where.status = status;
+      if (search.trim() !== '') {
+        const q = search.trim();
+        where.OR = [
+          { title: { contains: q, mode: 'insensitive' } },
+          { subject: { contains: q, mode: 'insensitive' } },
+        ];
+      }
+
+      const [campaigns, totalCount] = await Promise.all([
+        prisma.emailCampaign.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.emailCampaign.count({ where }),
+      ]);
+
+      const allCampaigns = await prisma.emailCampaign.findMany({ select: { sentCount: true, status: true } });
+      const totalSent = allCampaigns.reduce((acc, c) => acc + c.sentCount, 0);
+      const scheduledCount = allCampaigns.filter((c) => c.status === 'SCHEDULED').length;
 
       res.json({
         success: true,
         campaigns,
         stats: {
-          totalCampaigns: campaigns.length,
+          totalCampaigns: totalCount,
           totalEmailsSent: totalSent,
           activeScheduled: scheduledCount,
+        },
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(totalCount / limit)),
         },
       });
     } catch (error) {

@@ -21,6 +21,7 @@ import {
   Mail,
   Sun,
   Moon,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAdminTheme } from '@/context/AdminThemeContext';
@@ -34,6 +35,35 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
   // If on login page, render content directly without admin sidebar
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  // Gate Officer: fullscreen scanner layout — no sidebar or topbar
+  if (user?.role === 'GATE_OFFICER') {
+    return (
+      <div className={`min-h-screen flex flex-col font-sans ${isDark ? 'bg-[#090D16] text-slate-100' : 'bg-[#F8FAFC] text-slate-800'}`}>
+        {/* Minimal header strip for gate staff */}
+        <div className={`sticky top-0 z-50 h-12 px-4 flex items-center justify-between border-b ${isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200'}`}>
+          <div className="flex items-center gap-2">
+            <img src={isDark ? '/assets/logo/logo3.png' : '/assets/logo/logoblc.png'} alt="Masters EXPO26" className="h-7 object-contain" />
+            <span className={`text-[11px] font-black uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Gate Officer</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`text-xs font-bold truncate max-w-[120px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{user?.name || user?.email}</span>
+            <button
+              onClick={logout}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black border cursor-pointer transition-all ${isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20' : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'}`}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
+            </button>
+          </div>
+        </div>
+        {/* Full page content */}
+        <div className="flex-1">
+          {children}
+        </div>
+      </div>
+    );
   }
 
   // Expanded state for dropdown menus
@@ -60,13 +90,13 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="md:hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 transition-opacity"
+          className="md:hidden fixed top-14 inset-x-0 bottom-0 bg-slate-900/60 backdrop-blur-sm z-40 transition-opacity"
         />
       )}
 
       {/* MOBILE TOP BAR */}
       <div
-        className={`md:hidden sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-xs border-b ${
+        className={`md:hidden sticky top-0 z-40 h-14 px-4 flex items-center justify-between shadow-xs border-b ${
           isDark ? 'bg-[#131B2A] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
         }`}
       >
@@ -103,14 +133,14 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
 
       {/* LEFT SIDEBAR NAVIGATION */}
       <aside
-        className={`fixed md:sticky top-0 z-50 h-screen w-64 max-w-[85vw] border-r shadow-sm flex flex-col transition-all duration-300 ${
+        className={`fixed md:sticky top-14 md:top-0 z-50 h-[calc(100vh-56px)] md:h-screen w-64 max-w-[85vw] border-r shadow-sm flex flex-col transition-all duration-300 ${
           isDark
             ? 'bg-[#131B2A] border-slate-800 text-slate-100'
             : 'bg-white border-slate-200 text-slate-800'
         } ${mobileOpen ? 'left-0' : '-left-full md:left-0'}`}
       >
-        {/* LOGO HEADER */}
-        <div className={`p-5 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+        {/* LOGO HEADER — visible on desktop only (mobile topbar handles this) */}
+        <div className={`hidden md:flex p-5 border-b items-center justify-between ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
           <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
             <img
               src={logoSrc}
@@ -121,6 +151,17 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
           <button
             onClick={() => setMobileOpen(false)}
             className={`md:hidden p-1.5 rounded-lg ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-900'}`}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* MOBILE SIDEBAR HEADING — only visible on mobile */}
+        <div className={`md:hidden flex items-center justify-between px-4 py-3 border-b ${isDark ? 'border-slate-800 text-slate-300' : 'border-slate-100 text-slate-700'}`}>
+          <span className="text-xs font-black uppercase tracking-widest">Menu</span>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className={`p-1.5 rounded-lg ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-900'}`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -401,6 +442,29 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
                   <Users className="w-4 h-4 text-cyan-500" />
                   <span>Staff &amp; Gatekeepers</span>
                 </Link>
+
+                {/* Load Capacity Tester (Dev Tool) */}
+                <Link
+                  href="/admin/load-tester"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    isActive('/admin/load-tester')
+                      ? isDark
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        : 'bg-amber-50 text-amber-600 border border-amber-200 shadow-xs'
+                      : isDark
+                      ? 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-4 h-4 text-amber-400" />
+                    <span>Load Capacity Tester</span>
+                  </div>
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    DEV
+                  </span>
+                </Link>
               </>
             )}
           </div>
@@ -444,7 +508,7 @@ export default function AdminSidebar({ children }: { children: React.ReactNode }
             {/* THEME TOGGLE BUTTON */}
             <button
               onClick={toggleTheme}
-              className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 text-xs font-extrabold transition-all cursor-pointer ${
+              className={`hidden md:flex px-3 py-1.5 rounded-xl border items-center gap-2 text-xs font-extrabold transition-all cursor-pointer ${
                 isDark
                   ? 'bg-[#1C2638] border-slate-700 text-amber-400 hover:bg-slate-800'
                   : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'

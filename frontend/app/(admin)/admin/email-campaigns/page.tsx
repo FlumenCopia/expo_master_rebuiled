@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL, getAuthHeaders } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import Pagination from '@/components/Pagination';
 import {
   Mail,
   Send,
@@ -82,28 +83,34 @@ export default function EmailCampaignsPage() {
 
   // Stats
   const [stats, setStats] = useState({ totalCampaigns: 0, totalEmailsSent: 0, activeScheduled: 0 });
+  const [page, setPage] = useState(1);
+  const [limit] = useState(25);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/campaigns`, {
+      const query = new URLSearchParams({ search, page: String(page), limit: String(limit) });
+      const res = await fetch(`${API_BASE_URL}/api/campaigns?${query.toString()}`, {
         headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
         setCampaigns(data.campaigns || []);
         if (data.stats) setStats(data.stats);
+        if (data.pagination) setPagination(data.pagination);
       }
     } catch (err) {
       console.error('Failed to load campaigns:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, page, limit]);
 
   useEffect(() => {
-    fetchCampaigns();
-  }, []);
+    const t = setTimeout(() => fetchCampaigns(), 300);
+    return () => clearTimeout(t);
+  }, [fetchCampaigns]);
 
   const handleSelectPreset = (presetType: string) => {
     const preset = TEMPLATE_PRESETS.find((p) => p.type === presetType);
@@ -230,7 +237,7 @@ export default function EmailCampaignsPage() {
             setMessage(null);
             setShowModal(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#01A64E] text-white font-extrabold text-sm hover:bg-[#79C143] transition-all shadow-sm shadow-[#01A64E]/20 cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#01A64E] text-white font-extrabold text-sm hover:bg-[#79C143] transition-all shadow-sm shadow-[#01A64E]/20 cursor-pointer shrink-0 self-start sm:self-auto whitespace-nowrap"
         >
           <Plus className="w-5 h-5" />
           <span>New Campaign / Trigger</span>
@@ -313,7 +320,7 @@ export default function EmailCampaignsPage() {
       </div>
 
       {/* CAMPAIGNS AUDIT TABLE */}
-      <div className={`border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
+      <div className={`admin-table-container custom-scrollbar border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className={`border-b font-bold uppercase tracking-wider ${
@@ -425,6 +432,17 @@ export default function EmailCampaignsPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className={`p-4 border-t ${isDark ? 'bg-[#090D16] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+          <Pagination
+            page={page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={limit}
+            onPageChange={(p) => setPage(p)}
+          />
         </div>
       </div>
 

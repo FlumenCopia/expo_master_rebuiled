@@ -55,12 +55,12 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
   const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Masters EXPO26')}&details=${encodeURIComponent('Official Entry Pass: ' + visitor.badgeCode)}&location=${encodeURIComponent('Main Exhibition Centre, Kochi, Kerala')}&dates=20260915T090000Z/20260917T180000Z`;
 
   return (
-    <div className="min-h-screen bg-[#080d16] text-slate-100 flex flex-col items-center justify-start sm:justify-center py-8 px-4 selection:bg-[#01A64E] selection:text-white">
+    <div className="min-h-screen bg-[#090D16] text-slate-100 flex flex-col items-center justify-start sm:justify-center py-8 px-4 selection:bg-[#01A64E] selection:text-white font-sans">
       {/* Non-printable Top Navigation Bar */}
       <div className="no-print mb-6 flex items-center justify-center gap-3 flex-wrap z-10 shrink-0">
         <Link
           href="/"
-          className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white text-sm font-semibold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md"
+          className="px-4 py-2.5 rounded-xl bg-[#131B2A] border border-slate-800 text-slate-200 hover:text-white text-sm font-semibold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md"
         >
           <ArrowLeft className="w-4 h-4 text-slate-400" />
           <span>Home</span>
@@ -78,7 +78,7 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
       </div>
 
       {/* Printable Visitor ID Badge Card */}
-      <div className="badge-card w-full max-w-md bg-[#0f172a] border-2 border-[#01A64E]/50 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden text-center flex flex-col items-center my-auto">
+      <div className="badge-card w-full max-w-md bg-[#131B2A] border-2 border-[#01A64E]/50 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden text-center flex flex-col items-center my-auto">
         {/* Top Decorative Gradient Accent */}
         <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-[#01A64E] via-[#79C143] to-[#01A64E]" />
 
@@ -99,15 +99,15 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
         </div>
 
         {/* Visitor Details Section */}
-        <div className="w-full text-left bg-[#080d16]/90 p-4 rounded-2xl border border-slate-800/80 mb-4 text-xs sm:text-sm space-y-2.5">
-          <div className="flex items-start justify-between border-b border-slate-800/80 pb-2">
+        <div className="w-full text-left bg-[#090D16] p-4 rounded-2xl border border-slate-800 mb-4 text-xs sm:text-sm space-y-2.5">
+          <div className="flex items-start justify-between border-b border-slate-800 pb-2">
             <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
               <User className="w-3.5 h-3.5 text-[#79C143] shrink-0" /> Name:
             </span>
             <span className="font-black text-white text-right leading-snug text-sm sm:text-base">{visitor.fullName}</span>
           </div>
 
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
               <Zap className="w-3.5 h-3.5 text-[#79C143] shrink-0" /> Profile:
             </span>
@@ -115,7 +115,7 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
           </div>
 
           {visitor.designation && (
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Designation:
               </span>
@@ -124,7 +124,7 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
           )}
 
           {visitor.company && (
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Company:
               </span>
@@ -133,7 +133,7 @@ export default async function BadgePage({ params }: { params: Promise<{ code: st
           )}
 
           {(visitor.city || (visitor as any).district || visitor.state) && (
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <span className="text-slate-300 text-xs font-extrabold flex items-center gap-1.5 min-w-[95px]">
                 <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Location:
               </span>

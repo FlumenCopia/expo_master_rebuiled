@@ -109,6 +109,30 @@ export class SubEventController {
     }
   }
 
+  // Admin Update Sub-Event
+  static async updateSubEvent(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { title, description, speaker, location, date, timeSlot, capacity } = req.body;
+
+      const subEvent = await prisma.subEvent.update({
+        where: { id },
+        data: {
+          ...(title && { title }),
+          ...(description !== undefined && { description }),
+          ...(speaker !== undefined && { speaker }),
+          ...(location !== undefined && { location }),
+          ...(date !== undefined && { date }),
+          ...(timeSlot !== undefined && { timeSlot }),
+          ...(capacity && { capacity: parseInt(capacity, 10) }),
+        },
+      });
+      res.json({ success: true, message: 'Sub-event updated', subEvent });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // Admin Delete Sub-Event
   static async deleteSubEvent(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {

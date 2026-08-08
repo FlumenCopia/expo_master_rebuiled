@@ -110,6 +110,36 @@ export class UserController {
     }
   }
 
+  static async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { name, role, password } = req.body;
+
+      const existing = await prisma.user.findUnique({ where: { id } });
+      if (!existing) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      const validRoles = ['SUPER_ADMIN', 'EVENT_MANAGER', 'GATE_OFFICER'];
+      const updateData: any = {};
+
+      if (name) updateData.name = name;
+      if (role && validRoles.includes(role)) updateData.role = role;
+      if (password) updateData.password = await bcrypt.hash(password, 12);
+
+      const user = await prisma.user.update({
+        where: { id },
+        data: updateData,
+        select: { id: true, name: true, email: true, role: true, updatedAt: true },
+      });
+
+      res.json({ success: true, message: 'User updated successfully', user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;

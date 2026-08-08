@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Users, UserPlus, Trash2, Shield, ShieldCheck, CheckCircle2, AlertCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, UserPlus, Trash2, Shield, ShieldCheck, CheckCircle2, AlertCircle, Search } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import Pagination from '@/components/Pagination';
 
 interface UserItem {
   id: string;
@@ -356,31 +357,13 @@ export default function AdminUsersPage() {
               Showing <strong className={isDark ? 'text-white' : 'text-slate-900'}>{rangeStart} - {rangeEnd}</strong> of{' '}
               <strong className="text-[#01A64E]">{pagination.total}</strong> accounts
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                disabled={page <= 1 || loading}
-                onClick={() => setPage(page - 1)}
-                className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                  isDark ? 'bg-[#090D16] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span>
-                Page <strong className={isDark ? 'text-white' : 'text-slate-900'}>{page}</strong> of{' '}
-                <strong className={isDark ? 'text-white' : 'text-slate-900'}>{pagination.totalPages}</strong>
-              </span>
-              <button
-                disabled={page >= pagination.totalPages || loading}
-                onClick={() => setPage(page + 1)}
-                className={`p-1.5 rounded-xl border disabled:opacity-30 cursor-pointer ${
-                  isDark ? 'bg-[#090D16] border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={pagination.totalPages}
+              total={pagination.total}
+              limit={limit}
+              onPageChange={(p) => setPage(p)}
+            />
           </div>
         </div>
       </div>

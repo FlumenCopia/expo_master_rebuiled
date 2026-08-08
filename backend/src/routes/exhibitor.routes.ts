@@ -5,10 +5,10 @@ import { registrationLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 
-// Public route
+// Public route — no auth
 router.post('/register/exhibitor', registrationLimiter, ExhibitorController.register);
 
-// Admin routes
+// List exhibitors with pagination — Admin + Event Manager
 router.get(
   '/admin/exhibitors',
   authenticateJWT,
@@ -16,11 +16,20 @@ router.get(
   ExhibitorController.getAdminExhibitors
 );
 
+// Update exhibitor status/stall — Admin + Event Manager (both need to approve/assign)
 router.patch(
   '/admin/exhibitors/:id',
   authenticateJWT,
-  requireRoles('SUPER_ADMIN'),
+  requireRoles('SUPER_ADMIN', 'EVENT_MANAGER'),
   ExhibitorController.updateExhibitorStatus
+);
+
+// Delete exhibitor — Super Admin only
+router.delete(
+  '/admin/exhibitors/:id',
+  authenticateJWT,
+  requireRoles('SUPER_ADMIN'),
+  ExhibitorController.deleteExhibitor
 );
 
 export default router;

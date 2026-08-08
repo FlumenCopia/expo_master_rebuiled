@@ -28,7 +28,7 @@ export default function AdminCheckinPage() {
   const [selectedCameraId, setSelectedCameraId] = useState<string>('');
   const [history, setHistory] = useState<ScanHistoryItem[]>([]);
 
-  const [mode, setMode] = useState<'IN' | 'BREAK' | 'OUT'>('IN');
+  const [mode, setMode] = useState<'IN' | 'OUT'>('IN');
   const [selectedGate, setSelectedGate] = useState<string>('');
   const [gateOptions, setGateOptions] = useState<string[]>([]);
 
@@ -44,13 +44,13 @@ export default function AdminCheckinPage() {
   const [quickRegSubmitting, setQuickRegSubmitting] = useState(false);
   const [quickRegError, setQuickRegError] = useState('');
 
-  const modeRef = useRef<'IN' | 'BREAK' | 'OUT'>('IN');
+  const modeRef = useRef<'IN' | 'OUT'>('IN');
   const selectedGateRef = useRef<string>('');
   const html5QrCodeRef = useRef<any>(null);
   const lastScannedCodeRef = useRef<{ code: string; time: number }>({ code: '', time: 0 });
   const loadingRef = useRef(false);
 
-  const changeMode = (newMode: 'IN' | 'BREAK' | 'OUT') => {
+  const changeMode = (newMode: 'IN' | 'OUT') => {
     modeRef.current = newMode;
     setMode(newMode);
     setScanResult(null);
@@ -276,15 +276,15 @@ export default function AdminCheckinPage() {
           <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center font-bold transition-all ${
             mode === 'IN'
               ? isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-[#01A64E]'
-              : isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
+              : isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-600'
           }`}>
             <QrCode className="w-6 h-6" />
           </div>
           <div>
             <h1 className={`font-extrabold text-lg sm:text-xl flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Gate Scanner —{' '}
-              <span className={mode === 'IN' ? 'text-[#01A64E]' : mode === 'BREAK' ? 'text-amber-500' : 'text-rose-500'}>
-                {mode === 'IN' ? 'CHECK-IN (ENTRY)' : mode === 'BREAK' ? 'PASS-OUT (BREAK)' : 'FINAL EXIT'}
+              <span className={mode === 'IN' ? 'text-[#01A64E]' : 'text-rose-500'}>
+                {mode === 'IN' ? 'CHECK-IN (ENTRY)' : 'FINAL EXIT'}
               </span>
             </h1>
             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Scan QR codes on attendee badges for instant entry/exit validation</p>
@@ -330,16 +330,15 @@ export default function AdminCheckinPage() {
         isDark ? 'bg-[#131B2A] border-slate-800' : 'bg-white border-slate-200'
       }`}>
         {([
-          { key: 'IN',    label: '🟢 ENTRY MODE',       icon: Zap,        active: 'bg-[#01A64E] text-white shadow-xs',       idle: isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' },
-          { key: 'BREAK', label: '☕ PASS-OUT (BREAK)',  icon: Clock,      active: 'bg-amber-500 text-white shadow-xs',    idle: isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' },
-          { key: 'OUT',   label: '🔴 FINAL EXIT',        icon: ArrowRight, active: 'bg-rose-600 text-white shadow-xs',          idle: isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' },
+          { key: 'IN',  label: '🟢 ENTRY MODE', icon: Zap,        active: 'bg-[#01A64E] text-white shadow-xs', idle: isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' },
+          { key: 'OUT', label: '🔴 EXIT MODE',  icon: ArrowRight, active: 'bg-rose-600 text-white shadow-xs', idle: isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' },
         ] as const).map(({ key, label, icon: Icon, active, idle }) => (
           <button
             key={key}
             onClick={() => changeMode(key)}
-            className={`flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all min-w-[120px] cursor-pointer ${mode === key ? `${active} scale-[1.01]` : idle}`}
+            className={`flex-1 py-3 px-4 rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 transition-all cursor-pointer ${mode === key ? `${active} scale-[1.01]` : idle}`}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className="w-5 h-5" />
             <span>{label}</span>
           </button>
         ))}
@@ -348,20 +347,14 @@ export default function AdminCheckinPage() {
       {/* Scan Result Alert Banner */}
       {scanResult && (
         <div className={`p-6 rounded-3xl border text-center shadow-lg animate-in fade-in duration-200 ${
-          scanResult.code === 'VERIFIED'
+          scanResult.code === 'VERIFIED' || scanResult.code === 'CHECKED_OUT'
             ? isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-900'
-            : scanResult.code === 'ON_BREAK'
-            ? isDark ? 'bg-amber-500/20 border-amber-500/40 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900'
             : isDark ? 'bg-rose-500/20 border-rose-500/40 text-rose-200' : 'bg-rose-50 border-rose-200 text-rose-900'
         }`}>
           <div className="flex items-center justify-center mb-3">
-            {scanResult.code === 'VERIFIED' ? (
+            {scanResult.code === 'VERIFIED' || scanResult.code === 'CHECKED_OUT' ? (
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center">
                 <CheckCircle2 className="w-10 h-10 text-emerald-400" />
-              </div>
-            ) : scanResult.code === 'ON_BREAK' ? (
-              <div className="w-16 h-16 rounded-full bg-amber-500/20 border-2 border-amber-500 flex items-center justify-center">
-                <Clock className="w-10 h-10 text-amber-400" />
               </div>
             ) : (
               <div className="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center">
@@ -418,7 +411,7 @@ export default function AdminCheckinPage() {
 
           {cameraActive ? (
             <div className={`relative w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-inner ${
-              mode === 'IN' ? 'border-[#01A64E]/40' : mode === 'BREAK' ? 'border-amber-500/40' : 'border-rose-500/40'
+              mode === 'IN' ? 'border-[#01A64E]/40' : 'border-rose-500/40'
             }`}>
               <style>{`
                 #qr-camera-viewport video { width:100%!important; height:100%!important; object-fit:cover!important; display:block!important; }

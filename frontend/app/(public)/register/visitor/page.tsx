@@ -132,16 +132,35 @@ export default function VisitorRegisterPage() {
     }
   };
 
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
+  const [formError, setFormError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setFormError('');
 
+    // Client-side input validation
+    const cleanPhoneDigits = phone.replace(/\D/g, '');
+    if (countryCode === '91' && cleanPhoneDigits.length < 10) {
+      setFormError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    if (cleanPhoneDigits.length < 7) {
+      setFormError('Please enter a valid phone number (minimum 7 digits).');
+      return;
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setFormError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
     setVisitorName(name);
     setVisitorEmail(email);
 
     const payload = {
       fullName: name,
-      email,
+      email: email ? email.trim().toLowerCase() : '',
       phone: `+${countryCode} ${phone}`,
       company: companyName,
       designation,
@@ -167,6 +186,11 @@ export default function VisitorRegisterPage() {
       const data = await res.json();
       const code = data.badgeCode || String(Date.now()).slice(-4);
       setBadgeUrl(`/badge/${code}`);
+      setIsAlreadyRegistered(!!data.alreadyRegistered);
+      if (data.visitor) {
+        if (data.visitor.fullName) setVisitorName(data.visitor.fullName);
+        if (data.visitor.email) setVisitorEmail(data.visitor.email);
+      }
       setShowModal(true);
 
       // Track conversion
@@ -197,6 +221,11 @@ export default function VisitorRegisterPage() {
                 <div className="col-md-6 col-lg-4">
                   <div className="vist-form-contain">
                     <h2><span>Register</span> Now</h2>
+                    {formError && (
+                      <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '10px', padding: '10px 14px', color: '#fca5a5', fontSize: '13px', marginBottom: '14px' }}>
+                        ⚠️ {formError}
+                      </div>
+                    )}
                     <form id="visitorRegisterForm" onSubmit={handleSubmit}>
                       <input type="hidden" name="country" id="country" value={country} />
 
@@ -491,13 +520,21 @@ export default function VisitorRegisterPage() {
           </div>
         </section>
 
-        {/* SUCCESS OVERLAY MODAL (Matching Image 2 Sleek Dark Theme + Calendar Actions) */}
+        {/* SUCCESS OVERLAY MODAL */}
         {showModal && (
           <div id="vis-success-modal" className="show" role="dialog" aria-modal="true" style={{ display: 'flex', position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '20px' }}>
-            <div className="success-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(3,150,35,0.15)', border: '2px solid #7fee00', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', color: '#95c841', marginBottom: '20px' }}>✓</div>
-            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontSize: '28px', fontWeight: 800, marginBottom: '10px', color: '#fff', textAlign: 'center' }}>Visitor Registration Successful! 🎉</h2>
+            <div className="success-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', background: isAlreadyRegistered ? 'rgba(59,130,246,0.15)' : 'rgba(3,150,35,0.15)', border: `2px solid ${isAlreadyRegistered ? '#60a5fa' : '#7fee00'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', color: isAlreadyRegistered ? '#60a5fa' : '#95c841', marginBottom: '20px' }}>
+              {isAlreadyRegistered ? 'ℹ️' : '✓'}
+            </div>
+            <h2 style={{ fontFamily: "'Manrope',sans-serif", fontSize: '26px', fontWeight: 800, marginBottom: '10px', color: '#fff', textAlign: 'center' }}>
+              {isAlreadyRegistered ? 'Already Registered! 🏷️' : 'Visitor Registration Successful! 🎉'}
+            </h2>
             <p style={{ fontSize: '14.5px', color: '#a0aec0', maxWidth: '440px', lineHeight: 1.6, marginBottom: '16px', textAlign: 'center' }}>
-              Thank you, <strong style={{ color: '#fff' }}>{visitorName}</strong>! Your spot at <strong>Masters Kerala RE 2.0 EXPO26</strong> is secured.
+              {isAlreadyRegistered ? (
+                <>Welcome back, <strong style={{ color: '#fff' }}>{visitorName}</strong>! An existing registration was found for your phone/email. Here is your digital badge pass.</>
+              ) : (
+                <>Thank you, <strong style={{ color: '#fff' }}>{visitorName}</strong>! Your spot at <strong>Masters Kerala RE 2.0 EXPO26</strong> is secured.</>
+              )}
             </p>
 
             {visitorEmail && (

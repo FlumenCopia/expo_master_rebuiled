@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
-import { CheckInVerificationSchema } from '../middleware/security';
+import { CheckInVerificationSchema, sanitizeCsvCell } from '../middleware/security';
 
 export class CheckInController {
   static async verifyCheckIn(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
@@ -43,8 +43,8 @@ export class CheckInController {
         return;
       }
 
-      // --- BREAK / PASS-OUT MODE ---
-      if (mode === 'BREAK' || mode === 'OUT' || mode === 'EXIT') {
+      // --- EXIT MODE ---
+      if (mode === 'OUT' || mode === 'EXIT') {
         if (visitor.status !== 'CHECKED_IN') {
           // Log denied exit attempt
           await prisma.gateLog.create({
@@ -91,54 +91,9 @@ export class CheckInController {
         return;
       }
 
-      // --- RE-ENTRY MODE ---
-      if (mode === 'RE_ENTRY') {
-        if (visitor.status === 'CHECKED_IN') {
-          await prisma.gateLog.create({
-            data: {
-              visitorId: visitor.id,
-              scannedById: req.user?.id,
-              gateName: gateName || 'Main Entrance',
-              scanType: 'ENTRY',
-              status: 'DUPLICATE_ENTRY',
-              notes: 'Visitor is already inside',
-            },
-          });
-
-          res.json({
-            success: false,
-            code: 'ALREADY_CHECKED_IN',
-            message: `⚠️ ALREADY INSIDE! ${visitor.fullName} is already inside the venue.`,
-            visitor,
-          });
-          return;
-        }
-
-        const updatedVisitor = await prisma.visitor.update({
-          where: { id: visitor.id },
-          data: {
-            status: 'CHECKED_IN',
-            GateLogs: {
-              create: {
-                gateName: `${gateName || 'Main Entrance'} (RE-ENTRY)`,
-                scannedById: req.user?.id,
-                scanType: 'ENTRY',
-                status: 'SUCCESS',
-              },
-            },
-          },
-        });
-
-        res.json({
-          success: true,
-          code: 'VERIFIED',
-          message: `👋 WELCOME BACK! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Re-entry Approved!`,
-          visitor: updatedVisitor,
-        });
-        return;
-      }
-
       // --- ENTRY / CHECK-IN MODE (Default) ---
+      const isReEntry = visitor.status === 'CHECKED_OUT';
+
       if (visitor.status === 'CHECKED_IN') {
         await prisma.gateLog.create({
           data: {
@@ -147,14 +102,14 @@ export class CheckInController {
             gateName: gateName || 'Main Entrance',
             scanType: 'ENTRY',
             status: 'DUPLICATE_ENTRY',
-            notes: 'Visitor already inside venue',
+            notes: 'Visitor is already inside venue',
           },
         });
 
         res.json({
           success: false,
           code: 'ALREADY_CHECKED_IN',
-          message: `⚠️ ALREADY CHECKED IN! ${visitor.fullName} entered earlier.`,
+          message: `⚠️ ALREADY INSIDE! ${visitor.fullName} is already checked inside the venue.`,
           visitor,
         });
         return;
@@ -164,10 +119,10 @@ export class CheckInController {
         where: { id: visitor.id },
         data: {
           status: 'CHECKED_IN',
-          checkedInAt: new Date(),
+          checkedInAt: visitor.checkedInAt || new Date(),
           GateLogs: {
             create: {
-              gateName: `${gateName || 'Main Entrance'} (ENTRY)`,
+              gateName: `${gateName || 'Main Entrance'} (${isReEntry ? 'RE-ENTRY' : 'ENTRY'})`,
               scannedById: req.user?.id,
               scanType: 'ENTRY',
               status: 'SUCCESS',
@@ -179,9 +134,12 @@ export class CheckInController {
       res.json({
         success: true,
         code: 'VERIFIED',
-        message: `✅ WELCOME! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Entrance Pass Approved!`,
+        message: isReEntry
+          ? `👋 WELCOME BACK! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Re-entry Approved!`
+          : `✅ WELCOME! ${updatedVisitor.fullName} (${updatedVisitor.category}) - Entrance Pass Approved!`,
         visitor: updatedVisitor,
       });
+      return;
     } catch (error) {
       next(error);
     }
@@ -193,6 +151,7 @@ export class CheckInController {
       const search = (req.query.search as string) || '';
       const scanType = (req.query.scanType as string) || '';
       const status = (req.query.status as string) || '';
+      const exportFormat = req.query.export as string;
       const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
       const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
       const skip = (page - 1) * limit;
@@ -218,6 +177,40 @@ export class CheckInController {
           { scannedBy: { name: { contains: q, mode: 'insensitive' } } },
           { scannedBy: { email: { contains: q, mode: 'insensitive' } } },
         ];
+      }
+
+      if (exportFormat === 'csv') {
+        const allLogs = await prisma.gateLog.findMany({
+          where,
+          orderBy: { scannedAt: 'desc' },
+          take: 75000,
+          include: {
+            visitor: { select: { fullName: true, badgeCode: true, category: true, company: true } },
+            scannedBy: { select: { name: true, email: true } },
+          },
+        });
+
+        let csv = 'Timestamp,Gate Name,Scan Type,Status,Badge Code,Visitor Name,Category,Company,Scanned By,Notes\n';
+        allLogs.forEach((log: any) => {
+          const row = [
+            sanitizeCsvCell(new Date(log.scannedAt).toISOString()),
+            sanitizeCsvCell(log.gateName),
+            sanitizeCsvCell(log.scanType),
+            sanitizeCsvCell(log.status),
+            sanitizeCsvCell(log.visitor?.badgeCode || ''),
+            sanitizeCsvCell(log.visitor?.fullName || ''),
+            sanitizeCsvCell(log.visitor?.category || ''),
+            sanitizeCsvCell(log.visitor?.company || ''),
+            sanitizeCsvCell(log.scannedBy?.name || 'System Auto'),
+            sanitizeCsvCell(log.notes || ''),
+          ].join(',');
+          csv += row + '\n';
+        });
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="EXPO26_GateLogs_Export_${Date.now()}.csv"`);
+        res.status(200).send(csv);
+        return;
       }
 
       const [logs, total, totalEntry, totalExit, totalDenied] = await Promise.all([

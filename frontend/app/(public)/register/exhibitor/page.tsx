@@ -20,16 +20,38 @@ export default function ExhibitorRegisterPage() {
     );
   };
 
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
+  const [formError, setFormError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setFormError('');
 
     const formData = new FormData(e.currentTarget);
-    const firmName = String(formData.get('firm_name') || formData.get('name') || 'Exhibitor');
-    const contactPerson = String(formData.get('name') || '');
-    const email = String(formData.get('email') || '');
-    const phone = String(formData.get('mobile') || '');
+    const firmName = String(formData.get('firm_name') || formData.get('name') || '').trim();
+    const contactPerson = String(formData.get('name') || '').trim();
+    const email = String(formData.get('email') || '').trim().toLowerCase();
+    const phone = String(formData.get('mobile') || '').trim();
 
+    if (!firmName || firmName.length < 2) {
+      setFormError('Please enter your Company / Firm name (minimum 2 characters).');
+      return;
+    }
+    if (!contactPerson || contactPerson.length < 2) {
+      setFormError('Please enter Contact Person Name.');
+      return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setFormError('Please enter a valid Email Address.');
+      return;
+    }
+    const cleanPhoneDigits = phone.replace(/\D/g, '');
+    if (cleanPhoneDigits.length < 7) {
+      setFormError('Please enter a valid Phone Number (minimum 7 digits).');
+      return;
+    }
+
+    setLoading(true);
     setExhibitorName(contactPerson || firmName);
     setExhibitorEmail(email);
 
@@ -53,6 +75,7 @@ export default function ExhibitorRegisterPage() {
       const data = await res.json();
       const code = data.badgeCode || String(Date.now()).slice(-4);
       setBadgeUrl(`/badge/${code}`);
+      setIsAlreadyRegistered(!!data.alreadyRegistered);
       setShowModal(true);
     } catch {
       const code = String(Date.now()).slice(-4);
@@ -97,6 +120,11 @@ export default function ExhibitorRegisterPage() {
                 <div className="col-md-6 col-lg-4">
                   <div className="vist-form-contain">
                     <h2 className="text-slate-900 font-extrabold text-2xl mb-4"><span>Exhibitor</span> Registration</h2>
+                    {formError && (
+                      <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold p-3 rounded-lg mb-4">
+                        ⚠️ {formError}
+                      </div>
+                    )}
                     <form id="exhibitorForm" onSubmit={handleSubmit}>
                       {/* Name */}
                       <div className="vist-input option2 mb-3">

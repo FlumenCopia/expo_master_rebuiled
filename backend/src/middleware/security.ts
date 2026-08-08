@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export const VisitorRegistrationSchema = z.object({
-  fullName: z.string().min(2, 'Full Name must be at least 2 characters').max(100),
-  email: z.string().email('Please enter a valid email address').optional().or(z.literal('')),
-  phone: z.string().min(7, 'Phone number must be at least 7 digits').max(20),
+  fullName: z.string().trim().min(2, 'Full Name must be at least 2 characters').max(100, 'Full Name cannot exceed 100 characters'),
+  email: z.string().trim().email('Please enter a valid email address').optional().or(z.literal('')),
+  phone: z.string().trim().min(7, 'Phone number must be at least 7 digits').max(20, 'Phone number cannot exceed 20 characters'),
   company: z.string().optional(),
   designation: z.string().optional(),
   city: z.string().optional(),
@@ -21,10 +21,10 @@ export const VisitorRegistrationSchema = z.object({
 });
 
 export const ExhibitorRegistrationSchema = z.object({
-  companyName: z.string().min(2, 'Company Name is required'),
-  contactPerson: z.string().min(2, 'Contact person is required'),
-  email: z.string().email('Valid email required'),
-  phone: z.string().min(8, 'Valid phone number required'),
+  companyName: z.string().trim().min(2, 'Company Name is required (minimum 2 characters)'),
+  contactPerson: z.string().trim().min(2, 'Contact person name is required'),
+  email: z.string().trim().email('Valid email address is required'),
+  phone: z.string().trim().min(7, 'Valid phone number is required (minimum 7 digits)'),
   website: z.string().optional(),
   productCategory: z.string().optional(),
   stallSize: z.string().optional(),
@@ -39,7 +39,7 @@ export const AdminLoginSchema = z.object({
 export const CheckInVerificationSchema = z.object({
   badgeCode: z.string().min(3, 'Badge code is required').max(30),
   gateName: z.string().optional().default('Main Entrance'),
-  mode: z.enum(['IN', 'OUT', 'BREAK', 'RE_ENTRY', 'ENTRY', 'EXIT']).optional().default('IN'),
+  mode: z.enum(['IN', 'OUT', 'ENTRY', 'EXIT']).optional().default('IN'),
 });
 
 export const ExhibitorUpdateSchema = z.object({

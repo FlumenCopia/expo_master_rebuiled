@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
-import { ExhibitorRegistrationSchema, ExhibitorUpdateSchema, generateBadgeCode } from '../middleware/security';
+import { ExhibitorRegistrationSchema, ExhibitorUpdateSchema, generateBadgeCode, sanitizeCsvCell } from '../middleware/security';
 import { EmailService } from '../services/email.service';
 
 export class ExhibitorController {
@@ -15,11 +15,27 @@ export class ExhibitorController {
       }
 
       const data = validation.data;
-      const existing = await prisma.exhibitor.findUnique({ where: { email: data.email } });
+      const cleanEmail = data.email.trim().toLowerCase();
+      const cleanPhoneDigits = data.phone.replace(/\D/g, '');
+      const last10Digits = cleanPhoneDigits.length >= 10 ? cleanPhoneDigits.slice(-10) : cleanPhoneDigits;
+
+      const existing = await prisma.exhibitor.findFirst({
+        where: {
+          OR: [
+            { email: cleanEmail },
+            { phone: { contains: last10Digits } },
+          ],
+        },
+      });
 
       let badgeCode = '';
       const existingVisitor = await prisma.visitor.findFirst({
-        where: { OR: [{ email: data.email }, { phone: data.phone }] },
+        where: {
+          OR: [
+            { email: cleanEmail },
+            { phone: { contains: last10Digits } },
+          ],
+        },
       });
 
       if (existingVisitor) {
@@ -41,7 +57,7 @@ export class ExhibitorController {
           data: {
             badgeCode,
             fullName: data.contactPerson,
-            email: data.email,
+            email: cleanEmail,
             phone: data.phone,
             company: data.companyName,
             designation: 'Exhibitor Representative',
@@ -54,7 +70,8 @@ export class ExhibitorController {
       if (existing) {
         res.json({
           success: true,
-          message: 'Exhibitor already registered!',
+          alreadyRegistered: true,
+          message: 'Exhibitor registration already exists for this email or phone number!',
           badgeCode,
           exhibitor: existing,
         });
@@ -101,6 +118,7 @@ export class ExhibitorController {
     try {
       const search = (req.query.search as string) || '';
       const status = (req.query.status as string) || '';
+      const exportFormat = req.query.export as string;
       const page = Math.max(1, parseInt((req.query.page as string) || '1', 10));
       const limit = Math.min(100, Math.max(10, parseInt((req.query.limit as string) || '25', 10)));
       const skip = (page - 1) * limit;
@@ -121,6 +139,42 @@ export class ExhibitorController {
           { stallNumber: { contains: q, mode: 'insensitive' } },
           { productCategory: { contains: q, mode: 'insensitive' } },
         ];
+      }
+
+      if (exportFormat === 'csv') {
+        const allExhibitors = await prisma.exhibitor.findMany({
+          where,
+          include: {
+            _count: {
+              select: { employees: true },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 10000,
+        });
+
+        let csv = 'Company Name,Contact Person,Email,Phone,Website,Product Category,Stall Number,Stall Size,Status,Staff Passes Count,Registered At\n';
+        allExhibitors.forEach((ex: any) => {
+          const row = [
+            sanitizeCsvCell(ex.companyName),
+            sanitizeCsvCell(ex.contactPerson),
+            sanitizeCsvCell(ex.email),
+            sanitizeCsvCell(ex.phone),
+            sanitizeCsvCell(ex.website),
+            sanitizeCsvCell(ex.productCategory),
+            sanitizeCsvCell(ex.stallNumber),
+            sanitizeCsvCell(ex.stallSize),
+            sanitizeCsvCell(ex.status),
+            sanitizeCsvCell(String(ex._count?.employees || 0)),
+            sanitizeCsvCell(new Date(ex.createdAt).toISOString()),
+          ].join(',');
+          csv += row + '\n';
+        });
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="EXPO26_Exhibitors_Export_${Date.now()}.csv"`);
+        res.status(200).send(csv);
+        return;
       }
 
       const [exhibitors, totalCount, pendingCount, approvedCount, rejectedCount] = await Promise.all([
@@ -184,6 +238,17 @@ export class ExhibitorController {
       });
 
       res.json({ success: true, message: 'Exhibitor status updated', exhibitor: updated });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Admin Delete Exhibitor
+  static async deleteExhibitor(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      await prisma.exhibitor.delete({ where: { id } });
+      res.json({ success: true, message: 'Exhibitor deleted' });
     } catch (error) {
       next(error);
     }

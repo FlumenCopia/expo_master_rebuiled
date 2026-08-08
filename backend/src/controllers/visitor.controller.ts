@@ -82,29 +82,65 @@ export class VisitorController {
       const cleanPhoneDigits = data.phone.replace(/\D/g, '');
       const last10Digits = cleanPhoneDigits.length >= 10 ? cleanPhoneDigits.slice(-10) : cleanPhoneDigits;
 
-      let existing = null;
-      if (cleanEmail) {
-        existing = await prisma.visitor.findFirst({
+      // 1. Check existing Visitor table
+      let existingVisitor = null;
+      if (last10Digits.length >= 7) {
+        existingVisitor = await prisma.visitor.findFirst({
           where: {
             OR: [
-              { email: cleanEmail },
+              ...(cleanEmail ? [{ email: cleanEmail }] : []),
               { phone: { contains: last10Digits } },
             ],
           },
-        });
-      } else {
-        existing = await prisma.visitor.findFirst({
-          where: { phone: { contains: last10Digits } },
+          orderBy: { createdAt: 'desc' },
         });
       }
 
-      if (existing) {
+      if (existingVisitor) {
         res.json({
           success: true,
           alreadyRegistered: true,
           message: 'You are already registered for EXPO26!',
-          badgeCode: existing.badgeCode,
-          visitor: existing,
+          badgeCode: existingVisitor.badgeCode,
+          visitor: existingVisitor,
+        });
+        return;
+      }
+
+      // 2. Check existing Company Employee / Exhibitor Staff
+      let existingEmployee = null;
+      if (last10Digits.length >= 7) {
+        existingEmployee = await prisma.companyEmployee.findFirst({
+          where: {
+            OR: [
+              ...(cleanEmail ? [{ email: cleanEmail }] : []),
+              { phone: { contains: last10Digits } },
+            ],
+          },
+        });
+      }
+
+      if (existingEmployee) {
+        // Auto-create/link Visitor pass for staff member so they get badgeCode
+        const createdVisitor = await prisma.visitor.create({
+          data: {
+            badgeCode: existingEmployee.badgeCode || generateBadgeCode(),
+            fullName: existingEmployee.fullName,
+            email: cleanEmail || String(existingEmployee.email || `${cleanPhoneDigits}@expokerala.local`),
+            phone: data.phone,
+            company: existingEmployee.companyName,
+            designation: existingEmployee.designation || 'Exhibitor Staff',
+            category: 'EXHIBITOR',
+            status: 'REGISTERED',
+          },
+        });
+
+        res.json({
+          success: true,
+          alreadyRegistered: true,
+          message: 'Exhibitor Staff pass retrieved!',
+          badgeCode: createdVisitor.badgeCode,
+          visitor: createdVisitor,
         });
         return;
       }
@@ -268,6 +304,34 @@ export class VisitorController {
           totalPages: Math.ceil(totalCount / limit),
         },
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Admin Update Visitor Record
+  static async updateVisitor(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { fullName, email, phone, company, designation, city, district, state, category, status, notes } = req.body;
+
+      const visitor = await prisma.visitor.update({
+        where: { id },
+        data: {
+          ...(fullName && { fullName }),
+          ...(email && { email }),
+          ...(phone && { phone }),
+          ...(company !== undefined && { company }),
+          ...(designation !== undefined && { designation }),
+          ...(city !== undefined && { city }),
+          ...(district !== undefined && { district }),
+          ...(state !== undefined && { state }),
+          ...(category && { category: category as any }),
+          ...(status && { status: status as any }),
+        },
+      });
+
+      res.json({ success: true, message: 'Visitor record updated', visitor });
     } catch (error) {
       next(error);
     }

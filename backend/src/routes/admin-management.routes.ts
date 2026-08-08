@@ -1,38 +1,36 @@
 import { Router } from 'express';
-import { GateController } from '../controllers/gate.controller';
 import { UserController } from '../controllers/user.controller';
 import { authenticateJWT, requireRoles } from '../middleware/auth';
 
 const router = Router();
 
-// Gates Management API
-router.get('/admin/gates', authenticateJWT, GateController.getGates);
-router.post(
-  '/admin/gates',
-  authenticateJWT,
-  requireRoles('SUPER_ADMIN', 'EVENT_MANAGER'),
-  GateController.createGate
-);
-router.delete(
-  '/admin/gates/:id',
-  authenticateJWT,
-  requireRoles('SUPER_ADMIN'),
-  GateController.deleteGate
-);
-
 // Gatekeeper & Admin Users Management API
+
+// List users — Admin + Event Manager
 router.get(
   '/admin/users',
   authenticateJWT,
   requireRoles('SUPER_ADMIN', 'EVENT_MANAGER'),
   UserController.getUsers
 );
+
+// Create user — Admin + Event Manager
 router.post(
   '/admin/users',
   authenticateJWT,
   requireRoles('SUPER_ADMIN', 'EVENT_MANAGER'),
   UserController.createUser
 );
+
+// Update user (name, role, password) — Super Admin only
+router.put(
+  '/admin/users/:id',
+  authenticateJWT,
+  requireRoles('SUPER_ADMIN'),
+  UserController.updateUser
+);
+
+// Delete user — Super Admin only
 router.delete(
   '/admin/users/:id',
   authenticateJWT,

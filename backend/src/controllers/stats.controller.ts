@@ -33,8 +33,8 @@ export class StatsController {
         prisma.visitor.findMany({ orderBy: { createdAt: 'desc' }, take: 6 }).catch(() => []),
       ]);
 
-      // "Currently Inside" = CHECKED_IN + ON_BREAK
-      const currentlyInside = checkedInCount + onBreakCount;
+      // "Currently Inside" = CHECKED_IN
+      const currentlyInside = checkedInCount;
 
       res.json({
         success: true,

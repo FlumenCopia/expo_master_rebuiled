@@ -9,7 +9,7 @@ export default function AdminCheckinReportsPage() {
   const { isDark } = useAdminTheme();
   const [visitors, setVisitors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusTab, setStatusTab] = useState<'CHECKED_IN' | 'ON_BREAK' | 'CHECKED_OUT'>('CHECKED_IN');
+  const [statusTab, setStatusTab] = useState<'CHECKED_IN' | 'CHECKED_OUT'>('CHECKED_IN');
 
   const loadCheckinReport = async (status: string) => {
     setLoading(true);
@@ -28,9 +28,8 @@ export default function AdminCheckinReportsPage() {
   }, [statusTab]);
 
   const tabConfig = {
-    CHECKED_IN: { label: '✅ Inside Now', color: 'bg-emerald-500 text-slate-950' },
-    ON_BREAK: { label: '☕ On Break', color: 'bg-amber-500 text-slate-950' },
-    CHECKED_OUT: { label: '🔴 Checked Out', color: 'bg-rose-500 text-white' },
+    CHECKED_IN: { label: '🟢 Inside Now (Checked-In)', color: 'bg-emerald-500 text-slate-950' },
+    CHECKED_OUT: { label: '🔴 Checked Out (Exit)', color: 'bg-rose-500 text-white' },
   };
 
   return (
@@ -47,7 +46,7 @@ export default function AdminCheckinReportsPage() {
         </div>
         <a
           href={`${API_BASE_URL}/api/admin/visitors?export=csv&status=${statusTab}`}
-          className="px-4 py-2.5 rounded-xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs flex items-center gap-2 cursor-pointer shadow-sm shadow-[#01A64E]/20 self-start sm:self-auto"
+          className="px-4 py-2.5 rounded-xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#01A64E]/20 self-start sm:self-auto shrink-0 whitespace-nowrap"
         >
           <Download className="w-4 h-4" />
           <span>Export CSV</span>
@@ -79,7 +78,7 @@ export default function AdminCheckinReportsPage() {
         </button>
       </div>
 
-      <div className={`border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
+      <div className={`admin-table-container custom-scrollbar border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
         <table className="w-full text-left text-xs">
           <thead className={`uppercase text-[10px] font-extrabold border-b ${
             isDark ? 'bg-[#090D16] text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-200'

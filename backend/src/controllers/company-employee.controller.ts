@@ -71,6 +71,31 @@ export class CompanyEmployeeController {
   static async createEmployee(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { fullName, companyName, email, phone, designation, exhibitorId } = req.body;
+
+      if (!fullName || !phone) {
+        res.status(400).json({ error: 'Full Name and Phone Number are required' });
+        return;
+      }
+
+      const cleanPhoneDigits = String(phone).replace(/\D/g, '');
+      const last10Digits = cleanPhoneDigits.length >= 10 ? cleanPhoneDigits.slice(-10) : cleanPhoneDigits;
+      const cleanEmail = email ? String(email).trim().toLowerCase() : null;
+
+      // Check if employee with same email or phone already exists
+      const existing = await prisma.companyEmployee.findFirst({
+        where: {
+          OR: [
+            ...(cleanEmail ? [{ email: cleanEmail }] : []),
+            { phone: { contains: last10Digits } },
+          ],
+        },
+      });
+
+      if (existing) {
+        res.status(400).json({ error: `Staff member already registered under ${existing.companyName}` });
+        return;
+      }
+
       let finalCompanyName = companyName || '';
       let linkedExhibitorId = exhibitorId || null;
 

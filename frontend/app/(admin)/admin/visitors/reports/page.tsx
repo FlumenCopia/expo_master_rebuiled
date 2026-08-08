@@ -47,7 +47,7 @@ export default function AdminVisitorReportsPage() {
               '_blank'
             );
           }}
-          className="px-4 py-2.5 rounded-xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs flex items-center gap-2 cursor-pointer shadow-sm shadow-[#01A64E]/20 self-start sm:self-auto"
+          className="px-4 py-2.5 rounded-xl bg-[#01A64E] hover:bg-[#79C143] text-white font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#01A64E]/20 self-start sm:self-auto shrink-0 whitespace-nowrap"
         >
           <Download className="w-4 h-4" />
           <span>Export CSV Report</span>
@@ -81,7 +81,7 @@ export default function AdminVisitorReportsPage() {
         </button>
       </div>
 
-      <div className={`border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
+      <div className={`admin-table-container custom-scrollbar border rounded-3xl overflow-hidden ${isDark ? 'bg-[#131B2A] border-slate-800 shadow-xl' : 'bg-white border-slate-200 shadow-sm'}`}>
         <table className="w-full text-left text-xs">
           <thead className={`uppercase text-[10px] font-extrabold border-b ${
             isDark ? 'bg-[#090D16] text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-200'

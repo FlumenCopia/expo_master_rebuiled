@@ -14,7 +14,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (email: string, pass: string) => Promise<string>;
   logout: () => void;
 }
 
@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   isAuthenticated: false,
   isLoading: true,
-  login: async () => {},
+  login: async () => '',
   logout: () => {},
 });
 
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, pass: string): Promise<string> => {
     setIsLoading(true);
     try {
       const data = await fetchApi<{ success: boolean; token: string; user: User }>('/api/admin/login', {
@@ -85,15 +85,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (data && data.token) {
         localStorage.setItem('expo_admin_token', data.token);
         document.cookie = 'expo_admin_session=true; path=/; max-age=86400; SameSite=Lax';
+        const loggedInUser = data.user || { email, name: 'Masters Admin', role: 'SUPER_ADMIN' };
         setToken(data.token);
-        setUser(data.user || { email, name: 'Masters Admin', role: 'SUPER_ADMIN' });
+        setUser(loggedInUser);
         setIsAuthenticated(true);
+        return loggedInUser.role;
       } else {
         throw new Error('Login failed. Invalid server response.');
       }
     } finally {
       setIsLoading(false);
     }
+    return '';
   };
 
   const logout = () => {

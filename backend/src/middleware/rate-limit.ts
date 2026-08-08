@@ -43,9 +43,9 @@ export function createRateLimiter(limit = 500, windowMs = 60 * 1000, customMessa
 
 // Tailored Security Limiters
 export const authLimiter = createRateLimiter(
-  5,
+  50,
   15 * 60 * 1000,
-  'Too many failed login attempts. Account temporarily locked for 15 minutes.'
+  'Too many failed login attempts. Please wait a few minutes before trying again.'
 );
 
 export const gateLimiter = createRateLimiter(
@@ -55,7 +55,7 @@ export const gateLimiter = createRateLimiter(
 );
 
 export const registrationLimiter = createRateLimiter(
-  5,
+  35,
   60 * 1000,
   'Registration rate limit exceeded. Please wait 1 minute before submitting again.'
 );
