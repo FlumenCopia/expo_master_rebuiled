@@ -15,6 +15,7 @@ import companyEmployeeRoutes from './company-employee.routes';
 import masterRoutes from './master.routes';
 import devRoutes from './dev.routes';
 import exhibitorLeadRoutes from './exhibitor-lead.routes';
+import contactRoutes from './contact.routes';
 
 const apiRouter = Router();
 
@@ -36,6 +37,7 @@ apiRouter.use('/', adminManagementRoutes);
 apiRouter.use('/', gateRoutes);
 apiRouter.use('/', companyEmployeeRoutes);
 apiRouter.use('/', masterRoutes);
+apiRouter.use('/', contactRoutes);
 apiRouter.use('/reminders', reminderRoutes);
 apiRouter.use('/campaigns', campaignRoutes);
 apiRouter.use('/exhibitor-leads', exhibitorLeadRoutes);
