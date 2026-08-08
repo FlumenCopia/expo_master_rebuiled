@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api-client';
 import { useAdminTheme } from '@/context/AdminThemeContext';
+import { useToast } from '@/context/ToastContext';
 
 interface ScanHistoryItem {
   id: string;
@@ -20,6 +21,7 @@ interface ScanHistoryItem {
 
 export default function AdminCheckinPage() {
   const { isDark } = useAdminTheme();
+  const { success: toastSuccess, error: toastError, warning: toastWarning } = useToast();
   const [manualCode, setManualCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
@@ -169,21 +171,26 @@ export default function AdminCheckinPage() {
 
       if (data.success) {
         playSound('success');
+        toastSuccess(data.message || `Gate Entry Verified: ${cleanCode}`, 'Pass Verified');
         addHistoryItem(cleanCode, data.visitor?.fullName || 'Visitor', data.visitor?.category || 'PASS', 'VERIFIED');
       } else if (data.code === 'ALREADY_CHECKED_IN' || data.code === 'NOT_CHECKED_IN') {
         playSound('warning');
+        toastWarning(data.message || `Badge ${cleanCode} already checked in`, 'Already Checked In');
         addHistoryItem(cleanCode, data.visitor?.fullName || 'Visitor', data.visitor?.category || 'PASS', 'ALREADY_CHECKED_IN');
       } else {
         playSound('error');
+        toastError(data.message || `Invalid Badge Code: ${cleanCode}`, 'Verification Failed');
         addHistoryItem(cleanCode, 'Unknown Visitor', 'N/A', 'ERROR');
       }
       setManualCode('');
     } catch (err: any) {
       playSound('error');
+      const errTxt = err.message || '❌ Invalid Badge! Attendee or Staff record not found';
+      toastError(errTxt, 'Invalid Badge');
       setScanResult({
         success: false,
         code: 'ERROR',
-        message: err.message || '❌ Invalid Badge! Attendee or Staff record not found',
+        message: errTxt,
       });
       addHistoryItem(cleanCode, 'Invalid Badge', 'N/A', 'ERROR');
     } finally {
@@ -196,6 +203,7 @@ export default function AdminCheckinPage() {
     e.preventDefault();
     if (!quickRegForm.fullName.trim() || !quickRegForm.phone.trim()) {
       setQuickRegError('Full Name and Phone Number are required.');
+      toastError('Full Name and Phone Number are required.', 'Validation Error');
       return;
     }
     setQuickRegSubmitting(true);
@@ -218,15 +226,20 @@ export default function AdminCheckinPage() {
 
       const badgeCode = res?.badgeCode || res?.visitor?.badgeCode;
       if (res?.success && badgeCode) {
+        toastSuccess(`On-spot pass generated: ${badgeCode}`, 'Pass Created');
         setShowQuickRegister(false);
         setQuickRegForm({ fullName: '', phone: '', email: '', category: 'VISITOR', company: '' });
         setQuickRegError('');
         setTimeout(() => verifyBadge(badgeCode), 300);
       } else {
-        setQuickRegError(res?.message || res?.error || 'Failed to create instant gate pass.');
+        const msg = res?.message || res?.error || 'Failed to create instant gate pass.';
+        setQuickRegError(msg);
+        toastError(msg, 'Registration Failed');
       }
     } catch (err: any) {
-      setQuickRegError(err.message || 'Failed to register visitor at gate.');
+      const msg = err.message || 'Failed to register visitor at gate.';
+      setQuickRegError(msg);
+      toastError(msg, 'Registration Failed');
     } finally {
       setQuickRegSubmitting(false);
     }
